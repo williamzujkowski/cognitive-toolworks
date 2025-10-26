@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "slug": "agent-creator",
+    "name": "Agent Creator",
+    "description": "Orchestrates research, design, and generation of specialized Claude Code agents following CLAUDE.md standards and AGENT.md format.",
+    "keywords": ["agent-design", "orchestration", "system-prompt", "workflow", "mcp", "agent-authoring"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob", "WebFetch"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/agent-creator/AGENT.md"
+  }
+]

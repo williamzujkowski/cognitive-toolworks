@@ -2,6 +2,10 @@
 name: "Create Specialized Agent for Claude Code CLI"
 slug: "agent-creation"
 description: "Generate comprehensive AGENT.md specs with system prompts, workflows, and tool restrictions following Claude Code CLI standards."
+deprecated: true
+deprecation_notice: "This skill has been refactored into a proper agent. Use `/agents/agent-creator/AGENT.md` instead. Migration: Invoke via 'orchestrator use agent-creator ...' rather than skill invocation."
+deprecated_date: "2025-10-26"
+replacement: "agents/agent-creator"
 capabilities:
   - "research Claude Code agent specifications"
   - "generate AGENT.md with YAML frontmatter"
@@ -50,6 +54,8 @@ links:
 ---
 
 ## Purpose & When-To-Use
+
+> **DEPRECATED as of 2025-10-26**: This skill has been refactored into a proper agent at `/agents/agent-creator/AGENT.md`. Please use `orchestrator use agent-creator ...` instead of skill invocation. This file is retained for historical reference only.
 
 Use when a developer needs a **specialized Claude Code agent** for multi-step workflows (e.g., security audits, cost analysis, incident response) that orchestrates skills and operates in a separate context window. Agents are **user-invoked** (not model-invoked like skills) and suited for complex, stateful tasks requiring ≥3 steps.
 

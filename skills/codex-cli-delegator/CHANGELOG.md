@@ -5,6 +5,34 @@ All notable changes to the Codex CLI Delegator skill will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-10-26
+
+### Changed
+- **BREAKING:** Removed T2 extended validation workflow entirely
+- Simplified Procedure to T1 only (≤2k tokens)
+- Reduced delegation decision from 9 steps to 2 steps
+- Simplified Output Contract to 4 required fields (from 9 fields)
+- Removed hybrid mode (recommend separate validation agent instead)
+- Updated Decision Rules to simple criteria lists (removed complex scoring)
+- Streamlined Quality Gates to focus on essential safety checks
+- Updated Examples to show simple delegation only (removed complex scenarios)
+
+### Removed
+- T2 scoring matrix workflow (moved to separate agent concern)
+- Hybrid delegation mode (codex generates + claude reviews)
+- Complex threshold calculations (file counts, pattern counts, etc.)
+- Extended quality checks (lint/test/security now handled by separate agents)
+- Multi-step validation and quality check definitions
+- Estimated files/tokens fields from output contract
+- Execution mode field (always non-interactive for simplicity)
+
+### Rationale
+- T1-only design reduces skill token footprint by ~60%
+- Simple binary decision (codex vs claude) is faster and clearer
+- Complex validation workflows should be handled by dedicated validation agents
+- Maintains backward compatibility for basic delegation use cases
+- Aligns with CLAUDE.md progressive disclosure principle
+
 ## [1.0.0] - 2025-10-25
 
 ### Added

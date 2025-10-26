@@ -45,12 +45,39 @@ and this skill adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.h
 
 ---
 
+## [2.0.0] - 2025-10-26
+
+### Changed (BREAKING)
+- **Simplified to T1 only** (≤2k tokens): Removed T2 extended analysis tier
+- Reduced procedure from 8 steps to 2 steps
+- Simplified decision logic: file size >100KB OR task type = analysis/review → delegate
+- Removed complex multi-file orchestration (now out of scope)
+- Streamlined output contract: removed `context_estimate` field
+- Reduced from 4 sources to 3 sources
+- Decision matrix moved to `resources/` as static reference (not computed)
+
+### Removed
+- T2 multi-file codebase analysis (5 steps)
+- File counting and total size aggregation logic
+- Token estimation formulas
+- Complex ambiguity handling rules
+- MCP availability pre-check (assumed configured)
+
+### Improved
+- Token budget reduced from ~8k (T1+T2) to ~2k (T1 only)
+- Faster decision path: 2 steps vs 8 steps
+- Clearer scope: simple delegation only
+- Added second example showing "keep in Claude" case
+
+### Migration Notes
+- Multi-file orchestration should use separate orchestration agent
+- Existing trigger patterns remain backward compatible
+- If you need complex codebase analysis, use a dedicated orchestration skill
+
+---
+
 ## [Unreleased]
 
 ### Planned
-- T3 tier for meta-analysis of delegation patterns
 - Performance metrics logging (optional)
-- Integration with codebase-analyzer skill (if available)
-- Auto-detection of gemini-mcp-tool version
-- Support for context caching optimization decisions
-- Delegation history and pattern learning
+- Integration with orchestration agent for multi-file workflows
