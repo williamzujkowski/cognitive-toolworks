@@ -720,6 +720,30 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/finops-multicloud-optimizer/SKILL.md"
   },
   {
+    "slug": "frontend-accessibility-validator",
+    "name": "Frontend Accessibility Validator",
+    "summary": "Validate web accessibility compliance with WCAG 2.2 (Level A/AA/AAA), ARIA attributes, color contrast, keyboard navigation, screen reader support, and automated testing via axe-core/Pa11y.",
+    "keywords": [
+      "accessibility",
+      "a11y",
+      "wcag",
+      "wcag-2.2",
+      "aria",
+      "screen-reader",
+      "keyboard-navigation",
+      "color-contrast",
+      "semantic-html",
+      "axe-core",
+      "pa11y",
+      "lighthouse",
+      "ada-compliance",
+      "section-508"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/frontend-accessibility-validator/SKILL.md"
+  },
+  {
     "slug": "frontend-designsystem-validator",
     "name": "UX Design System Validator",
     "summary": "Validate design systems for accessibility (WCAG), responsive design, and component consistency with design token analysis.",
