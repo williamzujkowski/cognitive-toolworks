@@ -8,19 +8,21 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
+
 def load_skills_index():
     """Load and parse skills index"""
     index_path = Path(__file__).parent.parent / "index" / "skills-index.json"
     with open(index_path) as f:
         return json.load(f)
 
+
 def categorize_skill(slug):
     """Categorize skill by domain and tier based on slug"""
-    parts = slug.split('-', 2)
+    parts = slug.split("-", 2)
 
     # Tier 1: Core (all core-* skills)
-    if slug.startswith('core-'):
-        return 'Core', 'Core'
+    if slug.startswith("core-"):
+        return "Core", "Core"
 
     # Extract domain from slug
     if len(parts) >= 2:
@@ -28,18 +30,25 @@ def categorize_skill(slug):
 
         # Tier 3: Technology-specific
         tech_specific = {
-            'kubernetes', 'terraform', 'rust', 'go', 'mobile',
-            'compliance', 'slo', 'e2e'
+            "kubernetes",
+            "terraform",
+            "rust",
+            "go",
+            "mobile",
+            "compliance",
+            "slo",
+            "e2e",
         }
         if domain in tech_specific or parts[1] in tech_specific:
-            tier = 'Specialized'
+            tier = "Specialized"
         else:
             # Tier 2: Domain skills
-            tier = 'Domain'
+            tier = "Domain"
 
         return tier, domain.capitalize()
 
-    return 'Uncategorized', 'Other'
+    return "Uncategorized", "Other"
+
 
 def analyze_coverage(skills):
     """Analyze skill coverage by domain and tier"""
@@ -48,7 +57,7 @@ def analyze_coverage(skills):
     domain_tier_map = defaultdict(lambda: defaultdict(list))
 
     for skill in skills:
-        slug = skill['slug']
+        slug = skill["slug"]
         tier, domain = categorize_skill(slug)
 
         by_tier[tier].append(slug)
@@ -57,11 +66,12 @@ def analyze_coverage(skills):
 
     return by_tier, by_domain, domain_tier_map
 
+
 def generate_markdown_report(by_tier, by_domain, domain_tier_map, total_skills):
     """Generate markdown coverage report"""
     md = ["# Skill Coverage Matrix Analysis", ""]
     md.append(f"**Total Skills**: {total_skills}")
-    md.append(f"**Analysis Date**: $(date -I)")
+    md.append("**Analysis Date**: $(date -I)")
     md.append("")
 
     # Tier summary
@@ -70,7 +80,7 @@ def generate_markdown_report(by_tier, by_domain, domain_tier_map, total_skills):
     md.append("| Tier | Count | Percentage |")
     md.append("|------|-------|------------|")
 
-    tier_order = ['Core', 'Domain', 'Specialized']
+    tier_order = ["Core", "Domain", "Specialized"]
     for tier in tier_order:
         count = len(by_tier[tier])
         pct = (count / total_skills * 100) if total_skills > 0 else 0
@@ -89,10 +99,10 @@ def generate_markdown_report(by_tier, by_domain, domain_tier_map, total_skills):
         count = by_domain[domain]
         # Get skills from all tiers for this domain
         domain_skills = []
-        for tier in ['Core', 'Domain', 'Specialized']:
+        for tier in ["Core", "Domain", "Specialized"]:
             domain_skills.extend(domain_tier_map[tier].get(domain, []))
 
-        skills_preview = ', '.join(sorted(domain_skills)[:3])
+        skills_preview = ", ".join(sorted(domain_skills)[:3])
         if len(domain_skills) > 3:
             skills_preview += ", ..."
         md.append(f"| {domain} | {count} | {skills_preview} |")
@@ -108,7 +118,7 @@ def generate_markdown_report(by_tier, by_domain, domain_tier_map, total_skills):
         md.append("")
 
         # Special handling for Core tier
-        if tier == 'Core':
+        if tier == "Core":
             for skill in sorted(by_tier[tier]):
                 md.append(f"- `{skill}`")
             md.append("")
@@ -136,22 +146,24 @@ def generate_markdown_report(by_tier, by_domain, domain_tier_map, total_skills):
 
     md.append("**Language-Specific Tooling:**")
     tooling_langs = set()
-    for slug in by_tier.get('Specialized', []):
-        if 'rust' in slug or 'go' in slug or 'python' in slug:
-            tooling_langs.add(slug.split('-')[0])
+    for slug in by_tier.get("Specialized", []):
+        if "rust" in slug or "go" in slug or "python" in slug:
+            tooling_langs.add(slug.split("-")[0])
 
-    md.append(f"- ✅ Existing: {', '.join(sorted(tooling_langs)) if tooling_langs else 'Python, Go, Rust'}")
+    md.append(
+        f"- ✅ Existing: {', '.join(sorted(tooling_langs)) if tooling_langs else 'Python, Go, Rust'}"
+    )
     md.append("- ⚠️ Missing: Java, TypeScript/JavaScript, C#, C++")
     md.append("")
 
     md.append("**Testing:**")
-    testing_count = sum(1 for slug in by_tier.get('Domain', []) if slug.startswith('testing-'))
+    testing_count = sum(1 for slug in by_tier.get("Domain", []) if slug.startswith("testing-"))
     md.append(f"- ✅ Core testing skills: {testing_count}")
     md.append("- ⚠️ Missing: Performance profiling, mutation testing, visual regression")
     md.append("")
 
     md.append("**Observability:**")
-    obs_count = sum(1 for slug in by_tier.get('Domain', []) if slug.startswith('observability-'))
+    obs_count = sum(1 for slug in by_tier.get("Domain", []) if slug.startswith("observability-"))
     md.append(f"- ✅ Observability skills: {obs_count}")
     md.append("- ⚠️ Missing: APM-specific (Datadog, New Relic), cost attribution")
     md.append("")
@@ -182,18 +194,19 @@ def generate_markdown_report(by_tier, by_domain, domain_tier_map, total_skills):
     md.append("```")
 
     # Simple ASCII visualization (exclude Core from visualization)
-    domains_for_viz = {d: c for d, c in by_domain.items() if d != 'Core'}
+    domains_for_viz = {d: c for d, c in by_domain.items() if d != "Core"}
     max_count = max(domains_for_viz.values()) if domains_for_viz else 1
     for domain in sorted(domains_for_viz.keys(), key=lambda d: domains_for_viz[d], reverse=True):
         count = domains_for_viz[domain]
         bar_len = int((count / max_count) * 40)
-        bar = '█' * bar_len
+        bar = "█" * bar_len
         md.append(f"{domain:20} [{count:2}] {bar}")
 
     md.append("```")
     md.append("")
 
-    return '\n'.join(md)
+    return "\n".join(md)
+
 
 def main():
     skills = load_skills_index()
@@ -208,14 +221,15 @@ def main():
     output_path.write_text(report)
 
     print(f"Coverage matrix written to: {output_path}")
-    print(f"\nQuick Summary:")
+    print("\nQuick Summary:")
     print(f"  Total Skills: {total}")
     print(f"  Core: {len(by_tier['Core'])}")
     print(f"  Domain: {len(by_tier['Domain'])}")
     print(f"  Specialized: {len(by_tier['Specialized'])}")
-    print(f"\nTop 5 Domains:")
+    print("\nTop 5 Domains:")
     for domain in sorted(by_domain.keys(), key=lambda d: by_domain[d], reverse=True)[:5]:
         print(f"  {domain}: {by_domain[domain]}")
+
 
 if __name__ == "__main__":
     main()

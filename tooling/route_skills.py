@@ -7,8 +7,10 @@ Find most relevant skills for a given task description
 import json
 import pickle
 from pathlib import Path
-from sklearn.metrics.pairwise import cosine_similarity
+
 import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 class SkillRouter:
     """Route tasks to relevant skills using embeddings"""
@@ -23,16 +25,16 @@ class SkillRouter:
 
     def _load_embeddings(self):
         """Load pre-built embeddings from disk"""
-        with open(self.embeddings_dir / 'vectorizer.pkl', 'rb') as f:
+        with open(self.embeddings_dir / "vectorizer.pkl", "rb") as f:
             self.vectorizer = pickle.load(f)
 
-        with open(self.embeddings_dir / 'vectors.pkl', 'rb') as f:
+        with open(self.embeddings_dir / "vectors.pkl", "rb") as f:
             self.vectors = pickle.load(f)
 
-        with open(self.embeddings_dir / 'slugs.json') as f:
+        with open(self.embeddings_dir / "slugs.json") as f:
             self.slugs = json.load(f)
 
-        with open(self.embeddings_dir / 'metadata.json') as f:
+        with open(self.embeddings_dir / "metadata.json") as f:
             self.metadata = json.load(f)
 
     def route(self, query, top_k=2, min_score=0.1):
@@ -61,11 +63,9 @@ class SkillRouter:
         for idx in top_indices:
             score = similarities[idx]
             if score >= min_score:
-                results.append({
-                    'slug': self.slugs[idx],
-                    'score': float(score),
-                    'rank': len(results) + 1
-                })
+                results.append(
+                    {"slug": self.slugs[idx], "score": float(score), "rank": len(results) + 1}
+                )
 
         return results
 
@@ -80,7 +80,8 @@ class SkillRouter:
         for r in results:
             output.append(f"  {r['rank']}. {r['slug']} (score: {r['score']:.3f})")
 
-        return '\n'.join(output)
+        return "\n".join(output)
+
 
 def main():
     """CLI demo of skill routing"""
@@ -92,7 +93,7 @@ def main():
         print("  python route_skills.py 'validate kubernetes security'")
         sys.exit(1)
 
-    query = ' '.join(sys.argv[1:])
+    query = " ".join(sys.argv[1:])
 
     try:
         router = SkillRouter()
@@ -104,9 +105,10 @@ def main():
         print(json.dumps(results, indent=2))
 
     except FileNotFoundError as e:
-        print(f"Error: Embeddings not found. Run build_embeddings.py first.")
+        print("Error: Embeddings not found. Run build_embeddings.py first.")
         print(f"Details: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

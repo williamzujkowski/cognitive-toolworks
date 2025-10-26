@@ -6,7 +6,6 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
 
 try:
     import yaml  # type: ignore
@@ -49,14 +48,16 @@ SECRET_PATTERNS = [
     re.compile(r"(?i)secret\s*[:=]\s*[^\s]{6,}"),
 ]
 
+
 @dataclass
 class SkillValidationIssue:
     path: Path
     message: str
 
+
 @dataclass
 class FrontMatter:
-    meta: Dict
+    meta: dict
     body: str
 
 
@@ -82,9 +83,7 @@ def extract_front_matter(md_text: str) -> FrontMatter:
     body = "\n".join(lines[end_idx + 1 :])
 
     if yaml is None:
-        raise RuntimeError(
-            "PyYAML not installed. Please add 'pyyaml' and re-run validator."
-        )
+        raise RuntimeError("PyYAML not installed. Please add 'pyyaml' and re-run validator.")
     try:
         meta = yaml.safe_load(fm_text) or {}
     except Exception as e:  # pragma: no cover
@@ -96,12 +95,12 @@ def extract_front_matter(md_text: str) -> FrontMatter:
     return FrontMatter(meta=meta, body=body)
 
 
-def find_code_blocks(text: str) -> List[Tuple[int, int]]:
+def find_code_blocks(text: str) -> list[tuple[int, int]]:
     """Return list of (start_line_idx, end_line_idx) for fenced code blocks."""
-    blocks: List[Tuple[int, int]] = []
+    blocks: list[tuple[int, int]] = []
     fence = re.compile(r"^```")
     lines = text.splitlines()
-    open_idx: Optional[int] = None
+    open_idx: int | None = None
     for i, ln in enumerate(lines):
         if fence.match(ln):
             if open_idx is None:
@@ -112,7 +111,7 @@ def find_code_blocks(text: str) -> List[Tuple[int, int]]:
     return blocks
 
 
-def first_examples_block_len(text: str) -> Optional[int]:
+def first_examples_block_len(text: str) -> int | None:
     """Return line count of the first code block under '## Examples'."""
     parts = re.split(r"^## Examples\s*$", text, flags=re.M)
     if len(parts) < 2:
@@ -127,10 +126,12 @@ def first_examples_block_len(text: str) -> Optional[int]:
 
 def has_token_budgets(text: str) -> bool:
     # simple check for presence of T1/T2/T3 in the Quality Gates or anywhere
-    return bool(re.search(r"\bT1\b", text) and re.search(r"\bT2\b", text) and re.search(r"\bT3\b", text))
+    return bool(
+        re.search(r"\bT1\b", text) and re.search(r"\bT2\b", text) and re.search(r"\bT3\b", text)
+    )
 
 
-def scan_secrets(text: str) -> Optional[str]:
+def scan_secrets(text: str) -> str | None:
     for pat in SECRET_PATTERNS:
         m = pat.search(text)
         if m:
@@ -138,8 +139,8 @@ def scan_secrets(text: str) -> Optional[str]:
     return None
 
 
-def validate_skill_file(path: Path) -> List[SkillValidationIssue]:
-    issues: List[SkillValidationIssue] = []
+def validate_skill_file(path: Path) -> list[SkillValidationIssue]:
+    issues: list[SkillValidationIssue] = []
     try:
         fm = extract_front_matter(read_text(path))
     except Exception as e:
@@ -192,7 +193,7 @@ def validate_skill_file(path: Path) -> List[SkillValidationIssue]:
             )
 
     # Oversized code blocks
-    for (start, end) in find_code_blocks(body):
+    for start, end in find_code_blocks(body):
         n = max(0, end - start - 1)
         if n > MAX_CODEBLOCK_LINES:
             issues.append(
@@ -231,7 +232,7 @@ def main() -> int:
         print("No skills found.")
         return 0
 
-    total_issues: List[SkillValidationIssue] = []
+    total_issues: list[SkillValidationIssue] = []
     for p in md_files:
         issues = validate_skill_file(p)
         if issues:
@@ -242,7 +243,9 @@ def main() -> int:
             print(f"[OK]   {p}")
 
     if total_issues:
-        print(f"\n{len(total_issues)} issue(s) found across {len(md_files)} file(s).", file=sys.stderr)
+        print(
+            f"\n{len(total_issues)} issue(s) found across {len(md_files)} file(s).", file=sys.stderr
+        )
         return 1
     print(f"\nAll {len(md_files)} skill(s) passed validation.")
     return 0

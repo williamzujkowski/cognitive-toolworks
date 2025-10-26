@@ -3,11 +3,11 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
-import subprocess
-from pathlib import Path
-from typing import Any, Dict, List
 import re
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any
 
 try:
     import yaml  # type: ignore
@@ -30,7 +30,7 @@ def read_text(p: Path) -> str:
     return p.read_text(encoding="utf-8")
 
 
-def extract_front_matter(md_text: str) -> Dict[str, Any]:
+def extract_front_matter(md_text: str) -> dict[str, Any]:
     lines = md_text.splitlines()
     if not lines or not FRONT_MATTER_DELIM.match(lines[0]):
         raise ValueError("Missing starting '---' for front matter")
@@ -63,7 +63,7 @@ def main() -> int:
     ap.add_argument(
         "--with-embeddings",
         action="store_true",
-        help="Also rebuild embeddings after building index"
+        help="Also rebuild embeddings after building index",
     )
     args = ap.parse_args()
 
@@ -77,7 +77,7 @@ def main() -> int:
         return 2
     index_dir.mkdir(parents=True, exist_ok=True)
 
-    entries: List[Dict[str, Any]] = []
+    entries: list[dict[str, Any]] = []
     for skill_md in sorted(skills_dir.glob("*/SKILL.md")):
         meta = extract_front_matter(read_text(skill_md))
         missing = [k for k in META_FIELDS if k not in meta]
@@ -111,7 +111,7 @@ def main() -> int:
     if args.with_embeddings:
         print("\nRebuilding embeddings...")
         embeddings_script = Path(__file__).parent / "build_embeddings.py"
-        result = subprocess.run([sys.executable, str(embeddings_script)], cwd=root)
+        result = subprocess.run([sys.executable, str(embeddings_script)], cwd=root, check=False)
         if result.returncode != 0:
             print("ERROR: Failed to build embeddings", file=sys.stderr)
             return result.returncode

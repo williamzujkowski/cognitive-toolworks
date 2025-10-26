@@ -6,8 +6,9 @@ Extracts skill references from agents and visualizes relationships
 
 import json
 import re
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
+
 
 def load_agents_index():
     """Load agents index"""
@@ -15,18 +16,20 @@ def load_agents_index():
     with open(index_path) as f:
         return json.load(f)
 
+
 def load_skills_index():
     """Load skills index"""
     index_path = Path(__file__).parent.parent / "index" / "skills-index.json"
     with open(index_path) as f:
         return json.load(f)
 
+
 def extract_skill_references(agent_md_path):
     """Extract skill slug references from agent AGENT.md"""
     content = agent_md_path.read_text()
 
     # Pattern 1: Backtick-enclosed slugs (e.g., `skill-slug`)
-    backtick_pattern = r'`([a-z0-9-]+)`'
+    backtick_pattern = r"`([a-z0-9-]+)`"
 
     # Pattern 2: Explicit skill list format: "1. `slug` - description"
     # Pattern 3: References in prose
@@ -35,15 +38,16 @@ def extract_skill_references(agent_md_path):
     for match in re.finditer(backtick_pattern, content):
         slug = match.group(1)
         # Filter to likely skill slugs (contains at least one hyphen, lowercase)
-        if '-' in slug and slug.islower():
+        if "-" in slug and slug.islower():
             skills.add(slug)
 
     return sorted(skills)
 
+
 def build_dependency_graph():
     """Build agent→skill dependency graph"""
     agents = load_agents_index()
-    skills_set = {s['slug'] for s in load_skills_index()}
+    skills_set = {s["slug"] for s in load_skills_index()}
 
     dependencies = {}
     skill_usage = defaultdict(list)  # skill → list of agents using it
@@ -51,9 +55,9 @@ def build_dependency_graph():
     repo_root = Path(__file__).parent.parent
 
     for agent in agents:
-        agent_slug = agent['slug']
+        agent_slug = agent["slug"]
         # entry is a relative path from repo root
-        agent_path = repo_root / agent['entry']
+        agent_path = repo_root / agent["entry"]
 
         # Extract skill references
         referenced_skills = extract_skill_references(agent_path)
@@ -62,9 +66,9 @@ def build_dependency_graph():
         valid_skills = [s for s in referenced_skills if s in skills_set]
 
         dependencies[agent_slug] = {
-            'name': agent['name'],
-            'skills': valid_skills,
-            'skill_count': len(valid_skills)
+            "name": agent["name"],
+            "skills": valid_skills,
+            "skill_count": len(valid_skills),
         }
 
         # Track reverse mapping
@@ -72,6 +76,7 @@ def build_dependency_graph():
             skill_usage[skill].append(agent_slug)
 
     return dependencies, skill_usage
+
 
 def generate_mermaid_diagram(dependencies):
     """Generate Mermaid flowchart for agent→skill dependencies"""
@@ -84,7 +89,7 @@ def generate_mermaid_diagram(dependencies):
 
     # Nodes
     for agent_slug, data in sorted(dependencies.items()):
-        agent_id = agent_slug.replace('-', '_')
+        agent_id = agent_slug.replace("-", "_")
         lines.append(f"  {agent_id}[{data['name']}]:::agent")
 
     lines.append("")
@@ -92,23 +97,24 @@ def generate_mermaid_diagram(dependencies):
     # Skill nodes (only for skills that are referenced)
     all_referenced_skills = set()
     for data in dependencies.values():
-        all_referenced_skills.update(data['skills'])
+        all_referenced_skills.update(data["skills"])
 
     for skill_slug in sorted(all_referenced_skills):
-        skill_id = skill_slug.replace('-', '_')
+        skill_id = skill_slug.replace("-", "_")
         lines.append(f"  {skill_id}[{skill_slug}]:::skill")
 
     lines.append("")
 
     # Edges
     for agent_slug, data in sorted(dependencies.items()):
-        agent_id = agent_slug.replace('-', '_')
-        for skill_slug in sorted(data['skills']):
-            skill_id = skill_slug.replace('-', '_')
+        agent_id = agent_slug.replace("-", "_")
+        for skill_slug in sorted(data["skills"]):
+            skill_id = skill_slug.replace("-", "_")
             lines.append(f"  {agent_id} --> {skill_id}")
 
     lines.append("```")
-    return '\n'.join(lines)
+    return "\n".join(lines)
+
 
 def generate_markdown_report(dependencies, skill_usage):
     """Generate markdown dependency report"""
@@ -117,7 +123,7 @@ def generate_markdown_report(dependencies, skill_usage):
     # Summary stats
     total_agents = len(dependencies)
     total_unique_skills = len(skill_usage)
-    total_references = sum(d['skill_count'] for d in dependencies.values())
+    total_references = sum(d["skill_count"] for d in dependencies.values())
 
     md.append("## Summary Statistics")
     md.append("")
@@ -135,8 +141,8 @@ def generate_markdown_report(dependencies, skill_usage):
 
     for agent_slug in sorted(dependencies.keys()):
         data = dependencies[agent_slug]
-        skills_preview = ', '.join(data['skills'][:3])
-        if data['skill_count'] > 3:
+        skills_preview = ", ".join(data["skills"][:3])
+        if data["skill_count"] > 3:
             skills_preview += f", ... (+{data['skill_count'] - 3} more)"
         md.append(f"| {agent_slug} | {skills_preview} | {data['skill_count']} |")
 
@@ -151,7 +157,7 @@ def generate_markdown_report(dependencies, skill_usage):
     for skill_slug in sorted(skill_usage.keys(), key=lambda s: len(skill_usage[s]), reverse=True):
         agents_list = skill_usage[skill_slug]
         count = len(agents_list)
-        agents_preview = ', '.join(agents_list[:2])
+        agents_preview = ", ".join(agents_list[:2])
         if count > 2:
             agents_preview += f", ... (+{count - 2} more)"
         md.append(f"| {skill_slug} | {agents_preview} | {count} |")
@@ -163,7 +169,7 @@ def generate_markdown_report(dependencies, skill_usage):
     md.append("")
 
     # Orphaned skills (not referenced by any agent)
-    all_skills = set(s['slug'] for s in load_skills_index())
+    all_skills = set(s["slug"] for s in load_skills_index())
     orphaned_skills = all_skills - skill_usage.keys()
 
     md.append(f"### Orphaned Skills ({len(orphaned_skills)})")
@@ -184,12 +190,12 @@ def generate_markdown_report(dependencies, skill_usage):
         md.append("Skills used by multiple agents:")
         md.append("")
         for skill, count in sorted(heavily_used, key=lambda x: x[1], reverse=True):
-            agents_str = ', '.join(skill_usage[skill])
+            agents_str = ", ".join(skill_usage[skill])
             md.append(f"- **{skill}** ({count} agents): {agents_str}")
         md.append("")
 
     # Agents with no skill dependencies
-    no_deps = [a for a, d in dependencies.items() if d['skill_count'] == 0]
+    no_deps = [a for a, d in dependencies.items() if d["skill_count"] == 0]
     if no_deps:
         md.append(f"### Agents with No Skill Dependencies ({len(no_deps)})")
         md.append("")
@@ -203,7 +209,8 @@ def generate_markdown_report(dependencies, skill_usage):
     md.append(generate_mermaid_diagram(dependencies))
     md.append("")
 
-    return '\n'.join(md)
+    return "\n".join(md)
+
 
 def main():
     print("Analyzing agent→skill dependencies...")
@@ -226,7 +233,10 @@ def main():
     print("\nQuick Summary:")
     print(f"  Total agents: {len(dependencies)}")
     print(f"  Skills referenced: {len(skill_usage)}")
-    print(f"  Orphaned skills: {len(set(s['slug'] for s in load_skills_index()) - skill_usage.keys())}")
+    print(
+        f"  Orphaned skills: {len(set(s['slug'] for s in load_skills_index()) - skill_usage.keys())}"
+    )
+
 
 if __name__ == "__main__":
     main()
