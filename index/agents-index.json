@@ -1,38 +1,36 @@
 [
   {
-    "slug": "compliance-orchestrator",
-    "name": "Compliance Orchestrator",
-    "description": "Orchestrates multi-framework compliance workflows including ATO preparation, OSCAL generation, evidence validation, and continuous monitoring.",
-    "keywords": ["compliance", "automation", "fedramp", "oscal", "ato", "audit", "governance", "nist", "hipaa", "gdpr"],
+    "slug": "agent-creator",
+    "name": "Agent Creator",
+    "description": "Orchestrates research, design, and generation of specialized Claude Code agents following CLAUDE.md standards and AGENT.md format.",
+    "keywords": ["agent-design", "orchestration", "system-prompt", "workflow", "mcp", "agent-authoring"],
     "model": "inherit",
-    "tools": ["Read", "Write", "Bash", "Grep", "Glob", "Task"],
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob", "WebFetch"],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/compliance-orchestrator/AGENT.md"
+    "entry": "agents/agent-creator/AGENT.md"
   },
   {
-    "slug": "devops-pipeline-orchestrator",
-    "name": "DevOps Pipeline Orchestrator",
-    "description": "Orchestrates end-to-end DevOps pipeline design by coordinating CI/CD generation, IaC templates, observability, and deployment strategies.",
-    "keywords": ["devops", "orchestration", "cicd", "infrastructure", "observability", "deployment"],
-    "model": "inherit",
-    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
-    "version": "1.0.0",
-    "owner": "william@cognitive-toolworks",
-    "entry": "agents/devops-pipeline-orchestrator/AGENT.md",
-    "replaces": "skills/devops-pipeline-architect"
-  },
-  {
-    "slug": "security-auditor",
-    "name": "Security Auditor",
-    "description": "Orchestrates comprehensive security assessments across 8 security domains with threat modeling and compliance mapping.",
-    "keywords": ["security-orchestration", "security-assessment", "threat-modeling", "compliance", "multi-domain-security", "appsec", "cloudsec", "container-security", "zero-trust"],
+    "slug": "architecture-decision-orchestrator",
+    "name": "Architecture Decision Orchestrator",
+    "description": "Orchestrates architecture decision workflows by coordinating requirements analysis, pattern evaluation, ADR generation, and C4 diagram creation.",
+    "keywords": ["architecture", "orchestration", "ADR", "trade-off-analysis", "C4-model", "decision-making", "pattern-selection"],
     "model": "inherit",
     "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/security-auditor/AGENT.md",
-    "replaces": "skills/security-assessment-framework"
+    "entry": "agents/architecture-decision-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "aws-cloud-architect",
+    "name": "AWS Cloud Architect",
+    "description": "Orchestrates AWS solution delivery by coordinating requirements, architecture design, cost optimization, and deployment planning.",
+    "keywords": ["aws-orchestration", "solution-architecture", "workflow-coordination", "requirements-discovery", "architecture-decisions", "deployment-planning"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/aws-cloud-architect/AGENT.md"
   },
   {
     "slug": "cloud-native-orchestrator",
@@ -47,15 +45,15 @@
     "replaces": "skills/cloud-native-deployment-orchestrator"
   },
   {
-    "slug": "database-migration-orchestrator",
-    "name": "Database Migration Orchestrator",
-    "description": "Orchestrates database migration workflows by coordinating assessment, planning, execution, and validation across SQL/NoSQL databases.",
-    "keywords": ["database-migration", "schema-migration", "data-migration", "orchestration", "postgresql", "mysql", "mongodb", "database-optimization"],
+    "slug": "compliance-orchestrator",
+    "name": "Compliance Orchestrator",
+    "description": "Orchestrates multi-framework compliance workflows including ATO preparation, OSCAL generation, evidence validation, and continuous monitoring.",
+    "keywords": ["compliance", "automation", "fedramp", "oscal", "ato", "audit", "governance", "nist", "hipaa", "gdpr"],
     "model": "inherit",
-    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob", "Task"],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/database-migration-orchestrator/AGENT.md"
+    "entry": "agents/compliance-orchestrator/AGENT.md"
   },
   {
     "slug": "cost-optimization-orchestrator",
@@ -69,37 +67,27 @@
     "entry": "agents/cost-optimization-orchestrator/AGENT.md"
   },
   {
-    "slug": "observability-orchestrator",
-    "name": "Observability Orchestrator",
-    "description": "Orchestrates end-to-end observability strategy from requirements to SLO monitoring using stack configuration, SRE principles, and incident response.",
-    "keywords": ["observability-orchestration", "sre", "slo", "incident-response", "metrics", "tracing", "logging", "performance-monitoring"],
+    "slug": "database-migration-orchestrator",
+    "name": "Database Migration Orchestrator",
+    "description": "Orchestrates database migration workflows by coordinating assessment, planning, execution, and validation across SQL/NoSQL databases.",
+    "keywords": ["database-migration", "schema-migration", "data-migration", "orchestration", "postgresql", "mysql", "mongodb", "database-optimization"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/database-migration-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "devops-pipeline-orchestrator",
+    "name": "DevOps Pipeline Orchestrator",
+    "description": "Orchestrates end-to-end DevOps pipeline design by coordinating CI/CD generation, IaC templates, observability, and deployment strategies.",
+    "keywords": ["devops", "orchestration", "cicd", "infrastructure", "observability", "deployment"],
     "model": "inherit",
     "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
     "version": "1.0.0",
     "owner": "william@cognitive-toolworks",
-    "entry": "agents/observability-orchestrator/AGENT.md"
-  },
-  {
-    "slug": "performance-orchestrator",
-    "name": "Performance Orchestrator",
-    "description": "Orchestrates end-to-end performance optimization by coordinating profiling, analysis, optimization, and validation across application and infrastructure layers.",
-    "keywords": ["performance-orchestration", "profiling", "optimization", "database-tuning", "caching", "observability", "load-testing", "scalability"],
-    "model": "inherit",
-    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
-    "version": "1.0.0",
-    "owner": "cognitive-toolworks",
-    "entry": "agents/performance-orchestrator/AGENT.md"
-  },
-  {
-    "slug": "multi-region-orchestrator",
-    "name": "Multi-Region Deployment Orchestrator",
-    "description": "Orchestrates global and multi-region deployments by coordinating topology design, regional deployment, data replication, and validation workflows.",
-    "keywords": ["multi-region", "global-deployment", "cross-region", "geo-distribution", "data-replication", "regional-failover", "topology-design", "orchestration"],
-    "model": "inherit",
-    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
-    "version": "1.0.0",
-    "owner": "cognitive-toolworks",
-    "entry": "agents/multi-region-orchestrator/AGENT.md"
+    "entry": "agents/devops-pipeline-orchestrator/AGENT.md",
+    "replaces": "skills/devops-pipeline-architect"
   },
   {
     "slug": "disaster-recovery-orchestrator",
@@ -124,25 +112,48 @@
     "entry": "agents/incident-response-orchestrator/AGENT.md"
   },
   {
-    "slug": "architecture-decision-orchestrator",
-    "name": "Architecture Decision Orchestrator",
-    "description": "Orchestrates architecture decision workflows by coordinating requirements analysis, pattern evaluation, ADR generation, and C4 diagram creation.",
-    "keywords": ["architecture", "orchestration", "ADR", "trade-off-analysis", "C4-model", "decision-making", "pattern-selection"],
+    "slug": "multi-region-orchestrator",
+    "name": "Multi-Region Deployment Orchestrator",
+    "description": "Orchestrates global and multi-region deployments by coordinating topology design, regional deployment, data replication, and validation workflows.",
+    "keywords": ["multi-region", "global-deployment", "cross-region", "geo-distribution", "data-replication", "regional-failover", "topology-design", "orchestration"],
     "model": "inherit",
     "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/architecture-decision-orchestrator/AGENT.md"
+    "entry": "agents/multi-region-orchestrator/AGENT.md"
   },
   {
-    "slug": "aws-cloud-architect",
-    "name": "AWS Cloud Architect",
-    "description": "Orchestrates AWS solution delivery by coordinating requirements, architecture design, cost optimization, and deployment planning.",
-    "keywords": ["aws-orchestration", "solution-architecture", "workflow-coordination", "requirements-discovery", "architecture-decisions", "deployment-planning"],
+    "slug": "observability-orchestrator",
+    "name": "Observability Orchestrator",
+    "description": "Orchestrates end-to-end observability strategy from requirements to SLO monitoring using stack configuration, SRE principles, and incident response.",
+    "keywords": ["observability-orchestration", "sre", "slo", "incident-response", "metrics", "tracing", "logging", "performance-monitoring"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "william@cognitive-toolworks",
+    "entry": "agents/observability-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "performance-orchestrator",
+    "name": "Performance Orchestrator",
+    "description": "Orchestrates end-to-end performance optimization by coordinating profiling, analysis, optimization, and validation across application and infrastructure layers.",
+    "keywords": ["performance-orchestration", "profiling", "optimization", "database-tuning", "caching", "observability", "load-testing", "scalability"],
     "model": "inherit",
     "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/aws-cloud-architect/AGENT.md"
+    "entry": "agents/performance-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "security-auditor",
+    "name": "Security Auditor",
+    "description": "Orchestrates comprehensive security assessments across 8 security domains with threat modeling and compliance mapping.",
+    "keywords": ["security-orchestration", "security-assessment", "threat-modeling", "compliance", "multi-domain-security", "appsec", "cloudsec", "container-security", "zero-trust"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/security-auditor/AGENT.md",
+    "replaces": "skills/security-assessment-framework"
   }
 ]
