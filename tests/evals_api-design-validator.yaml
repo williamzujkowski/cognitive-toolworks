@@ -1,0 +1,156 @@
+---
+# Evaluation scenarios for api-design-validator skill
+# 5 scenarios covering T1/T2 validation for REST and GraphQL APIs
+
+skill: api-design-validator
+version: 1.0.0
+scenarios:
+
+  - id: eval-1-rest-basic-validation
+    name: "REST API T1 basic schema validation"
+    tier: T1
+    inputs:
+      api_type: "REST"
+      validation_tier: "T1"
+      api_spec:
+        openapi: "3.0.0"
+        info:
+          title: "Test API"
+          version: "1.0"
+        paths:
+          /test:
+            get:
+              responses:
+                200:
+                  description: OK
+    expected_outputs:
+      status: "pass"
+      findings: []
+      validation: "OpenAPI 3.x structure confirmed"
+    success_criteria:
+      - No critical or high severity findings
+      - Token usage ≤ 2k
+      - Execution time < 5s
+
+  - id: eval-2-rest-security-violation
+    name: "REST API T2 detects OWASP API Security violations"
+    tier: T2
+    inputs:
+      api_type: "REST"
+      validation_tier: "T2"
+      api_spec:
+        openapi: "3.1.0"
+        info:
+          title: "Insecure API"
+          version: "1.0"
+        paths:
+          /users/{userId}:
+            get:
+              parameters:
+                - name: userId
+                  in: path
+                - name: api_key
+                  in: query
+              responses:
+                200:
+                  description: User data
+    expected_outputs:
+      status: ["fail", "warning"]
+      findings_severity: ["high", "critical"]
+      owasp_mapping: ["API2:2023", "API8:2023"]
+      security_recommendations: "non-empty array"
+    success_criteria:
+      - Detects missing authentication scheme
+      - Flags API key in query parameter as security risk
+      - Provides OWASP API Security Top 10 mappings
+      - Token usage ≤ 6k
+
+  - id: eval-3-graphql-basic-validation
+    name: "GraphQL API T1 SDL syntax validation"
+    tier: T1
+    inputs:
+      api_type: "GraphQL"
+      validation_tier: "T1"
+      api_spec: |
+        type Query {
+          hello: String!
+        }
+        type User {
+          id: ID!
+          name: String
+        }
+    expected_outputs:
+      status: "pass"
+      findings_no_critical: true
+      validation: "Valid SDL syntax confirmed"
+    success_criteria:
+      - SDL parses without syntax errors
+      - Query type detected and validated
+      - Token usage ≤ 2k
+
+  - id: eval-4-graphql-security-patterns
+    name: "GraphQL API T2 validates security patterns and pagination"
+    tier: T2
+    inputs:
+      api_type: "GraphQL"
+      validation_tier: "T2"
+      api_spec: |
+        type Query {
+          users(limit: Int): [User!]!
+        }
+        type User {
+          id: ID!
+          password: String
+        }
+    expected_outputs:
+      status: ["fail", "warning"]
+      password_exposure_finding: "high severity"
+      pagination_recommendation: "Relay cursor connections"
+      design_patterns_provided: true
+    success_criteria:
+      - Detects sensitive field 'password' without auth directive
+      - Recommends Relay-style pagination over simple limit
+      - Provides GraphQL-specific security recommendations
+      - Token usage ≤ 6k
+
+  - id: eval-5-rest-versioning-strategy
+    name: "REST API T2 validates versioning and design patterns"
+    tier: T2
+    inputs:
+      api_type: "REST"
+      validation_tier: "T2"
+      versioning_strategy: "path"
+      api_spec:
+        openapi: "3.1.0"
+        info:
+          title: "Versioned API"
+          version: "2.0"
+        servers:
+          - url: "https://api.example.com/v2"
+        paths:
+          /resources:
+            get:
+              parameters:
+                - name: offset
+                  in: query
+                - name: limit
+                  in: query
+              responses:
+                200:
+                  description: Resource list
+    expected_outputs:
+      status: ["pass", "warning"]
+      versioning_strategy: "path-based"
+      pagination_recommendation: "cursor-based over offset"
+      design_patterns_provided: true
+    success_criteria:
+      - Validates path-based versioning in server URL
+      - Recommends cursor pagination over offset (best practice)
+      - Provides pagination pattern examples
+      - Token usage ≤ 6k
+      - HTTPS enforcement validated
+
+metadata:
+  created: "2025-10-25T21:30:36-04:00"
+  author: "cognitive-toolworks"
+  description: "Comprehensive evaluation scenarios for REST and GraphQL API validation covering schema syntax, OWASP API Security Top 10 compliance, and design pattern recommendations"

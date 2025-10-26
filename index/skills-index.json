@@ -1,5 +1,49 @@
 [
   {
+    "slug": "api-design-validator",
+    "name": "API Design Validator",
+    "summary": "Design and validate REST and GraphQL APIs with OpenAPI/GraphQL schema generation, security hardening, and OWASP API Security compliance.",
+    "keywords": [
+      "api-design",
+      "rest-api",
+      "graphql",
+      "openapi",
+      "swagger",
+      "api-security",
+      "owasp-api-security",
+      "schema-validation",
+      "api-versioning"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/api-design-validator/SKILL.md"
+  },
+  {
+    "slug": "aws-multi-service-architect",
+    "name": "AWS Multi-Service Architect",
+    "summary": "Design AWS solutions across compute, storage, networking, and serverless with cost optimization, security hardening, and Well-Architected Framework alignment.",
+    "keywords": [
+      "aws",
+      "cloud-architecture",
+      "ec2",
+      "s3",
+      "lambda",
+      "vpc",
+      "cloudformation",
+      "cdk",
+      "well-architected",
+      "serverless",
+      "compute",
+      "storage",
+      "networking",
+      "cost-optimization",
+      "multi-region"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/aws-multi-service-architect/SKILL.md"
+  },
+  {
     "slug": "cloud-native-deployment-orchestrator",
     "name": "Cloud-Native Deployment Orchestrator",
     "summary": "Design and validate Kubernetes, container, serverless, and service mesh deployments with platform-specific optimizations for AWS, Azure, and GCP.",
@@ -60,6 +104,27 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/compliance-automation-engine/SKILL.md"
+  },
+  {
+    "slug": "database-optimization-analyzer",
+    "name": "Database Optimization Analyzer",
+    "summary": "Optimize SQL and NoSQL databases with schema design, query performance tuning, and indexing strategies.",
+    "keywords": [
+      "database",
+      "performance",
+      "optimization",
+      "indexing",
+      "query-tuning",
+      "SQL",
+      "NoSQL",
+      "PostgreSQL",
+      "MySQL",
+      "MongoDB",
+      "Redis"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/database-optimization-analyzer/SKILL.md"
   },
   {
     "slug": "devops-pipeline-architect",

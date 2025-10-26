@@ -1,0 +1,169 @@
+skill: database-optimization-analyzer
+version: 1.0.0
+description: Evaluation scenarios for database optimization analyzer skill
+scenarios:
+  - id: eval-001-postgresql-missing-index
+    name: PostgreSQL Missing Index Detection
+    tier: T1
+    input:
+      database_type: postgresql
+      query: "SELECT * FROM orders WHERE customer_id = 12345 AND status = 'pending' ORDER BY created_at DESC"
+      performance_metrics:
+        execution_time_ms: 2300
+        rows_scanned: 450000
+        rows_returned: 15
+    expected_output:
+      findings_count: ">= 2"
+      must_contain:
+        - type: "index"
+        - severity: "high"
+        - table_or_collection: "orders"
+      index_recommendations:
+        - pattern: "CREATE INDEX.*orders.*customer_id.*status"
+        - rationale_mentions: ["WHERE predicates", "ORDER BY"]
+    success_criteria:
+      - Identifies missing composite index
+      - Recommends specific index definition
+      - Flags SELECT * as anti-pattern
+      - Execution time < 2s (T1 budget)
+      - Token count <= 2000
+
+  - id: eval-002-mysql-filesort
+    name: MySQL Filesort Optimization
+    tier: T2
+    input:
+      database_type: mysql
+      query: "SELECT product_id, name, price FROM products WHERE category = 'electronics' ORDER BY price DESC LIMIT 20"
+      execution_plan: |
+        +----+-------------+----------+------+---------------+------+---------+------+--------+----------------+
+        | id | select_type | table    | type | possible_keys | key  | key_len | ref  | rows   | Extra          |
+        +----+-------------+----------+------+---------------+------+---------+------+--------+----------------+
+        |  1 | SIMPLE      | products | ALL  | NULL          | NULL | NULL    | NULL | 125000 | Using filesort |
+        +----+-------------+----------+------+---------------+------+---------+------+--------+----------------+
+    expected_output:
+      findings_count: ">= 2"
+      must_contain:
+        - type: "index"
+        - description: "filesort"
+        - description: "full table scan"
+      index_recommendations:
+        - pattern: "CREATE INDEX.*products.*category.*price"
+    success_criteria:
+      - Detects filesort from EXPLAIN output
+      - Recommends composite index (category, price DESC)
+      - Identifies full table scan (type=ALL)
+      - Cites MySQL documentation
+      - Token count <= 6000
+
+  - id: eval-003-mongodb-collscan
+    name: MongoDB Collection Scan Detection
+    tier: T2
+    input:
+      database_type: mongodb
+      query: "db.users.find({status: 'active', subscription_tier: 'premium'}).sort({last_login: -1}).limit(50)"
+      execution_plan: |
+        {
+          "executionStats": {
+            "executionStages": {
+              "stage": "SORT",
+              "inputStage": {
+                "stage": "COLLSCAN",
+                "filter": {"$and": [{"status": {"$eq": "active"}}, {"subscription_tier": {"$eq": "premium"}}]},
+                "direction": "forward",
+                "docsExamined": 2500000
+              },
+              "nReturned": 50
+            }
+          }
+        }
+    expected_output:
+      findings_count: ">= 2"
+      must_contain:
+        - type: "index"
+        - description: "COLLSCAN"
+        - description: "SORT stage"
+      index_recommendations:
+        - pattern: "createIndex.*status.*subscription_tier.*last_login"
+        - rationale_mentions: ["ESR rule", "Equality", "Sort"]
+    success_criteria:
+      - Identifies COLLSCAN (collection scan)
+      - Detects in-memory SORT stage
+      - Recommends ESR-compliant compound index
+      - Calculates rows scanned vs returned ratio (2.5M vs 50)
+      - Cites MongoDB documentation
+      - Token count <= 6000
+
+  - id: eval-004-redis-keys-anti-pattern
+    name: Redis KEYS Command Anti-Pattern
+    tier: T1
+    input:
+      database_type: redis
+      query: "KEYS session:*"
+      performance_metrics:
+        execution_time_ms: 850
+        keyspace_size: 5000000
+    expected_output:
+      findings_count: ">= 1"
+      must_contain:
+        - type: "query_rewrite"
+        - severity: "high"
+        - description: "KEYS command blocks"
+      query_rewrites:
+        - pattern: "SCAN.*MATCH session:\\*"
+    success_criteria:
+      - Identifies KEYS blocking issue
+      - Recommends SCAN with cursor-based iteration
+      - Provides example SCAN command
+      - Warns about production impact
+      - Token count <= 2000
+
+  - id: eval-005-n-plus-one-detection
+    name: N+1 Query Pattern Detection
+    tier: T2
+    input:
+      database_type: postgresql
+      query: |
+        -- Main query
+        SELECT id, title FROM posts WHERE author_id = 42;
+        -- Followed by N queries (one per post):
+        SELECT * FROM comments WHERE post_id = 1;
+        SELECT * FROM comments WHERE post_id = 2;
+        SELECT * FROM comments WHERE post_id = 3;
+        ... (repeated 50 times)
+      performance_metrics:
+        total_queries: 51
+        total_time_ms: 1200
+    expected_output:
+      findings_count: ">= 1"
+      must_contain:
+        - type: "query_rewrite"
+        - description: "N+1"
+      query_rewrites:
+        - pattern: "JOIN.*comments"
+        - alternative_pattern: "IN.*post_id"
+      recommendations:
+        - mentions: ["batch loading", "JOIN", "eager loading"]
+    success_criteria:
+      - Detects N+1 pattern (1 query + N queries)
+      - Recommends JOIN or IN clause solution
+      - Provides both SQL rewrite and ORM guidance
+      - Estimates performance improvement
+      - Token count <= 6000
+
+evaluation_metadata:
+  total_scenarios: 5
+  tier_distribution:
+    T1: 2
+    T2: 3
+    T3: 0
+  database_coverage:
+    - postgresql
+    - mysql
+    - mongodb
+    - redis
+  pattern_coverage:
+    - missing_index
+    - execution_plan_analysis
+    - anti-patterns
+    - n_plus_one_queries
+  success_threshold: 4/5 scenarios must pass

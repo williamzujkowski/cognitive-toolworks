@@ -1,0 +1,33 @@
+{
+  "slug": "aws-multi-service-architect",
+  "name": "AWS Multi-Service Architect",
+  "summary": "Design AWS solutions across compute, storage, networking, and serverless with cost optimization, security hardening, and Well-Architected Framework alignment.",
+  "category": "cloud-platform",
+  "keywords": [
+    "aws",
+    "cloud-architecture",
+    "ec2",
+    "s3",
+    "lambda",
+    "vpc",
+    "cloudformation",
+    "cdk",
+    "well-architected",
+    "serverless",
+    "compute",
+    "storage",
+    "networking",
+    "cost-optimization",
+    "multi-region"
+  ],
+  "dependencies": [
+    "cloud-native-deployment-orchestrator",
+    "security-assessment-framework"
+  ],
+  "priority": "P1",
+  "phase": 2,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "/home/william/git/cognitive-toolworks/skills/aws-multi-service-architect/SKILL.md"
+}

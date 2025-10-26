@@ -1,0 +1,29 @@
+INPUT (PostgreSQL slow query):
+{
+  "database_type": "postgresql",
+  "query": "SELECT u.name, o.total FROM users u JOIN orders o ON u.id = o.user_id WHERE o.status = 'shipped' AND o.created_at > '2024-01-01' ORDER BY o.total DESC LIMIT 10",
+  "performance_metrics": {"execution_time_ms": 3200, "rows_scanned": 850000}
+}
+
+OUTPUT (T1 recommendations):
+{
+  "findings": [
+    {"type": "index", "severity": "high", "description": "Seq Scan on orders: 850k rows scanned",
+     "recommendation": "CREATE INDEX idx_orders_status_created ON orders(status, created_at, total DESC);"},
+    {"type": "index", "severity": "medium", "description": "Hash Join may benefit from index on users.id",
+     "recommendation": "Verify PRIMARY KEY exists on users(id)"}
+  ],
+  "index_recommendations": [
+    {"table_or_collection": "orders",
+     "index_definition": "CREATE INDEX CONCURRENTLY idx_orders_status_created ON orders(status, created_at, total DESC);",
+     "rationale": "Covers WHERE predicates (status, created_at) and ORDER BY (total DESC). CONCURRENTLY avoids locking on large table."}
+  ],
+  "estimated_impact": "95% reduction in rows scanned (850k → 42k filtered rows)",
+  "next_steps": ["Create index during low-traffic window", "Run ANALYZE orders after index creation", "Verify query plan uses new index"]
+}
+
+NOTES:
+- T1 analysis identifies index opportunity from row scan metrics
+- Composite index follows PostgreSQL best practice (equality → range → sort)
+- CONCURRENTLY flag prevents production impact during index creation
+- Estimated impact based on WHERE clause selectivity

@@ -1,0 +1,106 @@
+skill: aws-multi-service-architect
+version: 1.0.0
+scenarios:
+  - name: serverless-web-app-t1
+    description: "T1: Quick serverless web application architecture recommendation"
+    inputs:
+      requirements:
+        performance: "API response time <500ms"
+        security: "encrypted at rest and in transit"
+        cost: "budget-conscious for startup"
+      workload_type: "web-app"
+      deployment_tier: "T1"
+      regions: ["us-east-1"]
+      budget_constraints: "$500/month"
+    expected_outputs:
+      - architecture.services contains "Lambda"
+      - architecture.services contains "API Gateway"
+      - architecture.services contains "DynamoDB" OR "RDS"
+      - cost_estimate.monthly_usd <= 500
+      - well_architected_alignment.security == "high"
+    validation:
+      - "Cost estimate within budget constraint"
+      - "Serverless services recommended for variable load"
+      - "Encryption mentioned in security configuration"
+
+  - name: containerized-microservices-t2
+    description: "T2: ECS Fargate architecture with IaC for microservices"
+    inputs:
+      requirements:
+        performance: "handle 10K requests/second"
+        security: "private subnets, least-privilege IAM"
+        cost: "moderate budget"
+        compliance: "SOC2"
+      workload_type: "web-app"
+      deployment_tier: "T2"
+      regions: ["us-east-1"]
+      current_architecture: "monolith on EC2"
+    expected_outputs:
+      - architecture.services contains "ECS" OR "Fargate"
+      - architecture.services contains "ALB" OR "Application Load Balancer"
+      - architecture.services contains "VPC"
+      - iac_code.type == "cloudformation" OR "cdk"
+      - security_configuration.iam_policies is present
+      - migration_plan.phases is array with length >= 3
+    validation:
+      - "CloudFormation or CDK templates provided"
+      - "IAM policies follow least-privilege"
+      - "Migration plan addresses monolith to microservices"
+      - "VPC has private subnets for compute"
+
+  - name: data-processing-batch-t1
+    description: "T1: Batch data processing architecture"
+    inputs:
+      requirements:
+        performance: "process 1TB daily"
+        cost: "minimize compute costs"
+      workload_type: "batch"
+      deployment_tier: "T1"
+      regions: ["us-east-1"]
+    expected_outputs:
+      - architecture.services contains "Lambda" OR "Batch" OR "EMR"
+      - architecture.services contains "S3"
+      - cost_estimate.optimization_opportunities mentions "Spot Instances" OR "Savings Plans"
+    validation:
+      - "S3 recommended for data storage"
+      - "Batch or Lambda recommended for processing"
+      - "Cost optimization mentions Spot or reserved capacity"
+
+  - name: multi-region-dr-t2
+    description: "T2: Multi-region disaster recovery architecture"
+    inputs:
+      requirements:
+        reliability: "RTO 1 hour, RPO 15 minutes"
+        security: "encrypted, multi-region compliance"
+      workload_type: "web-app"
+      deployment_tier: "T2"
+      regions: ["us-east-1", "eu-west-1"]
+    expected_outputs:
+      - architecture.services contains "Route 53"
+      - architecture.services contains "S3" with CRR OR "RDS" with cross-region
+      - well_architected_alignment.reliability == "high"
+      - iac_code mentions "cross-region" OR "multi-region"
+    validation:
+      - "Multi-region architecture addresses RTO/RPO requirements"
+      - "Route 53 health checks for failover"
+      - "Data replication strategy (S3 CRR or RDS cross-region)"
+
+  - name: cost-optimization-review-t2
+    description: "T2: Cost optimization for existing AWS infrastructure"
+    inputs:
+      requirements:
+        cost: "reduce costs by 30%"
+      workload_type: "web-app"
+      deployment_tier: "T2"
+      regions: ["us-east-1"]
+      current_architecture: "EC2 t3.large instances (10), RDS Multi-AZ db.r5.xlarge, NAT Gateway in all AZs"
+      budget_constraints: "$5000/month (current $7000/month)"
+    expected_outputs:
+      - cost_estimate.optimization_opportunities length >= 3
+      - cost_estimate mentions "Savings Plans" OR "Reserved Instances"
+      - cost_estimate mentions "rightsizing" OR "VPC Endpoints"
+    validation:
+      - "Recommendations for Savings Plans or Reserved Instances"
+      - "Rightsizing recommendations for over-provisioned instances"
+      - "NAT Gateway cost reduction (VPC Endpoints for S3/DynamoDB)"
+      - "Cost estimate shows path to target budget"

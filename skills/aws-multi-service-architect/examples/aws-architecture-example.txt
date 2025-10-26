@@ -1,0 +1,29 @@
+INPUT:
+requirements: {performance: "low-latency API", security: "encrypted at rest/transit", cost: "moderate budget"}
+workload_type: "web-app"
+deployment_tier: "T1"
+regions: ["us-east-1"]
+budget_constraints: "$500/month"
+
+OUTPUT (T1):
+Architecture: Serverless Web Application
+  - API Gateway (HTTP API) with custom domain
+  - Lambda functions (Python 3.12, 512MB, on-demand scaling)
+  - DynamoDB (on-demand capacity, single-table design)
+  - S3 (Standard tier for static assets, CloudFront CDN)
+  - Cognito User Pools for authentication
+
+Estimated Monthly Cost: $420/month (within budget)
+  - Lambda: $80 (5M requests/month, 200ms avg duration)
+  - DynamoDB: $100 (5GB storage, 10M read/write units)
+  - S3: $30 (50GB storage, 1M requests)
+  - CloudFront: $150 (500GB transfer, 5M requests)
+  - API Gateway: $40 (5M requests)
+  - Cognito: $20 (10K active users)
+
+Well-Architected Alignment:
+  - Security: HIGH (encryption, IAM, Cognito auth)
+  - Cost: HIGH (serverless auto-scaling, on-demand pricing)
+  - Performance: MEDIUM (Lambda cold starts, DynamoDB single-digit ms)
+  - Reliability: HIGH (managed services, multi-AZ by default)
+  - Operational Excellence: MEDIUM (add CloudWatch alarms in T2)
