@@ -1,0 +1,69 @@
+# Evaluation Scenarios for skill-creation
+# 3-5 test cases covering happy path, missing input, edge cases
+
+evals:
+  - id: "happy-path-minimal"
+    description: "Create minimal skill with valid topic and defaults"
+    input:
+      topic: "JSON schema validator"
+    expected:
+      - "SKILL.md created with all required sections"
+      - "Example ≤30 lines in examples/"
+      - "Index entry emitted with slug, name, summary"
+      - "Token budget T1≤2k enforced"
+    pass_criteria:
+      - "All files created in skills/json-schema-validator/"
+      - "Metadata description ≤160 chars"
+      - "No secrets or PII embedded"
+
+  - id: "tier2-with-sources"
+    description: "Create skill requiring authoritative sources (regulated domain)"
+    input:
+      topic: "OSCAL SSP validator for FedRAMP Moderate"
+      constraints: { "strict": true }
+    expected:
+      - "2-4 authoritative sources cited with URLs and access dates"
+      - "Decision rules include ambiguity thresholds"
+      - "T2≤6k token budget enforced"
+    pass_criteria:
+      - "Sources include NIST/FedRAMP official docs"
+      - "Each source has NOW_ET access date"
+      - "Decision Rules section non-empty"
+
+  - id: "missing-required-input"
+    description: "Handle missing topic gracefully"
+    input:
+      constraints: { "strict": true }
+    expected:
+      - "Emit TODO list"
+      - "Stop with 'needs-input' status"
+      - "No files created"
+    pass_criteria:
+      - "Error message indicates missing 'topic' field"
+      - "No partial skill artifacts left behind"
+
+  - id: "tier3-full-validation"
+    description: "Create complete skill with evals and security notes"
+    input:
+      topic: "API rate limit enforcer"
+      tier: 3
+    expected:
+      - "tests/evals_api-rate-limit.yaml created with 3-5 scenarios"
+      - "CHANGELOG.md created at v1.0.0"
+      - "Security section includes secrets/PII/audit posture"
+      - "T3≤12k token budget enforced"
+    pass_criteria:
+      - "Evals file has at least 3 scenarios"
+      - "CHANGELOG follows semver format"
+      - "Security metadata present in front-matter"
+
+  - id: "example-size-enforcement"
+    description: "Truncate example if it exceeds 30 lines"
+    input:
+      topic: "Multi-step workflow orchestrator"
+    expected:
+      - "Example truncated to ≤30 lines"
+      - "Link to resources/ for full sample if needed"
+    pass_criteria:
+      - "Example file ≤30 lines"
+      - "No inline examples >30 lines in SKILL.md"

@@ -1,0 +1,136 @@
+---
+skill: fedramp-poam-qc
+version: 1.0.0
+description: Evaluation scenarios for FedRAMP POAM quality check skill
+created: 2025-10-25T21:04:34-04:00
+
+scenarios:
+  - id: eval_001_valid_poam
+    name: Valid POAM with no issues
+    tier: T1
+    input:
+      poam_tsv: |
+        POA&M Item ID	Control Identifier	Weakness Description	Risk Level	Scheduled Completion Date	Status
+        POAM-2025-001	AC-2	Missing automated account management	High	2025-11-15	In Progress
+        POAM-2025-002	SC-7	Firewall logging not enabled	Moderate	2025-12-01	Open
+        POAM-2025-003	AU-6	Log review process incomplete	Low	2026-02-20	Open
+      naming_convention: default
+    expected_output:
+      findings:
+        errors: []
+        warnings: []
+        stats:
+          total_rows: 3
+          duplicates: 0
+          missing_required: 0
+    pass_criteria:
+      - errors_count == 0
+      - warnings_count == 0
+      - total_rows == 3
+
+  - id: eval_002_missing_required_fields
+    name: POAM with missing required fields
+    tier: T1
+    input:
+      poam_tsv: |
+        POA&M Item ID	Control Identifier	Weakness Description	Risk Level	Scheduled Completion Date	Status
+        	AC-2	Missing account management	High	2025-11-15	In Progress
+        POAM-2025-002		Firewall logging not enabled	Moderate	2025-12-01	Open
+        POAM-2025-003	AU-6	Log review process incomplete		2026-02-20	Open
+      naming_convention: default
+    expected_output:
+      findings:
+        errors:
+          - row: 1
+            field: POA&M Item ID
+            issue: Missing required field
+            severity: error
+          - row: 2
+            field: Control Identifier
+            issue: Missing required field
+            severity: error
+          - row: 3
+            field: Risk Level
+            issue: Missing required field
+            severity: error
+        stats:
+          total_rows: 3
+          missing_required: 3
+    pass_criteria:
+      - errors_count == 3
+      - all(e['severity'] == 'error' for e in errors)
+
+  - id: eval_003_duplicate_detection
+    name: Duplicate entries across POAM
+    tier: T2
+    input:
+      poam_tsv: |
+        POA&M Item ID	Control Identifier	Weakness Description	Risk Level	Scheduled Completion Date	Status
+        POAM-2025-001	AC-2	Missing automated account management	High	2025-11-15	In Progress
+        POAM-2025-002	AC-2	Missing automated account management	High	2025-11-20	Open
+        POAM-2025-003	SC-7	Firewall logging not enabled	Moderate	2025-12-01	Open
+      naming_convention: default
+    expected_output:
+      findings:
+        warnings:
+          - issue: Duplicate or near-duplicate weakness detected
+            severity: warning
+        stats:
+          total_rows: 3
+          duplicates: 2
+    pass_criteria:
+      - duplicates >= 1
+      - any('duplicate' in w['issue'].lower() for w in warnings)
+
+  - id: eval_004_overdue_timeline
+    name: High-severity item exceeding 30-day remediation window
+    tier: T2
+    input:
+      poam_tsv: |
+        POA&M Item ID	Control Identifier	Weakness Description	Risk Level	Original Detection Date	Scheduled Completion Date	Status
+        POAM-2025-001	AC-2	Critical vulnerability CVE-2025-1234	High	2025-09-01	2025-11-15	Open
+      naming_convention: default
+      current_date: 2025-10-25
+    expected_output:
+      findings:
+        warnings:
+          - row: 1
+            field: Risk Level
+            issue: High-severity item overdue (>30 days)
+            severity: warning
+        stats:
+          overdue_high: 1
+    pass_criteria:
+      - warnings_count >= 1
+      - stats['overdue_high'] >= 1
+
+  - id: eval_005_invalid_date_formats
+    name: Invalid and malformed date entries
+    tier: T1
+    input:
+      poam_tsv: |
+        POA&M Item ID	Control Identifier	Weakness Description	Risk Level	Scheduled Completion Date	Status
+        POAM-2025-001	AC-2	Missing account management	High	13/45/2025	In Progress
+        POAM-2025-002	SC-7	Firewall logging not enabled	Moderate	2025-13-99	Open
+        POAM-2025-003	AU-6	Log review incomplete	Low	not-a-date	Open
+      naming_convention: default
+    expected_output:
+      findings:
+        errors:
+          - row: 1
+            field: Scheduled Completion Date
+            issue: Invalid date format
+            severity: error
+          - row: 2
+            field: Scheduled Completion Date
+            issue: Invalid date format
+            severity: error
+          - row: 3
+            field: Scheduled Completion Date
+            issue: Invalid date format
+            severity: error
+        stats:
+          total_rows: 3
+    pass_criteria:
+      - errors_count >= 3
+      - all('date' in e['issue'].lower() for e in errors)
