@@ -1,0 +1,122 @@
+# Evaluation scenarios for unit-testing-generator skill
+version: 1.0.0
+skill: unit-testing-generator
+
+scenarios:
+  - name: basic-jest-generation
+    description: Generate basic Jest test for a simple function
+    input:
+      framework: Jest
+      target_code: |
+        function add(a, b) {
+          return a + b;
+        }
+      test_type: unit
+    expected_output:
+      test_files:
+        - path: "add.test.js"
+          framework: Jest
+      config:
+        file_name: "jest.config.js"
+      coverage_setup:
+        threshold: 80
+    tier: T1
+
+  - name: pytest-with-mocks
+    description: Generate PyTest with database mocking
+    input:
+      framework: PyTest
+      target_code: |
+        class OrderService:
+            def create_order(self, user_id, items):
+                user = self.db.get_user(user_id)
+                return self.db.save_order(user, items)
+      test_type: unit
+      coverage_threshold: 90
+    expected_output:
+      test_files:
+        - path: "test_order_service.py"
+          framework: PyTest
+      config:
+        file_name: "pytest.ini"
+      coverage_setup:
+        threshold: 90
+        reporters: ["json", "html"]
+    tier: T2
+
+  - name: go-table-driven-tests
+    description: Generate Go table-driven unit tests
+    input:
+      framework: Go
+      target_code: |
+        func Fibonacci(n int) int {
+            if n <= 1 {
+                return n
+            }
+            return Fibonacci(n-1) + Fibonacci(n-2)
+        }
+      test_type: unit
+    expected_output:
+      test_files:
+        - path: "fibonacci_test.go"
+          framework: Go
+      coverage_setup:
+        threshold: 80
+    tier: T1
+
+  - name: junit-mockito-integration
+    description: Generate JUnit tests with Mockito mocking
+    input:
+      framework: JUnit
+      target_code: |
+        public class PaymentProcessor {
+            private PaymentGateway gateway;
+            public Transaction process(Payment p) {
+                return gateway.charge(p.amount());
+            }
+        }
+      test_type: unit
+      coverage_threshold: 85
+    expected_output:
+      test_files:
+        - path: "PaymentProcessorTest.java"
+          framework: JUnit
+      config:
+        file_name: "pom.xml"
+      coverage_setup:
+        threshold: 85
+    tier: T2
+
+  - name: rspec-property-based
+    description: Generate RSpec with property-based testing patterns
+    input:
+      framework: RSpec
+      target_code: |
+        class StringSanitizer
+          def sanitize(input)
+            input.gsub(/[^a-zA-Z0-9]/, '')
+          end
+        end
+      test_type: unit
+      coverage_threshold: 95
+    expected_output:
+      test_files:
+        - path: "string_sanitizer_spec.rb"
+          framework: RSpec
+      config:
+        file_name: "spec_helper.rb"
+      coverage_setup:
+        threshold: 95
+      metadata:
+        token_tier: T3
+        sources_consulted:
+          - title: "RSpec Property-Based Testing"
+            url: "https://rspec.info"
+    tier: T3
+
+quality_checks:
+  - all_test_files_have_valid_syntax: true
+  - coverage_thresholds_match_input: true
+  - mocking_used_for_external_dependencies: true
+  - examples_under_30_lines: true
+  - token_budgets_respected: true

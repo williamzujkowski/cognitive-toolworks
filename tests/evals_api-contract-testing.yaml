@@ -1,0 +1,164 @@
+skill: api-contract-testing
+version: 1.0.0
+scenarios:
+  - name: generate_pact_consumer_test
+    description: Generate Pact consumer test for mobile app calling user service
+    inputs:
+      api_spec:
+        openapi: "3.0.0"
+        paths:
+          /users/{id}:
+            get:
+              parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+              responses:
+                "200":
+                  description: User found
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          name:
+                            type: string
+                          email:
+                            type: string
+      role: consumer
+      framework: pact
+      language: javascript
+    expected_outputs:
+      - contract_tests contains "PactV3"
+      - contract_tests contains "mobile-app"
+      - contract_tests contains "/users/123"
+      - contract_spec is valid Pact JSON
+    tier: T1
+    token_budget: 2000
+
+  - name: provider_verification_with_breaking_changes
+    description: Verify provider against consumer contracts and detect breaking changes
+    inputs:
+      api_spec:
+        openapi: "3.0.0"
+        paths:
+          /users/{id}:
+            get:
+              # Breaking change: removed 'email' field from response
+              responses:
+                "200":
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          name:
+                            type: string
+      role: provider
+      framework: pact
+      previous_contract:
+        response_schema:
+          id: integer
+          name: string
+          email: string
+    expected_outputs:
+      - validation_report contains "breaking_changes"
+      - validation_report contains "critical"
+      - validation_report contains "email"
+      - ci_integration is present
+    tier: T2
+    token_budget: 6000
+
+  - name: spring_contract_generation
+    description: Generate Spring Cloud Contract DSL for Java provider
+    inputs:
+      api_spec:
+        description: "Order service API"
+        endpoints:
+          - path: /orders
+            method: POST
+            request_schema:
+              customerId: integer
+              items: array
+            response_schema:
+              orderId: string
+              total: number
+      role: provider
+      framework: spring-contract
+      language: java
+    expected_outputs:
+      - contract_tests contains "Contract.make"
+      - contract_tests contains "request"
+      - contract_tests contains "response"
+      - contract_spec format is spring_contract_dsl
+    tier: T1
+    token_budget: 2000
+
+  - name: schema_evolution_analysis
+    description: Analyze schema evolution across multiple versions and recommend versioning strategy
+    inputs:
+      api_spec:
+        version: "v2.0"
+        paths:
+          /api/v2/products/{id}:
+            get:
+              responses:
+                "200":
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          price:
+                            type: number
+                          currency:
+                            type: string
+                        required:
+                          - id
+                          - name
+                          - price
+                          - currency
+      role: provider
+      framework: openapi
+      previous_versions:
+        - version: "v1.0"
+          schema:
+            id: integer
+            name: string
+            price: number
+    expected_outputs:
+      - versioning_plan contains "url versioning"
+      - breaking_changes contains "id type changed from integer to string"
+      - governance_workflow is present
+      - compatibility_matrix includes v1.0 and v2.0
+    tier: T3
+    token_budget: 12000
+
+  - name: ci_integration_github_actions
+    description: Generate GitHub Actions workflow for contract testing with Pact Broker
+    inputs:
+      api_spec:
+        description: "Payment API"
+        endpoints:
+          - path: /payments
+            method: POST
+      role: consumer
+      framework: pact
+      ci_provider: github_actions
+    expected_outputs:
+      - ci_integration contains "pact-broker"
+      - ci_integration contains "publish"
+      - ci_integration contains "can-i-deploy"
+      - pipeline is github_actions
+    tier: T2
+    token_budget: 6000

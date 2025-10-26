@@ -1,0 +1,88 @@
+skill: message-queue-designer
+version: 1.0.0
+scenarios:
+
+  - name: event_broadcasting_pubsub
+    description: Design pub/sub pattern for user activity events with multiple consumers
+    input:
+      queue_system: kafka
+      pattern: publish-subscribe
+      guarantees: at-least-once
+      throughput_estimate: 5k msg/sec
+      ordering_scope: none
+    expected_output:
+      - queue_config.topology.topics[0].name matches /user\.activity/
+      - queue_config.topology.topics[0].partitions >= 3
+      - producer_code contains idempotency or message-id
+      - consumer_code contains error handling
+      - monitoring.metrics includes consumer_lag
+    pass_criteria:
+      - Multiple consumers can subscribe independently
+      - No global ordering required (parallel processing)
+      - DLQ configured for poison messages
+
+  - name: work_queue_task_distribution
+    description: Competing consumers for background job processing with retry
+    input:
+      queue_system: sqs
+      pattern: work-queue
+      guarantees: at-least-once
+      throughput_estimate: 2k msg/sec
+    expected_output:
+      - queue_config.topology.queues[0].dlq is defined
+      - consumer_code contains visibility timeout extension
+      - monitoring.alerts includes dlq_depth threshold
+    pass_criteria:
+      - Jobs processed by single consumer (no duplication)
+      - Failed jobs move to DLQ after max retries
+      - Exponential backoff on transient errors
+
+  - name: saga_orchestration_kafka
+    description: Choreography-based saga for order fulfillment workflow
+    input:
+      queue_system: kafka
+      pattern: saga
+      guarantees: exactly-once
+      ordering_scope: partition-key
+    expected_output:
+      - queue_config.topology.topics.length >= 2  # command + events
+      - producer_code contains enable.idempotence
+      - consumer_code contains isolation.level read_committed
+      - sources.length >= 2
+    pass_criteria:
+      - Each service publishes events to saga topic
+      - Compensation events handled for rollback
+      - Partition key ensures ordering per order_id
+
+  - name: request_reply_correlation
+    description: Async request-reply with correlation IDs for RPC-style messaging
+    input:
+      queue_system: rabbitmq
+      pattern: request-reply
+      guarantees: at-most-once
+    expected_output:
+      - queue_config.topology.queues includes reply-to queue
+      - producer_code contains correlation-id or reply-to header
+      - consumer_code contains routing based on correlation-id
+    pass_criteria:
+      - Requestor creates temporary reply queue
+      - Response routed back via correlation ID
+      - Timeout handling for lost replies
+
+  - name: high_throughput_backpressure
+    description: Kafka consumer with backpressure and autoscaling for 50k msg/sec
+    input:
+      queue_system: kafka
+      pattern: publish-subscribe
+      guarantees: exactly-once
+      throughput_estimate: 50k msg/sec
+      ordering_scope: partition-key
+    expected_output:
+      - queue_config.topology.topics[0].partitions >= 10
+      - consumer_code contains batch processing or poll tuning
+      - monitoring.metrics includes partition_throughput
+      - monitoring.alerts includes consumer lag scaling trigger
+    pass_criteria:
+      - Consumer lag monitored and triggers autoscaling
+      - Partitions scaled to support throughput
+      - Backpressure via fetch.min.bytes tuning

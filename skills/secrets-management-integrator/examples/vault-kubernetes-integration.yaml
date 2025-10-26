@@ -1,0 +1,33 @@
+# Vault + Kubernetes External Secrets: Dynamic PostgreSQL credentials
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: vault-backend
+  namespace: production
+spec:
+  provider:
+    vault:
+      server: "https://vault.example.com:8200"
+      auth:
+        kubernetes:
+          role: "production-app"
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: postgres-creds
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: vault-backend
+  target:
+    name: postgres-credentials
+  data:
+    - secretKey: username
+      remoteRef:
+        key: database/creds/postgres-prod
+        property: username
+    - secretKey: password
+      remoteRef:
+        key: database/creds/postgres-prod
+        property: password
