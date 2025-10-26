@@ -1,0 +1,137 @@
+scenarios:
+  - name: session-storage-web-application
+    description: "Web application session storage with high concurrency"
+    input:
+      use_case: session_storage
+      users_concurrent: 1000000
+      avg_session_size: 5KB
+      session_ttl: 3600
+      read_write_ratio: "80/20"
+      availability_sla: 99.9%
+      deployment_environment: aws-elasticache-redis-8.0
+    expected_recommendations:
+      caching_strategy: "Write-through (sessions written directly to Redis)"
+      data_structure: "Hash (50-70% memory savings vs JSON strings)"
+      key_pattern: "session:{session_id}"
+      eviction_policy: "volatile-lru (evict oldest sessions with TTL)"
+      maxmemory: "4gb (70-80% of system RAM)"
+      persistence: "AOF with appendfsync everysec (≤1s data loss)"
+      high_availability: "Redis Sentinel (1 master + 2 replicas + 3 sentinels)"
+      failover_time: "10-30 seconds"
+      memory_estimate: "2.5 GB (with hash optimization)"
+    token_tier: T2
+
+  - name: rate-limiting-api-gateway
+    description: "API rate limiting with fixed window and sliding window patterns"
+    input:
+      use_case: rate_limiting
+      requests_per_second: 50000
+      rate_limit: "100 requests per user per minute"
+      users: 500000
+      deployment_environment: self-hosted-redis-8.0
+    expected_recommendations:
+      data_structure: "Sorted Set (sliding window) or String (fixed window with INCR)"
+      fixed_window_pattern: "INCR rate_limit:{user_id} + EXPIRE 60"
+      sliding_window_pattern: "ZADD + ZREMRANGEBYSCORE + ZCARD"
+      eviction_policy: "volatile-ttl (expire soonest keys first)"
+      persistence: "RDB only (rate limit data can be rebuilt, performance priority)"
+      high_availability: "Redis Sentinel (fast failover for minimal disruption)"
+      estimated_latency: "Sub-millisecond (<1ms) per rate limit check"
+    token_tier: T2
+
+  - name: real-time-leaderboard-gaming
+    description: "Gaming leaderboard with millions of players and real-time updates"
+    input:
+      use_case: leaderboard
+      total_players: 10000000
+      active_players: 2000000
+      update_frequency: "every 10 seconds per active player"
+      deployment_environment: redis-cluster
+    expected_recommendations:
+      data_structure: "Sorted Set (ZADD, ZRANGE, ZRANK)"
+      key_pattern: "leaderboard:global"
+      commands:
+        - "ZADD leaderboard:global {score} {player_id}"
+        - "ZRANGE leaderboard:global 0 9 WITHSCORES REV (top 10)"
+        - "ZRANK leaderboard:global {player_id} (player rank)"
+      high_availability: "Redis Cluster (6+ nodes for horizontal scaling)"
+      sharding: "Hash tag to keep leaderboards on same shard: {game:123}:leaderboard"
+      persistence: "Hybrid (RDB + AOF) to prevent leaderboard data loss"
+      performance: "Redis 8.0: 2x ops/sec, sub-millisecond rank lookups"
+    token_tier: T2
+
+  - name: cache-layer-ecommerce
+    description: "E-commerce product catalog caching with cache-aside pattern"
+    input:
+      use_case: caching
+      workload_type: read-heavy (95% reads, 5% writes)
+      data_volume: "50GB product catalog"
+      cache_hit_rate_target: 90%
+      queries_per_second: 10000
+      deployment_environment: gcp-memorystore-redis-8.0
+    expected_recommendations:
+      caching_strategy: "Cache-aside (lazy loading) for read-heavy workload"
+      data_structure: "Hash for product objects (50% memory savings)"
+      key_pattern: "product:{product_id}"
+      ttl: "3600 seconds (1 hour) with periodic cache warming"
+      eviction_policy: "allkeys-lru (general cache, all keys eligible)"
+      maxmemory: "40gb (80% of 50GB RAM server)"
+      persistence: "RDB only (cache can be rebuilt from DB, no AOF overhead)"
+      invalidation: "On product update, delete cache key: DEL product:{product_id}"
+      estimated_reduction: "80-95% database load reduction"
+    token_tier: T2
+
+  - name: task-queue-background-jobs
+    description: "Background job task queue with FIFO processing"
+    input:
+      use_case: task_queue
+      jobs_per_minute: 5000
+      job_size: 2KB
+      processing_pattern: FIFO
+      reliability_requirement: "no job loss"
+      deployment_environment: self-hosted-redis-8.0
+    expected_recommendations:
+      data_structure: "List (LPUSH + BRPOP) or Stream (XADD + XREADGROUP)"
+      list_pattern: "LPUSH jobs:queue {job_data} → BRPOP jobs:queue (blocking consumer)"
+      stream_pattern: "XADD jobs:stream * job {data} → XREADGROUP GROUP workers consumer1"
+      persistence: "AOF with appendfsync always (no job loss, slower writes)"
+      high_availability: "Redis Sentinel (failover on master failure)"
+      alternative: "Redis Streams with consumer groups (ACK, retry logic)"
+      estimated_throughput: "5000+ jobs/min with Redis 8.0 (2x improvement)"
+    token_tier: T2
+
+  - name: redis-7-to-8-migration
+    description: "Plan migration from Redis 7.2 to Redis 8.0"
+    input:
+      use_case: migration
+      current_version: 7.2
+      target_version: 8.0
+      data_volume: "500GB"
+      downtime_tolerance: "< 30 seconds"
+      deployment_environment: self-hosted
+    expected_migration_plan:
+      benefits:
+        - "87% faster command latency"
+        - "2x more operations per second"
+        - "16x faster query processing (allkeys-lfu eviction)"
+        - "112% throughput improvement with I/O threading"
+        - "New probabilistic data structures (Bloom, Cuckoo, Count-min sketch, Top-k, t-digest)"
+      migration_strategy: "Replica promotion (zero downtime)"
+      steps:
+        - "Add Redis 8.0 replica to existing Redis 7.2 master"
+        - "Wait for replication lag to stabilize (monitor with INFO replication)"
+        - "Test queries on Redis 8.0 replica (validate compatibility)"
+        - "Promote Redis 8.0 replica to master (SLAVEOF NO ONE or Sentinel failover)"
+        - "Upgrade remaining replicas one at a time"
+        - "Enable Redis 8.0 features: CONFIG SET io-threads 4, io-threads-do-reads yes"
+        - "Monitor for 24h (rollback if issues detected)"
+      risks: "Client library compatibility, deprecated features removed"
+      downtime_estimate: "< 30 seconds (failover time)"
+    token_tier: T2
+
+  - name: insufficient-data-error
+    description: "Error case: missing critical use case and access patterns"
+    input:
+      deployment_environment: aws-elasticache-redis-8.0
+    expected_error: "Insufficient data: missing use case (caching, session, rate limiting, etc.), data access patterns (read/write ratio, TTL), and data volume estimates. Cannot design architecture without requirements."
+    token_tier: T1

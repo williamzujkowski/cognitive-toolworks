@@ -1,0 +1,29 @@
+# Session Storage Redis Architecture (Web Application)
+
+INPUT: use_case: session_storage, users: 1M concurrent, avg_session: 5KB, ttl: 1h, read_write: 80/20
+
+OUTPUT (T2 Architecture):
+
+CACHING STRATEGY: Write-through (session updates sync to Redis, no DB backend for sessions)
+CONSISTENCY: Strong (all session writes immediately available)
+
+DATA STRUCTURE: Hash (50% memory savings vs JSON string)
+Key pattern: session:{session_id} → HSET session:abc123 user_id 1000 cart_items 3 last_seen 1730000000
+Commands: HSET, HGETALL, EXPIRE, TTL
+Memory: 1M sessions × 5KB × 50% efficiency = 2.5 GB (vs 5 GB with strings)
+
+EVICTION POLICY: volatile-lru (evict oldest sessions with TTL first)
+maxmemory: 4gb (80% of 5GB RAM server, allows 60% headroom)
+
+PERSISTENCE: AOF (appendfsync everysec) → lose ≤1s sessions on crash, acceptable for web app
+Alternative: RDB only if session loss tolerable (faster, no write overhead)
+
+HIGH AVAILABILITY: Redis Sentinel (3 nodes)
+Topology: 1 master + 2 replicas + 3 Sentinel processes (co-located)
+Failover: 10-30s automatic master election on failure
+RTO: <30s, RPO: ≤1s (AOF everysec)
+
+PERFORMANCE (Redis 8.0): io-threads: 4, maxclients: 50000, timeout: 3600 (1h)
+Estimated: 87% faster session reads, 2x higher throughput vs Redis 7.x
+
+SCALING: Session count grows → add more RAM to master, or migrate to Redis Cluster at 10M+ sessions
