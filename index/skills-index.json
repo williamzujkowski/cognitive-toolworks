@@ -1160,6 +1160,25 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/testing-unit-generator/SKILL.md"
   },
   {
+    "slug": "tooling-csharp-generator",
+    "name": "C# .NET Tooling Specialist",
+    "summary": "Generate C# .NET project scaffolding with dotnet CLI, xUnit/NUnit, StyleCop analyzers, and packaging (NuGet/Docker).",
+    "keywords": [
+      "csharp",
+      "dotnet",
+      "tooling",
+      "nuget",
+      "xunit",
+      "aspnet",
+      "blazor",
+      "roslyn",
+      "msbuild"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/tooling-csharp-generator/SKILL.md"
+  },
+  {
     "slug": "tooling-java-generator",
     "name": "Java Tooling Specialist",
     "summary": "Generate Java project scaffolding with Maven/Gradle, JUnit 5, Mockito, Checkstyle/SpotBugs, and packaging (JAR/WAR/native-image).",

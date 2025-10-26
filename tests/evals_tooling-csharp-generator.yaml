@@ -1,0 +1,70 @@
+skill: tooling-csharp-generator
+version: 1.0.0
+timestamp: 2025-10-26T00:00:00-05:00
+
+scenarios:
+  - name: basic-library-net8
+    description: "Generate a simple .NET class library"
+    input:
+      project_type: library
+      dotnet_version: "8.0"
+      test_framework: xunit
+      project_name: "UtilsLibrary"
+    expected:
+      - .csproj with library SDK
+      - StyleCop analyzers configured
+      - xUnit test project
+      - Solution file with src and tests
+    token_tier: T1
+
+  - name: webapi-minimal-swagger
+    description: "Generate ASP.NET Core Web API with Swagger"
+    input:
+      project_type: web-api
+      dotnet_version: "8.0"
+      test_framework: xunit
+      project_name: "PaymentService"
+    expected:
+      - Microsoft.AspNetCore.OpenApi package
+      - Swashbuckle.AspNetCore for Swagger
+      - Minimal API setup in Program.cs
+      - Integration test project
+    token_tier: T2
+
+  - name: blazor-wasm-app
+    description: "Generate Blazor WebAssembly application"
+    input:
+      project_type: blazor
+      dotnet_version: "8.0"
+      test_framework: nunit
+      project_name: "DashboardApp"
+    expected:
+      - Microsoft.AspNetCore.Components.WebAssembly
+      - NUnit test configuration
+      - wwwroot for static assets
+      - Component structure
+    token_tier: T2
+
+  - name: nuget-package-multitarget
+    description: "Generate library with NuGet packaging and multi-targeting"
+    input:
+      project_type: library
+      dotnet_version: "8.0"
+      test_framework: xunit
+      project_name: "CompanyName.CoreLibrary"
+    expected:
+      - TargetFrameworks with net6.0;net7.0;net8.0
+      - GeneratePackageOnBuild enabled
+      - SourceLink configuration
+      - Symbol package generation
+    token_tier: T3
+
+  - name: invalid-project-name
+    description: "Error case: project name with spaces should be rejected"
+    input:
+      project_type: library
+      dotnet_version: "8.0"
+      test_framework: xunit
+      project_name: "Invalid Project Name"
+    expected_error: "project_name must be valid .NET identifier"
+    token_tier: T1
