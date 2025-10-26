@@ -323,37 +323,42 @@ links:
 
 ## Examples
 
-**Example 1: Library with Poetry**
+**Quick Start: Python Library** (35 lines)
 
+```python
+# examples/library_example.py
+from dataclasses import dataclass
+from datetime import datetime
+
+@dataclass(frozen=True)
+class AnalysisResult:
+    length: int
+    word_count: int
+    analyzed_at: datetime
+
+class TextAnalyzer:
+    def __init__(self) -> None:
+        self._history: list[str] = []
+
+    def analyze(self, text: str) -> AnalysisResult:
+        if not text or not text.strip():
+            raise ValueError("Text cannot be empty")
+        self._history.append(text)
+        word_count = len(text.split())
+        return AnalysisResult(len(text), word_count, datetime.utcnow())
+
+    def get_history(self) -> tuple[str, ...]:
+        return tuple(self._history)
 ```
-INPUT: {
-  project_type: "library",
-  dependency_manager: "poetry",
-  python_version: "3.11",
-  project_name: "my-awesome-lib"
-}
 
-OUTPUT:
-structure:
-  - src/my_awesome_lib/__init__.py
-  - src/my_awesome_lib/py.typed
-  - tests/test_core.py
-  - pyproject.toml (with Poetry, pytest, mypy, ruff)
-  - .pre-commit-config.yaml
-  - Makefile
+**Additional Examples:**
+- **CLI Tool**: `examples/cli_example.py` (32 lines) - Click framework, file I/O, error handling
+- **FastAPI**: `examples/api_example.py` (38 lines) - Pydantic models, async endpoints
 
-pyproject.toml excerpt:
-[tool.poetry.dependencies]
-python = "^3.11"
-
-[tool.mypy]
-strict = true
-
-commands:
-  install: "poetry install"
-  test: "poetry run pytest"
-  publish: "poetry publish --build"
-```
+**Template Resources** (see `resources/`)
+- pyproject.toml: `pyproject-library.toml` / `pyproject-cli.toml` / `pyproject-api.toml`
+- Testing: `example_test.py` - pytest with fixtures and parametrize
+- Pre-commit: `pre-commit-config.yaml` - ruff, black, mypy hooks
 
 ---
 
