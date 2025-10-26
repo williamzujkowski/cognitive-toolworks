@@ -98,6 +98,30 @@
     "entry": "agents/cloud-aws-orchestrator/AGENT.md"
   },
   {
+    "slug": "cloud-gcp-orchestrator",
+    "name": "GCP Cloud Architect",
+    "description": "Orchestrates Google Cloud Platform solution delivery by coordinating requirements, architecture design, cost optimization, and deployment planning.",
+    "keywords": [
+      "gcp-orchestration",
+      "solution-architecture",
+      "workflow-coordination",
+      "requirements-discovery",
+      "architecture-decisions",
+      "deployment-planning"
+    ],
+    "model": "inherit",
+    "tools": [
+      "Read",
+      "Write",
+      "Bash",
+      "Grep",
+      "Glob"
+    ],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/cloud-gcp-orchestrator/AGENT.md"
+  },
+  {
     "slug": "cloud-native-orchestrator",
     "name": "Cloud-Native Deployment Orchestrator",
     "description": "Orchestrates end-to-end cloud-native deployments by coordinating container optimization, Kubernetes manifests, Helm charts, service mesh, serverless, and cloud platform integration.",
