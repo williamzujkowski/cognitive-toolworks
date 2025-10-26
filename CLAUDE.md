@@ -46,7 +46,14 @@ If any rule conflicts with another document, **this wins**.
 ## 2) Repository Layout (strict)
 
 ```
+/agents/
+  <agent-slug>/
+    AGENT.md                # agent specification (system prompt + workflows)
+    examples/               # 1–2 interaction examples (≤30 lines each)
+    workflows/              # optional multi-step procedures
+    CHANGELOG.md
 /index/
+  agents-index.json         # generated; agent discovery manifest
   skills-index.json         # generated; minimal discovery manifest
   embeddings/               # optional ANN vectors (tiny)
 /skills/
@@ -58,19 +65,24 @@ If any rule conflicts with another document, **this wins**.
     CHANGELOG.md
 /tests/
   evals_<slug>.yaml         # 3–5 tiny scenarios per skill
+  evals_agent_<slug>.yaml   # 3–5 scenarios per agent
 /tooling/
   validate_skill.py         # schema/format/secret/token checks
-  build_index.py            # generates index; optional embeddings
+  validate_agent.py         # agent spec validation
+  build_index.py            # generates skills index; optional embeddings
+  build_agent_index.py      # generates agents index
   lint_skill.py             # headings/order/links (optional)
 /.github/workflows/
   skills-ci.yaml            # validate → lint → index → evals
+  agents-ci.yaml            # validate → build agent index → run agent evals
 ```
 
 Rules:
 
 * **One skill per folder** with a single `SKILL.md`.
+* **One agent per folder** with a single `AGENT.md`.
 * Always include a **`.gitkeep`** in otherwise-empty directories.
-* Prefer **editing** existing skills over creating new ones.
+* Prefer **editing** existing skills/agents over creating new ones.
 
 ---
 

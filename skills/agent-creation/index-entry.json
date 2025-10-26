@@ -1,0 +1,9 @@
+{
+  "slug": "agent-creation",
+  "name": "Create Specialized Agent for Claude Code CLI",
+  "summary": "Generate comprehensive AGENT.md specs with system prompts, workflows, and tool restrictions following Claude Code CLI standards.",
+  "keywords": ["agent-authoring", "claude-code", "system-prompt", "workflow", "orchestration", "mcp"],
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/agent-creation/SKILL.md"
+}

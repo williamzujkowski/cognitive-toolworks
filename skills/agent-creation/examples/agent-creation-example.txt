@@ -1,0 +1,33 @@
+INPUT:
+  topic: "Cost optimization analyzer for multi-cloud environments"
+  agent_type: "analyzer"
+  capabilities: ["resource analysis", "cost forecasting", "recommendation generation"]
+  tier: "T2"
+  tools: ["Read", "Bash", "Task"]
+
+OUTPUT (files created):
+  agents/cost-optimizer/AGENT.md
+  agents/cost-optimizer/examples/cost-analysis-interaction.txt
+  agents/cost-optimizer/CHANGELOG.md
+  index_entry (JSON)
+
+AGENT.MD FRONTMATTER:
+---
+name: "cost-optimizer"
+description: "Analyzes multi-cloud resource usage and generates cost optimization recommendations with forecasting."
+model: "inherit"
+tools: ["Read", "Bash", "Task"]
+persona: "FinOps engineer specializing in cloud cost optimization"
+version: "1.0.0"
+owner: "cognitive-toolworks"
+keywords: ["cost", "optimization", "finops", "cloud", "multi-cloud"]
+---
+
+VALIDATION RESULTS:
+{
+  "frontmatter_valid": true,
+  "system_prompt_length": 1247,
+  "required_sections_present": true,
+  "examples_valid": true,
+  "tools_valid": true
+}

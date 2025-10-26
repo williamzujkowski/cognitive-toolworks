@@ -1,0 +1,100 @@
+meta:
+  slug: agent-creation
+  budgets:
+    tier1_tokens: 2000
+    tier2_tokens: 6000
+    tier3_tokens: 12000
+
+cases:
+  - name: "Happy path — Create security auditor agent (T2)"
+    input:
+      topic: "Security audit orchestrator for multi-tier applications"
+      agent_type: "orchestrator"
+      capabilities: ["vulnerability scanning", "compliance checking", "report generation"]
+      tier: "T2"
+      tools: ["Read", "Bash", "Grep", "Task"]
+    expect:
+      status: pass
+      has_output_fields: ["agent_folder", "index_entry", "validation_results"]
+      validation_results:
+        frontmatter_valid: true
+        system_prompt_length_lte: 1500
+        required_sections_present: true
+        examples_valid: true
+        tools_valid: true
+      files_created:
+        - "agents/security-auditor/AGENT.md"
+        - "agents/security-auditor/examples/"
+        - "agents/security-auditor/CHANGELOG.md"
+      index_entry_fields: ["slug", "name", "description", "keywords", "model", "tools", "version", "owner", "entry"]
+      sources_count_gte: 2
+
+  - name: "Missing required input — Insufficient topic information"
+    input:
+      topic: "Some agent"
+      tier: "T1"
+    expect:
+      status: fail
+      reason_contains: "needs-input"
+      has_output_fields: ["todo_list"]
+      todo_contains:
+        - "Clarify agent purpose and trigger conditions"
+        - "Specify required capabilities"
+
+  - name: "Agent vs Skill decision — Simple task should recommend skill"
+    input:
+      topic: "Validate JSON schema against a file"
+      capabilities: ["schema validation"]
+      tier: "T1"
+    expect:
+      status: pass
+      recommendation: "skill"
+      reason_contains: "Single-step task; recommend creating a skill instead of an agent"
+
+  - name: "Tool restriction validation — Invalid tool specified"
+    input:
+      topic: "Database migration orchestrator"
+      agent_type: "orchestrator"
+      capabilities: ["schema migration", "data validation"]
+      tier: "T2"
+      tools: ["Read", "Write", "InvalidTool"]
+    expect:
+      status: fail
+      reason_contains: "InvalidTool not in approved MCP tool list"
+      suggested_tools: ["Read", "Write", "Bash", "Grep"]
+
+  - name: "Deep orchestration — T3 with workflows and comprehensive evals"
+    input:
+      topic: "Incident response coordinator for production systems"
+      agent_type: "coordinator"
+      capabilities: ["alert triage", "log analysis", "runbook execution", "stakeholder communication"]
+      tier: "T3"
+      tools: ["Read", "Bash", "Grep", "Task", "WebFetch"]
+    expect:
+      status: pass
+      has_output_fields: ["agent_folder", "index_entry", "validation_results"]
+      files_created:
+        - "agents/incident-coordinator/AGENT.md"
+        - "agents/incident-coordinator/examples/"
+        - "agents/incident-coordinator/workflows/triage-procedure.md"
+        - "agents/incident-coordinator/workflows/escalation-flow.md"
+        - "agents/incident-coordinator/CHANGELOG.md"
+        - "tests/evals_agent_incident-coordinator.yaml"
+      validation_results:
+        evals_count_gte: 3
+        workflows_present: true
+      sources_count_gte: 4
+
+  - name: "System prompt length violation — Exceeds 1500 token limit"
+    input:
+      topic: "Comprehensive platform engineering agent with extensive procedures"
+      agent_type: "orchestrator"
+      capabilities: ["infrastructure", "security", "compliance", "monitoring", "incident response", "cost optimization"]
+      tier: "T3"
+      constraints:
+        verbose_system_prompt: true
+    expect:
+      status: fail
+      reason_contains: "System prompt exceeds 1500 token limit"
+      suggested_action: "Extract detailed procedures to workflows/ directory"
+      system_prompt_length_gt: 1500
