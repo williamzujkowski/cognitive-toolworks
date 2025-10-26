@@ -255,6 +255,143 @@ Do not open SKILL.md unless requested.
 
 ---
 
+## 13) Git & GitHub Workflow (Required)
+
+**Branch Strategy**
+
+* **Never commit directly to `main`** — main branch is protected.
+* Feature branch naming: `feature/<skill-slug>` or `feature/<component>`
+  * Examples: `feature/oscal-ssp-validate`, `feature/index-builder`
+* Hotfix branch naming: `hotfix/<issue-id>` (e.g., `hotfix/42`)
+* Always branch from latest main: `git checkout main && git pull && git checkout -b feature/<name>`
+
+**Commit Practices**
+
+* **Atomic commits**: one logical change per commit.
+* **Conventional Commits format**: `type(scope): description`
+  * **Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+  * **Examples**:
+    * `feat(skill): add oscal-ssp-validate skill`
+    * `fix(validator): correct front-matter parsing`
+    * `docs(readme): update quick start guide`
+    * `test(evals): add edge cases for routing skill`
+    * `chore(ci): update workflow timeout settings`
+* **First line**: max 72 chars, imperative mood ("add", not "added")
+* **Body** (optional): blank line separator, explain why/context
+* **Reference issues/PRs**: use `Fixes #123` or `Relates to #456` in body
+
+**GitHub CLI Integration**
+
+* Create PR: `gh pr create --title "feat(skill): add new skill" --body "$(cat <<'EOF' ...)`
+* Check PR status: `gh pr status`
+* Monitor CI: `gh pr checks`
+* Merge after approval: `gh pr merge --squash`
+* View PR diff: `gh pr diff`
+
+**PR Workflow (step-by-step)**
+
+1. **Create feature branch**:
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b feature/my-skill
+   ```
+
+2. **Make atomic commits**:
+   ```bash
+   # Work on skill
+   git add skills/my-skill/SKILL.md
+   git commit -m "feat(skill): add my-skill core structure"
+
+   # Add examples
+   git add skills/my-skill/examples/
+   git commit -m "docs(skill): add my-skill examples"
+   ```
+
+3. **Push to remote**:
+   ```bash
+   git push -u origin feature/my-skill
+   ```
+
+4. **Create PR** (with template):
+   ```bash
+   gh pr create --title "feat(skill): add my-skill" --body "$(cat <<'EOF'
+   ## Summary
+   Adds my-skill for <purpose>. Implements T1/T2/T3 tiers with <token-budget>.
+
+   ## Test Plan
+   - [ ] Validator passes
+   - [ ] Linter passes
+   - [ ] Index builds
+   - [ ] Evals run successfully
+
+   ## Checklist (from §10)
+   - [ ] NOW_ET computed and used
+   - [ ] No secrets or PII
+   - [ ] Required sections present
+   - [ ] Example ≤30 lines
+   - [ ] Token budgets visible
+   - [ ] Links resolve
+   - [ ] Index updated
+   EOF
+   )"
+   ```
+
+5. **Wait for CI** — all quality gates must pass (see §8)
+
+6. **Review & merge**:
+   * Self-review or request review
+   * Address feedback with new commits
+   * Squash-merge to main: `gh pr merge --squash`
+
+**Quality Gates Before Merge** (automated in CI, see §8)
+
+* All skills pass `tooling/validate_skill.py`
+* All skills pass `tooling/lint_skill.py`
+* Index builds successfully via `tooling/build_index.py`
+* All evals have valid YAML syntax
+* No secrets detected (pattern scan)
+* PR template checklist completed
+
+**Release Process**
+
+* **Tag format**: `v<major>.<minor>.<patch>` (semantic versioning)
+  * Breaking changes → bump major
+  * New skills/features → bump minor
+  * Fixes/docs → bump patch
+* **Create annotated tag**:
+  ```bash
+  git tag -a v0.1.0 -m "Release v0.1.0: initial skills collection"
+  git push origin v0.1.0
+  ```
+* **Create GitHub release**:
+  ```bash
+  gh release create v0.1.0 --title "v0.1.0" --notes "$(cat CHANGELOG.md)"
+  ```
+
+**Common Commands Quick Reference**
+
+```bash
+# Start new feature
+git checkout main && git pull && git checkout -b feature/my-feature
+
+# Amend last commit (before push)
+git add . && git commit --amend --no-edit
+
+# Sync feature branch with main
+git checkout main && git pull
+git checkout feature/my-feature
+git rebase main
+
+# View what will be pushed
+git log origin/main..HEAD --oneline
+
+# Undo last commit (keep changes)
+git reset --soft HEAD~1
+```
+
+---
+
 ### Final Word
 
 Build **small, sharp Skills** with **clear triggers** and **tight outputs**. Cite precisely. Keep tokens down. When unsure, ask for inputs, list TODOs, and stop.
