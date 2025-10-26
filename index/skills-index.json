@@ -448,6 +448,25 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/database-optimization-analyzer/SKILL.md"
   },
   {
+    "slug": "database-postgres-architect",
+    "name": "PostgreSQL Database Architect",
+    "summary": "Design high-performance PostgreSQL databases with schema optimization, indexing strategies, partitioning, replication, and PostgreSQL 17 tuning.",
+    "keywords": [
+      "postgresql",
+      "database architecture",
+      "schema design",
+      "indexing",
+      "partitioning",
+      "query optimization",
+      "replication",
+      "high availability",
+      "performance tuning"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/database-postgres-architect/SKILL.md"
+  },
+  {
     "slug": "database-schema-designer",
     "name": "Database Schema Designer",
     "summary": "Design normalized database schemas with ERDs, migration plans, and indexing strategies for relational and document databases",

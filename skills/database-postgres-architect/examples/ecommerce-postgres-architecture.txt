@@ -1,0 +1,27 @@
+# E-commerce PostgreSQL Architecture (OLTP workload)
+
+INPUT: workload: oltp, data: 500GB (5M users, 50M orders), qps: 5000, sla: 99.95%
+
+OUTPUT (T2 Architecture):
+
+SCHEMA (3NF normalized):
+users: id BIGSERIAL PK, email VARCHAR(255) UNIQUE, created_at TIMESTAMPTZ
+orders: id BIGSERIAL PK, user_id BIGINT FK, status VARCHAR(20), total NUMERIC(10,2)
+  → Partitioned RANGE by created_at (monthly), 24 partitions (2 years retention)
+
+INDEXES (5 recommended):
+1. idx_users_email B-tree UNIQUE → login queries 50x faster (seq 250ms → idx 5ms)
+2. idx_orders_user_created B-tree (user_id, created_at) → history 25x faster
+3. idx_orders_status PARTIAL WHERE status != 'completed' → active orders only
+4. idx_products_category GIN (categories) → multi-category search
+5. idx_logs_created BRIN (created_at) → time-series, minimal space
+
+TUNING (64GB RAM server):
+shared_buffers: 16GB (25%), effective_cache_size: 40GB (62%), work_mem: 8MB
+max_connections: 200, checkpoint_timeout: 15min
+
+PARTITIONING:
+orders RANGE(created_at): monthly partitions, auto-prune queries by date filter
+→ Scan time: 45s (full table) → 2s (single partition) = 22x speedup
+
+HA: Primary + 2 async read replicas, Patroni auto-failover, RTO <60s, RPO <5s
