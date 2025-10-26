@@ -60,5 +60,6 @@
   "testing-strategy-composer",
   "testing-unit-generator",
   "tooling-java-generator",
-  "tooling-python-generator"
+  "tooling-python-generator",
+  "tooling-typescript-generator"
 ]

@@ -1196,5 +1196,25 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/tooling-python-generator/SKILL.md"
+  },
+  {
+    "slug": "tooling-typescript-generator",
+    "name": "TypeScript Tooling Specialist",
+    "summary": "Generate TypeScript/JavaScript project scaffolding with npm/pnpm/yarn, Jest/Vitest, ESLint/Prettier, and bundling (Vite/Rollup/esbuild).",
+    "keywords": [
+      "typescript",
+      "javascript",
+      "tooling",
+      "npm",
+      "jest",
+      "vitest",
+      "eslint",
+      "vite",
+      "node",
+      "react"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/tooling-typescript-generator/SKILL.md"
   }
 ]
