@@ -1,0 +1,270 @@
+scenarios:
+  - name: basic-crud-api-single-resource
+    description: "Quick REST API design for single resource with basic CRUD (T1 fast path)"
+    input:
+      domain_model:
+        User:
+          id: "uuid"
+          email: "string"
+          name: "string"
+          createdAt: "datetime"
+      use_cases:
+        - "List all users"
+        - "Create a new user"
+        - "Get user by ID"
+        - "Update user"
+        - "Delete user"
+    expected_recommendations:
+      richardson_level: 2
+      resources:
+        - uri: "/users"
+          methods: ["GET", "POST"]
+        - uri: "/users/{id}"
+          methods: ["GET", "PUT", "PATCH", "DELETE"]
+      http_semantics:
+        GET_users: "List users with pagination (?limit=20&offset=0 default)"
+        POST_users: "Create user, return 201 Created with Location header"
+        GET_users_id: "Retrieve user, return 200 OK or 404 Not Found"
+        PUT_users_id: "Replace entire user (idempotent), return 200 OK"
+        PATCH_users_id: "Partial update, return 200 OK or 204 No Content"
+        DELETE_users_id: "Delete user (idempotent), return 204 No Content"
+      pagination: "Offset-based (limit/offset) by default"
+      openapi_version: "3.1.0"
+      validation: "JSON Schema for request/response bodies"
+    token_tier: T1
+
+  - name: ecommerce-multiresource-cursor-pagination
+    description: "Multi-resource e-commerce API with cursor pagination and OAuth2"
+    input:
+      domain_model:
+        User: {id: "uuid", email: "string", name: "string"}
+        Order: {id: "uuid", userId: "uuid", status: "enum(pending,completed,cancelled)", total: "decimal"}
+        Product: {id: "uuid", name: "string", price: "decimal", stock: "integer"}
+      use_cases:
+        - "List orders for a user"
+        - "Create a new order"
+        - "Search products by name"
+        - "Get order details"
+      versioning_strategy: "uri"
+      pagination_preference: "cursor"
+      security_requirements:
+        auth: "OAuth2 (Bearer JWT)"
+        rate_limit: "100 requests/minute per user"
+    expected_recommendations:
+      richardson_level: 2
+      versioning: "URI-based (/v1/users, /v2/users)"
+      resources:
+        - uri: "/v1/users"
+          methods: ["GET", "POST"]
+        - uri: "/v1/orders"
+          methods: ["GET", "POST"]
+          query_params: "?userId=123&status=completed&after=cursor"
+        - uri: "/v1/products"
+          methods: ["GET", "POST"]
+          query_params: "?q=laptop&limit=20&after=cursor"
+      pagination:
+        method: "cursor-based"
+        request_params: "limit (default 20, max 100), after (cursor string)"
+        response_format: "{data: [items], pagination: {nextCursor, hasMore, count}}"
+        benefits: "No page drift, efficient for real-time data"
+      security:
+        - "OAuth2 Bearer JWT in Authorization header"
+        - "Validate userId in JWT matches resource access (API1: BOLA)"
+        - "Rate limit 100 req/min via X-RateLimit headers (API4)"
+      owasp_mitigations:
+        - "API1 BOLA: Validate user ownership before returning orders"
+        - "API2 Broken Auth: JWT validation on every protected endpoint"
+        - "API3 Property Authorization: Don't expose internal fields (passwordHash)"
+        - "API4 Resource Consumption: 100 req/min rate limit, 429 response"
+        - "API8 Misconfiguration: Generic 500 errors (no stack traces in production)"
+      error_format: "RFC 7807 Problem Details"
+    token_tier: T2
+
+  - name: hateoas-api-level-3-rest
+    description: "Richardson Level 3 REST API with HATEOAS hypermedia links"
+    input:
+      domain_model:
+        Order: {id: "uuid", status: "enum", total: "decimal"}
+      use_cases:
+        - "Get order with available actions based on status"
+      maturity_target: 3
+      versioning_strategy: "uri"
+    expected_recommendations:
+      richardson_level: 3
+      hateoas_links:
+        - "Every resource includes _links section"
+        - "self: link to current resource"
+        - "related: links to related resources (user, items)"
+        - "actions: conditional links based on state (cancel, pay if status=pending)"
+      example_response:
+        id: "order-123"
+        status: "pending"
+        total: 99.99
+        _links:
+          self: {href: "/v2/orders/order-123"}
+          user: {href: "/v2/users/user-456"}
+          items: {href: "/v2/orders/order-123/items"}
+          cancel: {href: "/v2/orders/order-123/cancel", method: "POST"}
+          pay: {href: "/v2/payments", method: "POST"}
+      benefits:
+        - "Clients discover actions dynamically (no hardcoded URLs)"
+        - "Server can change URIs without breaking clients"
+        - "Conditional actions based on resource state"
+    token_tier: T2
+
+  - name: api-versioning-migration-strategy
+    description: "API versioning with migration from v1 to v2 and deprecation timeline"
+    input:
+      domain_model:
+        User: {id: "uuid", email: "string"}
+      use_cases:
+        - "Migrate from v1 to v2 with breaking changes"
+      versioning_strategy: "uri"
+    expected_recommendations:
+      versioning:
+        strategy: "URI-based"
+        current_version: "v2"
+        supported_versions: ["v1", "v2"]
+        concurrent_support: "2 versions (v1 + v2) for 6 months"
+      breaking_changes:
+        - "v1: User has 'username' field"
+        - "v2: 'username' removed, replaced with 'email'"
+      deprecation_timeline:
+        deprecated_version: "v1"
+        sunset_date: "2026-04-26"
+        deprecation_header: "Deprecation: true"
+        sunset_header: "Sunset: Sun, 26 Apr 2026 00:00:00 GMT"
+      migration_guide:
+        - "Update client to use 'email' instead of 'username'"
+        - "Test against /v2/ endpoints"
+        - "Deploy v2 client before 2026-04-26 sunset date"
+    token_tier: T2
+
+  - name: pagination-comparison-offset-cursor-keyset
+    description: "Compare offset, cursor, and keyset pagination for large dataset"
+    input:
+      domain_model:
+        Product: {id: "uuid", name: "string", createdAt: "datetime"}
+      use_cases:
+        - "List products (10M+ records) with efficient pagination"
+    expected_recommendations:
+      pagination_methods:
+        offset:
+          request: "?limit=20&offset=100"
+          pros: "Simple, stateless, supports random access (jump to page 5)"
+          cons: "Slow for large offsets (DB scans first N rows), page drift"
+          use_case: "Small datasets, admin dashboards"
+        cursor:
+          request: "?limit=20&after=cursorXYZ"
+          response: "{data: [], pagination: {nextCursor, hasMore}}"
+          pros: "Efficient (no offset scan), no page drift, ideal for infinite scroll"
+          cons: "No random access (can't jump to page 5), opaque cursor"
+          use_case: "Feeds, real-time data, mobile apps"
+        keyset:
+          request: "?limit=20&afterId=1000&afterCreatedAt=2025-10-26T12:00:00Z"
+          query: "WHERE (createdAt, id) > (?, ?) ORDER BY createdAt, id LIMIT 20"
+          pros: "Fastest (index seek), deterministic, no drift"
+          cons: "Requires stable sort key, complex for clients"
+          use_case: "Large datasets (10M+ rows), time-series data"
+      recommendation: "Use cursor for most APIs, keyset for 10M+ datasets"
+    token_tier: T2
+
+  - name: webhooks-openapi-31
+    description: "Define webhooks for outbound events using OpenAPI 3.1"
+    input:
+      domain_model:
+        Order: {id: "uuid", status: "enum"}
+      use_cases:
+        - "Notify external systems when order is created/completed"
+      openapi_version: "3.1.0"
+    expected_recommendations:
+      webhooks:
+        - event: "order.created"
+          method: "POST"
+          payload:
+            event: "order.created"
+            timestamp: "2025-10-26T19:30:00Z"
+            data: {$ref: "#/components/schemas/Order"}
+        - event: "order.completed"
+          method: "POST"
+          payload:
+            event: "order.completed"
+            data: {orderId: "order-123"}
+      openapi_spec:
+        webhooks:
+          orderCreated:
+            post:
+              summary: "Notifies when an order is created"
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      type: object
+                      properties:
+                        event: {type: string}
+                        timestamp: {type: string, format: date-time}
+                        data: {$ref: "#/components/schemas/Order"}
+              responses:
+                200: {description: "Webhook acknowledged"}
+      delivery_guarantees: "At-least-once (retry on failure with exponential backoff)"
+    token_tier: T2
+
+  - name: bulk-operations-idempotency
+    description: "Design bulk operations with idempotency for batch create/update"
+    input:
+      domain_model:
+        User: {id: "uuid", email: "string", name: "string"}
+      use_cases:
+        - "Create 100 users in a single request"
+        - "Update 50 users in a single request"
+    expected_recommendations:
+      bulk_endpoints:
+        - uri: "/users/batch"
+          method: "POST"
+          request_body: "[{email, name}, {email, name}, ...]"
+          response: "[{id, email, name}, {id, email, name}, ...]"
+          status: "201 Created (all succeeded) or 207 Multi-Status (partial success)"
+        - uri: "/users/batch"
+          method: "PATCH"
+          request_body: "[{id, changes}, {id, changes}, ...]"
+          response: "[{id, email, name}, {id, email, name}, ...]"
+      idempotency:
+        header: "Idempotency-Key: unique-request-id"
+        behavior: "Server stores request ID for 24h; duplicate requests return cached result"
+        status_code: "200 OK (from cache) or 201 Created (new)"
+      error_handling:
+        - "207 Multi-Status: {successes: [{id}], failures: [{email, error}]}"
+        - "400 Bad Request: Invalid batch size (max 1000 items)"
+    token_tier: T3
+
+  - name: rate-limiting-standardized-headers
+    description: "Implement rate limiting with standardized headers"
+    input:
+      domain_model:
+        User: {id: "uuid"}
+      use_cases:
+        - "Limit API usage to 100 requests/minute per user"
+      security_requirements:
+        rate_limit: "100 requests/minute per user"
+    expected_recommendations:
+      rate_limiting:
+        algorithm: "Token bucket or sliding window"
+        limit: "100 requests/minute per user"
+        headers:
+          - "X-RateLimit-Limit: 100"
+          - "X-RateLimit-Remaining: 95"
+          - "X-RateLimit-Reset: 1698345600 (Unix timestamp)"
+        response_on_exceed:
+          status: 429
+          body: {type: "https://api.example.com/errors/rate-limit", title: "Too Many Requests", detail: "Rate limit of 100 req/min exceeded"}
+          headers:
+            - "Retry-After: 60 (seconds until reset)"
+      gateway_integration: "AWS API Gateway, Kong, Apigee support rate limiting natively"
+    token_tier: T2
+
+  - name: insufficient-data-error
+    description: "Error case: missing domain model and use cases"
+    input:
+      versioning_strategy: "uri"
+    expected_error: "Insufficient data: missing 'domain_model' and 'use_cases'. Cannot design REST API without domain entities and operations. Please provide: (1) Domain model with at least one entity (e.g., User: {id, email, name}), (2) Use cases with CRUD or custom operations (e.g., 'List all users', 'Create order')."
+    token_tier: T1
