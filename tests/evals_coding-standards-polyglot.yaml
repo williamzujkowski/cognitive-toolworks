@@ -1,0 +1,115 @@
+skill: coding-standards-polyglot
+version: 1.0.0
+timestamp: 2025-10-25T21:30:36-04:00
+
+scenarios:
+  - id: python-happy-path
+    description: "Python file with mixed violations, should return structured report with PEP 8 issues"
+    input:
+      code_path: "test_fixtures/sample.py"
+      language: "python"
+      ruleset: "both"
+      severity_threshold: "warning"
+    expected:
+      score_range: [60, 80]
+      issues_present:
+        - rule: "PEP8-E501"
+        - rule: "UNIVERSAL-MAGIC"
+      metrics:
+        error_count: 0
+        warning_count_min: 3
+      timestamp_format: "ISO-8601"
+    pass_criteria:
+      - "Output contains 'quality_report' JSON key"
+      - "Score is integer between 0-100"
+      - "At least one PEP 8 violation detected"
+      - "Fix suggestions provided in Markdown format"
+
+  - id: go-error-handling
+    description: "Go file with unchecked errors, should flag GO-ERR-001"
+    input:
+      code_path: "test_fixtures/handlers.go"
+      language: "go"
+      ruleset: "language-specific"
+      severity_threshold: "error"
+    expected:
+      score_range: [40, 70]
+      issues_present:
+        - rule: "GO-ERR-001"
+          severity: "error"
+      metrics:
+        error_count_min: 1
+    pass_criteria:
+      - "Unchecked error returns flagged with severity 'error'"
+      - "Output excludes universal rules (ruleset=language-specific)"
+      - "Fix suggestions reference Effective Go"
+
+  - id: typescript-invalid-input
+    description: "Invalid file path should return error, not crash"
+    input:
+      code_path: "/nonexistent/file.ts"
+      language: "typescript"
+      ruleset: "both"
+      severity_threshold: "warning"
+    expected:
+      error: true
+      error_message_contains: "not accessible"
+    pass_criteria:
+      - "Returns error response (not crash)"
+      - "Error message clearly indicates file access issue"
+      - "No partial analysis attempted"
+
+  - id: universal-principles-only
+    description: "Multi-language directory analyzed with universal rules only"
+    input:
+      code_path: "test_fixtures/mixed/"
+      language: null  # auto-detect
+      ruleset: "universal"
+      severity_threshold: "info"
+    expected:
+      languages_detected:
+        - "python"
+        - "javascript"
+        - "shell"
+      score_range: [50, 90]
+      issues_present:
+        - rule: "DRY-001"
+        - rule: "DOC-001"
+      no_language_specific_rules: true
+    pass_criteria:
+      - "Analyzes files in multiple languages"
+      - "Only universal rules applied (no PEP8, AIRBNB, etc.)"
+      - "Aggregated score across all files"
+      - "Per-file breakdown in output"
+
+  - id: kotlin-autofix-generation
+    description: "Kotlin file with fixable issues should provide diff patches"
+    input:
+      code_path: "test_fixtures/MainActivity.kt"
+      language: "kotlin"
+      ruleset: "both"
+      severity_threshold: "info"
+    expected:
+      score_range: [70, 95]
+      issues_with_fixes:
+        - rule: "KT-LAMBDA-001"
+          autofix: true
+      fix_suggestions_format: "markdown"
+    pass_criteria:
+      - "At least one issue includes 'fix' field with diff or instruction"
+      - "Autofix flag correctly set in language-rules.json mapping"
+      - "Fix suggestions grouped by severity"
+      - "Citations reference Kotlin official conventions"
+
+meta:
+  total_scenarios: 5
+  coverage:
+    - "Python (happy path)"
+    - "Go (language-specific edge case)"
+    - "TypeScript (error handling)"
+    - "Universal principles (multi-language)"
+    - "Kotlin (autofix generation)"
+  pass_threshold: "All scenarios must pass"
+  notes: |
+    Test fixtures referenced (test_fixtures/) are minimal code samples
+    designed to trigger specific rules. Create fixtures as needed for CI.

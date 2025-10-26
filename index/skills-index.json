@@ -1,5 +1,21 @@
 [
   {
+    "slug": "coding-standards-polyglot",
+    "name": "Polyglot Coding Standards Analyzer",
+    "summary": "Evaluate code quality across 8+ languages using language-agnostic principles and language-specific best practices.",
+    "keywords": [
+      "code-quality",
+      "linting",
+      "style-guide",
+      "polyglot",
+      "static-analysis",
+      "best-practices"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/coding-standards-polyglot/SKILL.md"
+  },
+  {
     "slug": "fedramp-poam-qc",
     "name": "FedRAMP POAM Quality Check",
     "summary": "Validates FedRAMP Plan of Action and Milestones (POAM) files for structural integrity, naming conventions, deduplication, and cross-sheet consistency",
@@ -45,5 +61,24 @@
     "owner": "cloud.gov OCS",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/skill-creation/SKILL.md"
+  },
+  {
+    "slug": "testing-strategy-composer",
+    "name": "Testing Strategy Composer",
+    "summary": "Compose comprehensive testing strategies spanning unit, integration, e2e, and performance tests with optimal coverage.",
+    "keywords": [
+      "testing",
+      "test-pyramid",
+      "unit-tests",
+      "integration-tests",
+      "e2e-tests",
+      "performance-tests",
+      "test-strategy",
+      "coverage",
+      "quality-assurance"
+    ],
+    "owner": "william@cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/testing-strategy-composer/SKILL.md"
   }
 ]

@@ -1,0 +1,28 @@
+# Polyglot Coding Standards - Example
+
+INPUT:
+  code_path: "src/data_processor.py"
+  language: "python"
+  ruleset: "both"
+
+T1 (Universal):
+- ✗ Function exceeds 50 lines (23-89)
+- ✗ Magic number: 3600 at line 45
+- ✗ Missing docstrings: 3 functions
+
+T2 (PEP 8):
+- ✗ E501: Line too long (79 chars)
+- ✗ N802: Function name should be lowercase
+
+OUTPUT:
+{
+  "code_path": "src/data_processor.py",
+  "language": "python",
+  "score": 72,
+  "issues": [
+    {"line": 45, "severity": "warning", "rule": "UNIVERSAL-MAGIC",
+     "message": "Magic number 3600", "fix": "SECONDS_PER_HOUR = 3600"}
+  ],
+  "metrics": {"error_count": 0, "warning_count": 6},
+  "timestamp": "2025-10-25T21:30:36-04:00"
+}
