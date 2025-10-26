@@ -287,6 +287,27 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/compliance-fedramp-validator/SKILL.md"
   },
   {
+    "slug": "compliance-nist-validator",
+    "name": "NIST SP 800-53 Compliance Validator",
+    "summary": "Validate NIST SP 800-53 control implementation with evidence mapping, gap analysis, automated testing, and compliance reporting across 20 control families.",
+    "keywords": [
+      "nist",
+      "sp-800-53",
+      "compliance",
+      "security-controls",
+      "privacy-controls",
+      "evidence",
+      "gap-analysis",
+      "oscal",
+      "automation",
+      "assessment",
+      "nist-800-53a"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/compliance-nist-validator/SKILL.md"
+  },
+  {
     "slug": "compliance-oscal-validator",
     "name": "OSCAL SSP Validator",
     "summary": "Validates OSCAL System Security Plan documents against schemas, profiles, and cross-reference requirements with tiered validation depth.",

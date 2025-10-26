@@ -1,0 +1,30 @@
+# NIST SP 800-53 MODERATE Baseline Assessment
+
+INPUT: baseline: MODERATE, system: Financial Services API, scope: AC+SI+CM+AU+IA (5 families)
+
+OUTPUT (T2 Assessment):
+
+BASELINE: MODERATE (325 controls total, assessing 89 controls in 5 families)
+
+VALIDATION RESULTS (Sample Controls):
+AC-2 (Account Management): ✅ Implemented (100%) - Evidence: policy, quarterly review, auto-scan
+SI-2 (Flaw Remediation): ⚠️  Partial (60%) - Gap: 15 systems missing critical patches
+CM-2 (Baseline Configuration): ✅ Implemented (95%) - Evidence: Terraform state, Git commits
+AU-2 (Event Logging): ✅ Implemented (100%) - Evidence: Splunk config, 1-year retention
+IA-2(1) (MFA): ✅ Implemented (100%) - Evidence: Okta enrollment 98%, auth logs
+
+EVIDENCE MAPPING:
+AC: IAM configs (auto), user reviews (manual), policies (manual)
+SI: Qualys scans (auto), patch logs (auto), patch policy (manual)
+CM: Terraform/Git (auto), change board minutes (manual), AU: Splunk (auto), IA: Okta (auto)
+
+GAP ANALYSIS:
+1. SI-2: 15 systems missing patches (Risk Score: 18.0, Effort: 40h, Deadline: 30 days)
+2. AC-2(4): No auto account mgmt (Risk Score: 10.0, Effort: 30h, Deadline: 90 days)
+3. CM-8: Asset inventory incomplete (Risk Score: 8.5, Effort: 20h, Deadline: 60 days)
+
+COMPLIANCE SCORE: 87% (77/89 controls implemented)
+By Family: AC: 85%, SI: 78%, CM: 92%, AU: 100%, IA: 100%
+Trend: ↗ Improved 5% from 82% (last assessment 3 months ago)
+
+OSCAL OUTPUTS: SAR generated (JSON), POA&M with 12 remediation items, 3 high-priority
