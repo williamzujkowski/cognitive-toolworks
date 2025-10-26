@@ -104,6 +104,30 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/cloud-aws-architect/SKILL.md"
   },
   {
+    "slug": "cloud-azure-architect",
+    "name": "Azure Multi-Service Architect",
+    "summary": "Design Azure solutions across compute, storage, networking, and serverless with cost optimization, security hardening, and Framework alignment.",
+    "keywords": [
+      "azure",
+      "cloud-architecture",
+      "virtual-machines",
+      "app-service",
+      "container-apps",
+      "functions",
+      "aks",
+      "blob-storage",
+      "bicep",
+      "terraform",
+      "well-architected",
+      "serverless",
+      "cost-optimization",
+      "multi-region"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/cloud-azure-architect/SKILL.md"
+  },
+  {
     "slug": "cloud-edge-architect",
     "name": "Edge Computing Architecture Designer",
     "summary": "Design edge computing solutions with CDN integration, edge functions, IoT device management, and latency-optimized deployment patterns.",
