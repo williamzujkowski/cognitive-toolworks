@@ -478,36 +478,40 @@ links:
 
 ## Examples
 
-**Example 1: ASP.NET Core Web API with xUnit**
+**Quick Start: C# Library** (26 lines)
 
-```
-INPUT: {
-  project_type: "web-api",
-  dotnet_version: "8.0",
-  test_framework: "xunit",
-  project_name: "PaymentService"
+```csharp
+// examples/LibraryExample.cs
+namespace Example.Utils;
+
+public sealed class TextAnalyzer
+{
+    public record AnalysisResult(int Length, int WordCount, DateTime Analyzed);
+
+    private readonly List<string> _history = new();
+
+    public AnalysisResult Analyze(string text)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(text);
+        _history.Add(text);
+        var wordCount = text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+        return new AnalysisResult(text.Length, wordCount, DateTime.UtcNow);
+    }
+
+    public IReadOnlyList<string> GetHistory() => _history.AsReadOnly();
+
+    public void Clear() => _history.Clear();
 }
-
-OUTPUT:
-structure:
-  - src/PaymentService/
-    - PaymentService.csproj
-    - Program.cs
-    - appsettings.json
-  - tests/PaymentService.Tests/
-    - PaymentService.Tests.csproj
-    - HealthCheckTests.cs
-  - PaymentService.sln
-
-commands:
-  restore: "dotnet restore"
-  build: "dotnet build"
-  test: "dotnet test"
-  run: "dotnet run --project src/PaymentService"
-  publish: "dotnet publish -c Release"
 ```
 
-_(Full output truncated for ≤30 line limit)_
+**Additional Examples:**
+- **CLI Tool**: `examples/CliExample.cs` (22 lines) - System.CommandLine, async/await, file I/O
+- **Minimal API**: `examples/ApiExample.cs` (30 lines) - ASP.NET Core endpoints, concurrent collections
+
+**Template Resources** (see `resources/`)
+- .csproj: `Library.csproj` / `Console.csproj` / `WebApi.csproj`
+- Testing: `Tests.csproj` with xUnit, Moq, FluentAssertions / `ExampleTest.cs`
+- Packaging: `NuGetPackage.csproj` - complete NuGet metadata and SourceLink
 
 ---
 
