@@ -1,0 +1,149 @@
+# Detection & Triage Workflow Template (Steps 1-2)
+# Orchestrates incident classification and playbook activation
+
+workflow_name: "detection-triage-workflow"
+version: "1.0.0"
+nist_phases: ["Detection & Analysis"]
+token_budget: "≤2.5k tokens (Step 1: 500 + Step 2: 2k)"
+
+# Step 1: Detection & Classification
+step1_detection:
+  inputs:
+    - incident_signal
+  actions:
+    - name: "parse_incident_signal"
+      description: "Extract incident metadata from alert/report"
+      outputs:
+        - incident_description
+        - affected_service
+        - timestamp
+    - name: "classify_incident"
+      logic: |
+        if keywords in [breach, ransomware, malware, unauthorized]:
+          type = security
+        elif keywords in [outage, degradation, down]:
+          type = infrastructure
+        elif keywords in [disaster, datacenter, regional]:
+          type = disaster-recovery
+      outputs:
+        - incident_type
+    - name: "assign_severity"
+      thresholds:
+        P0: "customer_impact OR data_breach OR ransomware"
+        P1: "partial_degradation OR contained_security_incident"
+        P2: "internal_systems_only"
+        P3: "minor_issues"
+      outputs:
+        - severity_level
+    - name: "detect_compliance"
+      logic: |
+        if incident_type = data-breach AND data_type = PHI:
+          compliance += HIPAA
+        if incident_type = data-breach AND data_type = payment:
+          compliance += PCI-DSS
+      outputs:
+        - compliance_requirements
+  outputs:
+    incident_classification:
+      type: string
+      severity: string
+      compliance_requirements: array
+
+# Step 2: Triage & Playbook Activation
+step2_triage:
+  inputs:
+    - incident_classification
+    - service_context (optional)
+  actions:
+    - name: "select_playbook_tier"
+      logic: |
+        if severity in [P0, P1] AND service_context exists:
+          tier = T2
+        else:
+          tier = T1
+      outputs:
+        - playbook_tier
+    - name: "invoke_playbook_generator"
+      skill: "incident-response-playbook-generator"
+      inputs:
+        incident_type: "from incident_classification"
+        severity_level: "from incident_classification"
+        service_context: "from input (if available)"
+        compliance_requirements: "from incident_classification"
+        tier: "from playbook_tier"
+      outputs:
+        - playbook
+        - escalation_matrix
+        - post_mortem_template
+    - name: "activate_escalation"
+      logic: |
+        for role in escalation_matrix:
+          if current_time - incident_timestamp >= role.threshold:
+            notify(role.contact_method)
+      outputs:
+        - escalation_status
+    - name: "coordinate_security_assessment"
+      condition: "incident_type in [data-breach, ransomware, unauthorized-access]"
+      skill: "security-assessment-framework"
+      inputs:
+        threat_scenario: "from incident_description"
+      outputs:
+        - threat_model
+        - IOCs
+        - attack_vectors
+    - name: "coordinate_observability"
+      condition: "incident_type in [outage, service-degradation]"
+      skill: "observability-stack-generator"
+      inputs:
+        service_name: "from affected_service"
+      outputs:
+        - log_queries
+        - metric_queries
+        - trace_ids
+  outputs:
+    activated_playbook: object
+    escalation_status: object
+    security_context: object (if security incident)
+    observability_queries: array (if infrastructure incident)
+
+# Auto-escalation triggers
+auto_escalation:
+  severity_based:
+    P0:
+      roles: ["CISO", "VP Engineering", "Incident Commander"]
+      threshold: "15min"
+      notification: "PagerDuty + SMS + Slack"
+    P1:
+      roles: ["Security Lead", "Director Engineering"]
+      threshold: "30min"
+      notification: "PagerDuty + Slack"
+    P2:
+      roles: ["Manager", "On-call engineer"]
+      threshold: "2hr"
+      notification: "Slack"
+  duration_based:
+    - if incident_duration > 30min AND severity = P0: escalate_to_executive
+    - if incident_duration > 2hr AND severity = P1: escalate_to_director
+    - if incident_duration > 8hr AND severity = P2: escalate_to_manager
+
+# Compliance triggers
+compliance_actions:
+  HIPAA:
+    condition: "data_breach AND data_type = PHI"
+    actions:
+      - "Notify legal within 1 hour"
+      - "Prepare 60-day breach notification to HHS"
+      - "Document forensic preservation"
+  PCI_DSS:
+    condition: "incident affects payment data"
+    actions:
+      - "Notify QSA within 24 hours"
+      - "Initiate forensic investigation per PCI DSS 12.10"
+  SOC2:
+    condition: "any incident"
+    actions:
+      - "Document all communications per CC7.3"
+  FedRAMP:
+    condition: "severity in [P0, P1]"
+    actions:
+      - "Notify Agency within 1 hour per IR-6(1)"

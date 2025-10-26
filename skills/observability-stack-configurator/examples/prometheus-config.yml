@@ -1,0 +1,25 @@
+# Example: Prometheus configuration for Kubernetes service
+# Input: platform=kubernetes, tech_stack=[nodejs, python], requirements={slis: [availability, latency]}
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'api-service'
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names: ['production']
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        regex: api
+        action: keep
+
+rule_files:
+  - 'alerts.yml'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']

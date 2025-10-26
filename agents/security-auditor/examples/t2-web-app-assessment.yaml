@@ -1,0 +1,144 @@
+# Example: T2 Standard Web Application Security Assessment
+
+## Input
+target_system: "e-commerce-web-app-prod"
+security_domains: [] # Auto-detect (will select: appsec, iam, cryptosec)
+assessment_tier: "T2"
+compliance_frameworks: ["OWASP", "PCI-DSS"]
+threat_model_required: false
+
+## Expected Workflow
+
+### Step 1: Domain Auto-Detection
+Agent analyzes target_system type and selects relevant domains:
+- appsec (web application layer)
+- iam (user authentication/authorization)
+- cryptosec (payment data encryption)
+
+### Step 2: Parallel Skill Invocation
+Agent invokes 3 skills in parallel:
+
+1. appsec-validator:
+   - application_identifier: "e-commerce-web-app-prod"
+   - assessment_scope: "web-app"
+   - check_level: "standard"
+
+2. iam-security-reviewer:
+   - identity_provider: "e-commerce-web-app-prod"
+   - iam_scope: "all"
+   - authenticator_level: "AAL2" (PCI-DSS requirement)
+
+3. cryptosec-validator:
+   - target_system: "e-commerce-web-app-prod"
+   - crypto_scope: "all"
+   - compliance_standard: "pci-dss"
+
+### Step 3: Finding Aggregation
+Aggregate findings from 3 skills:
+- 1 high from appsec (A01:2021 - Broken Access Control)
+- 1 high from iam (MFA not enforced on admin accounts)
+- 0 from cryptosec (all checks passed)
+
+Cross-domain finding identified:
+- Weak IAM + authorization bypass = elevated to critical
+
+### Step 4: Compliance Mapping
+Map findings to PCI-DSS requirements:
+- Requirement 8.3 (MFA) - Failed
+- Requirement 6.5.10 (Broken Authentication) - Failed
+
+### Step 5: Remediation Roadmap
+Quick wins (0-30 days):
+- Enable MFA on all admin accounts
+- Fix authorization check in /api/orders endpoint
+
+Short-term (30-90 days):
+- Implement role-based access control (RBAC)
+- Add API rate limiting
+
+## Output (Abbreviated)
+
+```json
+{
+  "assessment_metadata": {
+    "target_system": "e-commerce-web-app-prod",
+    "assessment_tier": "T2",
+    "timestamp": "2025-10-26T01:33:55-04:00",
+    "domains_assessed": ["appsec", "iam", "cryptosec"],
+    "compliance_frameworks": ["OWASP", "PCI-DSS"]
+  },
+  "overall_risk": "critical",
+  "domain_findings": {
+    "appsec": {
+      "risk": "high",
+      "findings": [
+        {
+          "id": "APPSEC-001",
+          "owasp_category": "A01:2021-Broken_Access_Control",
+          "severity": "high",
+          "cvss_score": 8.1,
+          "title": "Missing authorization check on /api/orders/{id}",
+          "remediation": "Add user ownership validation before returning order data"
+        }
+      ]
+    },
+    "iam": {
+      "risk": "high",
+      "findings": [
+        {
+          "id": "IAM-001",
+          "category": "authentication",
+          "severity": "high",
+          "cvss_score": 7.5,
+          "title": "MFA not enforced for admin role",
+          "nist_reference": "SP 800-63B Section 4.2 (AAL2)",
+          "remediation": "Enable MFA requirement for all admin accounts"
+        }
+      ]
+    },
+    "cryptosec": {
+      "risk": "low",
+      "findings": []
+    }
+  },
+  "aggregated_findings": [
+    {
+      "id": "AGG-001",
+      "domains": ["appsec", "iam"],
+      "severity": "critical",
+      "cvss_score": 9.1,
+      "title": "Combined authorization and authentication weaknesses",
+      "description": "Weak admin authentication combined with broken access control creates critical risk",
+      "remediation": "1) Enable admin MFA immediately, 2) Fix authorization checks",
+      "priority": 1
+    }
+  ],
+  "compliance_mapping": {
+    "framework": "PCI-DSS",
+    "controls_assessed": ["8.3", "6.5.10", "4.1"],
+    "controls_passed": ["4.1"],
+    "controls_failed": ["8.3", "6.5.10"]
+  },
+  "remediation_roadmap": {
+    "quick_wins": [
+      "Enable MFA on admin accounts (PCI-DSS 8.3)",
+      "Fix /api/orders authorization check (OWASP A01)"
+    ],
+    "short_term": [
+      "Implement RBAC across application",
+      "Add API rate limiting (OWASP API4)"
+    ],
+    "long_term": [
+      "Migrate to centralized identity provider",
+      "Implement automated security testing in CI/CD"
+    ]
+  },
+  "summary": {
+    "total_findings": 2,
+    "critical_count": 1,
+    "high_count": 2,
+    "medium_count": 0,
+    "low_count": 0
+  }
+}
+```

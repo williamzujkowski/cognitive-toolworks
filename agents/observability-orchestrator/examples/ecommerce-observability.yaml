@@ -1,0 +1,33 @@
+# Example: E-commerce Platform Observability Plan
+# Platform: AWS with Kubernetes (EKS)
+
+input:
+  platform: aws
+  tech_stack: [react, nodejs, java, python, go]
+  critical_services:
+    - checkout-service
+    - payment-processor
+  sla_target: 99.9%
+
+output:
+  sli_definitions:
+    - service: checkout-service
+      sli: availability
+      query: "sum(rate(http_requests_total{job='checkout',status!~'5..'}[5m])) / sum(rate(http_requests_total{job='checkout'}[5m]))"
+      target: 0.999
+    - service: checkout-service
+      sli: latency_p95
+      query: "histogram_quantile(0.95, http_request_duration_seconds_bucket{job='checkout'})"
+      target: 0.2  # 200ms
+
+  slo_targets:
+    - service: checkout-service
+      availability_slo: 99.5%  # 0.4% error budget from 99.9% SLA
+      window: 28d rolling
+      error_budget: 40.32 minutes/month
+
+  alerting_rules:
+    - name: CheckoutHighErrorRate
+      condition: "rate(http_requests_total{job='checkout',status=~'5..'}[5m]) > 0.05"
+      severity: critical
+      notification: pagerduty

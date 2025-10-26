@@ -1,0 +1,53 @@
+{
+  "description": "Example orchestration request for complete DevOps pipeline",
+  "input": {
+    "platform": "github-actions",
+    "tech_stack": ["nodejs", "docker", "kubernetes"],
+    "cloud_provider": "aws",
+    "requirements": {
+      "environments": ["dev", "staging", "production"],
+      "security_gates": ["sast", "sca", "container-scan"],
+      "observability": {
+        "metrics": true,
+        "logging": true,
+        "tracing": true,
+        "slis": ["availability", "latency", "error_rate"]
+      },
+      "deployment_strategy": "canary",
+      "downtime_tolerance": "zero",
+      "rollback_time": "< 5 minutes"
+    }
+  },
+  "expected_workflow": [
+    {
+      "step": 1,
+      "skill": "cicd-pipeline-generator",
+      "tier": "T2",
+      "rationale": "Multi-environment with security gates"
+    },
+    {
+      "step": 2,
+      "skill": "iac-template-generator",
+      "tier": "T2",
+      "rationale": "Multi-environment infrastructure on AWS"
+    },
+    {
+      "step": 3,
+      "skill": "observability-stack-configurator",
+      "tier": "T2",
+      "rationale": "Full observability with distributed tracing"
+    },
+    {
+      "step": 4,
+      "skill": "deployment-strategy-designer",
+      "tier": "T2",
+      "rationale": "Canary deployment with zero downtime"
+    }
+  ],
+  "integration_points": [
+    "CI/CD pipeline invokes terraform apply for IaC",
+    "CI/CD pipeline executes canary deployment",
+    "Deployment health checks reference Prometheus metrics",
+    "OpenTelemetry configured in deployment manifests"
+  ]
+}

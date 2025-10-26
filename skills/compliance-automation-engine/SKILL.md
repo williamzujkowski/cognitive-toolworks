@@ -2,6 +2,10 @@
 name: Compliance Automation Engine
 slug: compliance-automation-engine
 description: Automate compliance checks for NIST, FedRAMP, FISMA, GDPR, HIPAA, and fintech regulations with OSCAL artifact generation and evidence validation.
+deprecated: true
+deprecation_notice: "This skill has been refactored into the compliance-orchestrator agent. Use /agents/compliance-orchestrator/AGENT.md for multi-step compliance workflows."
+deprecated_date: "2025-10-26"
+replacement: "compliance-orchestrator"
 capabilities:
   - Cross-framework control mapping (NIST CSF, 800-53, FedRAMP, FISMA, GDPR, HIPAA)
   - OSCAL artifact generation (SSP, SAP, SAR, POA&M)
@@ -49,6 +53,33 @@ links:
 ---
 
 ## Purpose & When-To-Use
+
+**⚠️ DEPRECATION NOTICE**
+
+This skill has been **deprecated** as of 2025-10-26 and refactored into the **compliance-orchestrator agent** (`/agents/compliance-orchestrator/AGENT.md`).
+
+**Reason for deprecation**: This skill violated CLAUDE.md principles by implementing a 15-step procedure (T1: 2 steps, T2: 7 steps, T3: 8 steps) when skills should be ≤2 steps. Multi-step compliance workflows require proper orchestration and are better suited as agents.
+
+**Migration path**: Use the compliance-orchestrator agent with the following command:
+```bash
+orchestrator use compliance-orchestrator \
+  --framework [fedramp-moderate|nist-800-53|fisma|hipaa|gdpr] \
+  --control-baseline [low|moderate|high] \
+  --evidence-path /path/to/evidence \
+  --system-context @system_context.json \
+  --validation-mode [quick|standard|comprehensive]
+```
+
+See `/agents/compliance-orchestrator/MIGRATION.md` for detailed migration instructions.
+
+**Timeline**:
+- 2025-10-26: Deprecated (warning period begins)
+- 2025-11-26: 30-day warning period ends
+- 2025-12-26: Skill may be archived or removed
+
+---
+
+**Original Purpose** (for historical reference):
 
 **Trigger conditions:**
 

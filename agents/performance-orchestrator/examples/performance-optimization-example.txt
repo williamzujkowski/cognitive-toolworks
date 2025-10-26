@@ -1,0 +1,53 @@
+# Performance Orchestrator Example: E-commerce API Optimization
+
+## Scenario
+E-commerce API experiencing latency issues during peak traffic.
+
+## Input
+{
+  "target_system": "E-commerce API (Node.js + PostgreSQL + Redis)",
+  "optimization_scope": ["application", "database", "caching"],
+  "performance_targets": {
+    "latency_p95_ms": 500,
+    "latency_p99_ms": 1000,
+    "throughput_rps": 1000
+  },
+  "baseline_metrics": {
+    "latency_p95_ms": 1200,
+    "latency_p99_ms": 2500,
+    "throughput_rps": 500
+  }
+}
+
+## Orchestration Flow (T3)
+
+### Step 1: Profiling
+- Observability dashboard shows 60% latency from database
+- pg_stat_statements identifies N+1 query pattern
+- Redis cache hit ratio: 45% (suboptimal)
+- CPU profiling shows JSON serialization hot path
+
+### Step 2: Analysis
+Invoked skills:
+- database-optimization-analyzer → Index recommendations
+  - CREATE INDEX idx_products_category ON products(category_id, created_at)
+  - Rewrite N+1 query to batch JOIN
+- Edge caching analysis → Product catalog cache-aside pattern
+
+### Step 3: Optimization
+- Database: Created composite index (non-blocking)
+- Application: Batch loading for product queries
+- Caching: Redis cache with 1-hour TTL (hit ratio → 88%)
+- Network: Enabled gzip compression (30% payload reduction)
+
+### Step 4: Validation
+Load testing with k6 (2000 rps peak):
+- p95 latency: 1200ms → 350ms (71% improvement) ✓
+- p99 latency: 2500ms → 650ms (74% improvement) ✓
+- Throughput: 500 rps → 1200 rps (140% increase) ✓
+- Cache hit ratio: 45% → 88%
+
+Monitoring configured: Prometheus + Grafana with SLO alerts
+
+## Result
+All performance targets met. ROI: 2.4x annually.

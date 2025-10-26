@@ -1,0 +1,30 @@
+# Example: Kubernetes rolling deployment
+# Input: deployment_target=kubernetes, application_type=stateless, requirements={downtime_tolerance: zero}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-service
+spec:
+  replicas: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+  template:
+    spec:
+      containers:
+      - name: api
+        image: api:v2.0.0
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+
+# Rollback: kubectl rollout undo deployment/api-service

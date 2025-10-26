@@ -2,6 +2,11 @@
 name: "Cloud-Native Deployment Orchestrator"
 slug: "cloud-native-deployment-orchestrator"
 description: "Design and validate Kubernetes, container, serverless, and service mesh deployments with platform-specific optimizations for AWS, Azure, and GCP."
+deprecated: true
+deprecated_date: "2025-10-26"
+replacement: "agents/cloud-native-orchestrator"
+replacement_note: "Split into 6 focused skills (container-image-optimizer, kubernetes-manifest-generator, helm-chart-builder, service-mesh-configurator, serverless-deployment-designer, cloud-platform-integrator) orchestrated by cloud-native-orchestrator agent. Use skills directly for simple deployments or agent for complex orchestration."
+sunset_date: "2026-01-26"
 capabilities:
   - Kubernetes manifest generation and validation with best practices
   - Docker containerization strategy and multi-stage build optimization

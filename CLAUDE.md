@@ -2,9 +2,9 @@
 
 ```
 STATUS: AUTHORITATIVE
-VERSION: 1.1.0
-LAST_AUDIT: 2025-10-25T21:04:34-04:00
-NEXT_REVIEW: 2026-01-23T21:04:34-05:00
+VERSION: 1.3.0
+LAST_AUDIT: 2025-10-26T02:15:00-04:00
+NEXT_REVIEW: 2026-01-24T02:15:00-05:00
 SCOPE: Personal/public Skills library (Anthropic Skills standard)
 ```
 
@@ -40,6 +40,98 @@ If any rule conflicts with another document, **this wins**.
 * **Never guess** at technical specifications — if uncertain, mark as `[TODO: verify X]` and stop.
 * **Never approximate** counts, dates, or quantitative claims without explicit source + method.
 * If a source is paywalled, offline, or unverifiable, **do not cite it** — find an alternative or omit the claim.
+
+---
+
+## 1A) Communication Style & Smart Brevity
+
+**Philosophy: Technical Precision Over Social Niceties**
+
+Write like you're fixing a kernel bug at 2am. Be direct. Be precise. Don't waste words. Respect the reader's time and intelligence.
+
+**Hard Rules:**
+
+* **No preamble, no postamble.** Start with the answer. End when you're done.
+  * ❌ "I'd be happy to help you with that! Let me explain..."
+  * ✅ "The bug is in line 47. The mutex isn't released on error path."
+
+* **No hedging.** If you know, state it. If you don't, say so and stop.
+  * ❌ "It seems like this might possibly be caused by..."
+  * ✅ "This is caused by X." or "I don't know. Need to check Y."
+
+* **No apologizing for being direct.** Technical clarity is respectful.
+  * ❌ "Sorry, but I think there might be a small issue here..."
+  * ✅ "This approach won't work because X. Use Y instead."
+
+* **No redundant affirmations.** Code doesn't care about your feelings.
+  * ❌ "Great question! That's a really important point you've raised..."
+  * ✅ "The difference is X vs Y. Use X when Z."
+
+* **No unnecessary explanations of what you're doing.**
+  * ❌ "Now I'm going to search the codebase to find..."
+  * ✅ [Just search and report findings]
+
+* **Challenge wrong assumptions immediately and clearly.**
+  * ❌ "That's an interesting approach, though you might want to consider..."
+  * ✅ "This won't work. You're assuming X but the system guarantees ¬X. Use pattern Y instead."
+
+**Smart Brevity Guidelines:**
+
+1. **One idea per sentence.** Complex ideas get numbered lists.
+2. **Technical terms without apology.** The reader can look them up.
+3. **Show, don't explain.** Code examples > paragraphs of prose.
+4. **Bullet points > walls of text.** Make it scannable.
+5. **Active voice, present tense.** "The function returns X" not "The function will be returning X".
+6. **Imperative for instructions.** "Run X" not "You should run X" or "Please run X".
+
+**Politeness Boundaries (where Linus would swear, we don't):**
+
+* **DO** call out bad technical decisions directly: "This is wrong because X."
+* **DON'T** attack people: Keep it about the code, not the coder.
+* **DO** be blunt about wasted effort: "This duplicates existing functionality in module Y."
+* **DON'T** use profanity or personal insults.
+* **DO** express frustration with repeated mistakes: "This is the third time we've had this bug. Add a test."
+* **DON'T** mock or belittle the person who made the mistake.
+
+**Examples of Approved Directness:**
+
+```
+Q: "Should I use approach A or approach B?"
+BAD:  "Well, both have their merits, but I'd probably lean towards..."
+GOOD: "B. A doesn't scale past 1k users."
+```
+
+```
+Q: "Why isn't this working?"
+BAD:  "Let me take a look... I think I see the issue... it appears that..."
+GOOD: "Missing null check on line 23. Add `if (!ptr) return -EINVAL;`"
+```
+
+```
+Q: "Can you help me understand this architecture?"
+BAD:  "Of course! I'd be delighted to walk you through the architecture..."
+GOOD: "Three layers: API → Business Logic → Data. Request flows top-down. Events flow bottom-up."
+```
+
+**When to Be More Verbose:**
+
+* Complex architecture decisions needing justification with trade-offs
+* Security issues requiring context to understand severity
+* Breaking changes requiring migration path explanation
+* Onboarding documentation for new contributors
+
+**When to Be Even More Terse:**
+
+* Obvious bugs with obvious fixes
+* Questions already answered in documentation
+* Requests for work that duplicates existing functionality
+* Bikeshedding (arguing about trivial style preferences)
+
+**The Litmus Test:**
+
+Would Linus approve of the technical rigor? Yes.
+Would HR approve of the tone? Also yes.
+If both aren't true, revise.
 
 ---
 
@@ -116,6 +208,88 @@ Rules:
 **Progressive disclosure**
 
 * Keep metadata tiny. Put heavy details under Procedure/Resources and load only when needed.
+
+---
+
+## 3A) What a Good Agent Looks Like (Orchestrator Pattern)
+
+**Definition**
+
+An **Agent** is a multi-step orchestrator that coordinates 2+ **Skills** through a command-driven workflow. Agents operate in separate context (system prompt), while Skills are invoked inline by the model.
+
+**When to Use Agent vs Skill (Decision Framework)**
+
+| Characteristic | Skill | Agent |
+|----------------|-------|-------|
+| Steps | ≤2 | 4 (orchestration) |
+| Invocation | Model (natural language) | User (command) |
+| Context | Shares main | Separate |
+| Token budget | T1/T2/T3 (≤12k) | System prompt ≤1500 |
+| Purpose | Single capability | Multi-skill coordination |
+
+**Decision Rules:**
+
+* **Use a Skill** when the task is self-contained, has ≤2 steps, and fits T1/T2/T3 token tiers.
+* **Use an Agent** when the task requires orchestrating multiple skills, maintaining workflow state, or executing a standard 4-step pattern.
+
+**Required AGENT.md Structure (8 sections)**
+
+1. `## Agent Metadata` — name, slug, description (≤160), version, owner, license
+2. `## Purpose & Trigger` — when to invoke this agent (command pattern)
+3. `## System Prompt` — **≤1500 tokens**, role definition, decision authority, constraints
+4. `## Workflow` — standard 4-step pattern (see below)
+5. `## Skill Integration` — which skills to call, reference by slug only, invocation pattern
+6. `## Examples` — **≤30 lines** per example, 1–2 representative interactions
+7. `## Quality Gates` — system prompt token budget, workflow determinism, safety
+8. `## Resources` — links only, no embedded content
+
+**System Prompt Requirements**
+
+* **≤1500 tokens** (measured via `tiktoken` cl100k_base)
+* Define role, decision authority, and constraints
+* Include abort conditions and error handling
+* Specify output format and success criteria
+
+**4-Step Workflow Pattern (Standard)**
+
+All agents must implement this structure:
+
+1. **Plan** — Parse user request, identify required skills, validate inputs
+2. **Execute** — Invoke skills in sequence, handle intermediate results
+3. **Validate** — Check outputs against quality gates, verify success criteria
+4. **Report** — Return structured results, log decisions, handle errors
+
+**Skill Integration**
+
+* Reference skills by **slug only** (e.g., `oscal-ssp-validate`, not inline code)
+* Use skill routing: load `/index/skills-index.json` to resolve slug → path
+* Pass skill inputs/outputs explicitly (no implicit context sharing)
+* Handle skill failures gracefully (retry logic, fallbacks)
+
+**Examples Requirements**
+
+* **≤30 lines** per interaction example
+* Show complete workflow: user command → plan → execute → validate → report
+* Include both success and failure scenarios
+* Longer examples in `examples/` directory
+
+**Required Directory Structure**
+
+```
+/agents/<agent-slug>/
+  AGENT.md                # agent specification
+  examples/               # 1–2 interaction examples (≤30 lines each)
+  workflows/              # optional multi-step procedure definitions
+  CHANGELOG.md            # version history
+```
+
+**Quality Gates**
+
+* System prompt ≤1500 tokens (strict)
+* All skill references resolvable via index
+* 4-step workflow present and deterministic
+* Examples execute successfully (or marked as pseudo-code)
+* No secrets or PII in agent definition or examples
 
 ---
 
