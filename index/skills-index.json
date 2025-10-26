@@ -138,7 +138,7 @@
       "ai-agents"
     ],
     "owner": "personal",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/codex-cli-delegator/SKILL.md"
   },
   {
@@ -338,7 +338,7 @@
   {
     "slug": "gemini-cli-delegator",
     "name": "Gemini CLI Delegation & Large Context Routing",
-    "summary": "Intelligently delegate large-context tasks to Gemini CLI via MCP integration for document analysis, codebase review, and multi-file processing.",
+    "summary": "Fast delegation of large-context tasks to Gemini CLI via MCP when file size exceeds 100KB or task requires analysis/review.",
     "keywords": [
       "delegation",
       "gemini",
@@ -348,7 +348,7 @@
       "codebase-analysis"
     ],
     "owner": "cognitive-toolworks",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/gemini-cli-delegator/SKILL.md"
   },
   {
