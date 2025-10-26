@@ -488,6 +488,27 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/database-postgres-architect/SKILL.md"
   },
   {
+    "slug": "database-redis-architect",
+    "name": "Redis Database Architect",
+    "summary": "Design Redis architectures with caching patterns, data structures, eviction policies, persistence (RDB/AOF), and high availability (Sentinel/Cluster).",
+    "keywords": [
+      "redis",
+      "caching",
+      "in-memory",
+      "key-value",
+      "data-structures",
+      "eviction",
+      "persistence",
+      "high-availability",
+      "sentinel",
+      "cluster",
+      "redis-8"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/database-redis-architect/SKILL.md"
+  },
+  {
     "slug": "database-schema-designer",
     "name": "Database Schema Designer",
     "summary": "Design normalized database schemas with ERDs, migration plans, and indexing strategies for relational and document databases",
