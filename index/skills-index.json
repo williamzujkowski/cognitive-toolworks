@@ -597,6 +597,24 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/finops-cost-analyzer/SKILL.md"
   },
   {
+    "slug": "finops-multicloud-optimizer",
+    "name": "Multi-Cloud Cost Optimizer",
+    "summary": "Optimize costs across AWS, GCP, Azure with cross-cloud waste detection, workload placement, commitment balancing, and unified FinOps.",
+    "keywords": [
+      "multi-cloud cost optimization",
+      "cross-cloud finops",
+      "workload placement",
+      "commitment optimization",
+      "cloud cost arbitrage",
+      "multi-cloud waste detection",
+      "unified cost allocation",
+      "egress cost optimization"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/finops-multicloud-optimizer/SKILL.md"
+  },
+  {
     "slug": "frontend-designsystem-validator",
     "name": "UX Design System Validator",
     "summary": "Validate design systems for accessibility (WCAG), responsive design, and component consistency with design token analysis.",
