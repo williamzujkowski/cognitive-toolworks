@@ -1,0 +1,28 @@
+# Example: T1 Security Assessment for Web Application
+
+## Input:
+target_system: "payment-api-production"
+security_domains: ["appsec", "cryptosec", "iam"]
+assessment_tier: "T1"
+compliance_frameworks: ["PCI-DSS"]
+
+## Process:
+1. AppSec quick scan: Check OWASP Top 10 controls
+2. CryptoSec scan: Verify TLS 1.2+, strong ciphers
+3. IAM scan: Check MFA, password policy, least privilege
+
+## Output (T1 Quick Scan):
+- Finding F001: High severity - Missing rate limiting on /api/payment endpoint (OWASP API4:2023)
+- Finding F002: Medium severity - TLS 1.1 still enabled (NIST SP 800-52 violation)
+- Finding F003: High severity - Admin accounts without MFA (NIST SP 800-63B AAL2 requirement)
+- Finding F004: Low severity - Password policy allows 8 char minimum (recommend 12+)
+
+## Summary:
+- Critical: 0, High: 2, Medium: 1, Low: 1
+- Overall Risk: HIGH
+- Recommendation: Proceed to T2 assessment for PCI-DSS compliance mapping
+- Immediate action: Enable MFA on admin accounts, disable TLS 1.1
+
+## Compliance Impact:
+- PCI-DSS 8.3: MFA violation (Finding F003)
+- PCI-DSS 4.1: Strong cryptography violation (Finding F002)

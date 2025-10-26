@@ -1,5 +1,29 @@
 [
   {
+    "slug": "cloud-native-deployment-orchestrator",
+    "name": "Cloud-Native Deployment Orchestrator",
+    "summary": "Design and validate Kubernetes, container, serverless, and service mesh deployments with platform-specific optimizations for AWS, Azure, and GCP.",
+    "keywords": [
+      "kubernetes",
+      "docker",
+      "containers",
+      "serverless",
+      "service-mesh",
+      "helm",
+      "cloud-native",
+      "eks",
+      "aks",
+      "gke",
+      "istio",
+      "deployment",
+      "orchestration",
+      "cncf"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/cloud-native-deployment-orchestrator/SKILL.md"
+  },
+  {
     "slug": "coding-standards-polyglot",
     "name": "Polyglot Coding Standards Analyzer",
     "summary": "Evaluate code quality across 8+ languages using language-agnostic principles and language-specific best practices.",
@@ -14,6 +38,48 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/coding-standards-polyglot/SKILL.md"
+  },
+  {
+    "slug": "compliance-automation-engine",
+    "name": "Compliance Automation Engine",
+    "summary": "Automate compliance checks for NIST, FedRAMP, FISMA, GDPR, HIPAA, and fintech regulations with OSCAL artifact generation and evidence validation.",
+    "keywords": [
+      "compliance",
+      "automation",
+      "nist",
+      "fedramp",
+      "fisma",
+      "oscal",
+      "gdpr",
+      "hipaa",
+      "controls",
+      "ato",
+      "security",
+      "governance"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/compliance-automation-engine/SKILL.md"
+  },
+  {
+    "slug": "devops-pipeline-architect",
+    "name": "DevOps Pipeline Architect",
+    "summary": "Design CI/CD pipelines, IaC templates, and observability stacks with platform-specific integrations and best practices.",
+    "keywords": [
+      "cicd",
+      "github-actions",
+      "gitlab-ci",
+      "jenkins",
+      "infrastructure-as-code",
+      "terraform",
+      "observability",
+      "monitoring",
+      "deployment",
+      "devops"
+    ],
+    "owner": "william@cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/devops-pipeline-architect/SKILL.md"
   },
   {
     "slug": "fedramp-poam-qc",
@@ -47,6 +113,28 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/oscal-ssp-validate/SKILL.md"
+  },
+  {
+    "slug": "security-assessment-framework",
+    "name": "Comprehensive Security Assessment Framework",
+    "summary": "Multi-tier security analysis covering AppSec, CloudSec, ContainerSec, CryptoSec, IAM, NetworkSec, OSSec, and ZeroTrust with threat modeling.",
+    "keywords": [
+      "security-assessment",
+      "appsec",
+      "cloudsec",
+      "container-security",
+      "cryptography",
+      "iam",
+      "network-security",
+      "ossec",
+      "zero-trust",
+      "threat-modeling",
+      "owasp",
+      "nist"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/security-assessment-framework/SKILL.md"
   },
   {
     "slug": "skill-creation",

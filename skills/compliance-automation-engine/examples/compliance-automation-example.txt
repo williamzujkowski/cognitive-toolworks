@@ -1,0 +1,27 @@
+# Example: FedRAMP Moderate Assessment (T2)
+
+## Input
+framework: fedramp-moderate
+control_baseline: moderate
+evidence_path: /compliance/evidence/fedramp-mod
+system_context:
+  system_name: "Cloud SaaS Platform"
+  system_id: "CSP-001"
+  boundary_description: "AWS GovCloud VPC with web/app/db tiers"
+  authorization_boundary: "All components in VPC vpc-abc123"
+validation_mode: standard
+
+## Processing Summary
+- Loaded 325 controls from FedRAMP Moderate baseline
+- Scanned 847 evidence files across policy/procedure/config/test types
+- Identified 10 gaps: 3 critical, 5 high, 2 medium
+- Generated OSCAL SSP (245KB JSON, validated against schema 1.1.2)
+- Created remediation plan with 4-6 week timeline for critical gaps
+
+## Output (Key Metrics)
+coverage: 96.9% (315/325 controls with sufficient evidence)
+status: ready-with-findings
+critical_gaps: ["AC-2(1)", "AU-6(1)", "IR-4(1)"]
+oscal_ssp_generated: true
+remediation_priority: Address 3 critical gaps before formal assessment
+estimated_ato_date: 2025-12-15 (assuming 4-week remediation + 8-week assessment)

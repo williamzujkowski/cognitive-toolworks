@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Compliance Report Schema",
+  "description": "JSON Schema for compliance_report output from Compliance Automation Engine",
+  "type": "object",
+  "required": ["metadata", "summary", "gaps"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["timestamp", "framework", "system_id", "system_name", "assessment_tier"],
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "NOW_ET timestamp in ISO-8601 format"
+        },
+        "framework": {
+          "type": "string",
+          "enum": ["nist-csf", "nist-800-53", "fedramp-low", "fedramp-moderate", "fedramp-high", "fisma", "gdpr", "hipaa", "pci-dss"]
+        },
+        "system_id": {
+          "type": "string",
+          "description": "Unique system identifier"
+        },
+        "system_name": {
+          "type": "string",
+          "description": "Human-readable system name"
+        },
+        "assessment_tier": {
+          "type": "string",
+          "enum": ["T1", "T2", "T3"],
+          "description": "Validation mode tier used"
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["total_controls", "coverage_pct", "status"],
+      "properties": {
+        "total_controls": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "implemented": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "partially_implemented": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "planned": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "not_applicable": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "coverage_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ready", "ready-with-findings", "gaps-identified", "not-ready"]
+        },
+        "estimated_ato_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Estimated Authority to Operate date"
+        }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["control_id", "title", "severity", "gap_description"],
+        "properties": {
+          "control_id": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}-[0-9]+(\\([0-9]+\\))?$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "gap_description": {
+            "type": "string"
+          },
+          "risk_score": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "remediation": {
+            "type": "object",
+            "properties": {
+              "recommendation": {
+                "type": "string"
+              },
+              "effort_weeks": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "owner": {
+                "type": "string"
+              },
+              "target_date": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "controls_by_family": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "evidence_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidence_types": {
+          "type": "object",
+          "properties": {
+            "policy": {"type": "integer"},
+            "procedure": {"type": "integer"},
+            "config": {"type": "integer"},
+            "test": {"type": "integer"}
+          }
+        }
+      }
+    }
+  }
+}

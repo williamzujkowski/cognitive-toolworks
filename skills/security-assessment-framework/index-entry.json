@@ -1,0 +1,29 @@
+{
+  "slug": "security-assessment-framework",
+  "name": "Comprehensive Security Assessment Framework",
+  "summary": "Multi-tier security analysis covering AppSec, CloudSec, ContainerSec, CryptoSec, IAM, NetworkSec, OSSec, and ZeroTrust with threat modeling.",
+  "category": "security",
+  "keywords": [
+    "security-assessment",
+    "appsec",
+    "cloudsec",
+    "container-security",
+    "cryptography",
+    "iam",
+    "network-security",
+    "ossec",
+    "zero-trust",
+    "threat-modeling",
+    "owasp",
+    "nist",
+    "cis",
+    "cisa"
+  ],
+  "dependencies": [],
+  "priority": "P0",
+  "phase": 1,
+  "token_budget": "T3",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "/home/william/git/cognitive-toolworks/skills/security-assessment-framework/SKILL.md"
+}

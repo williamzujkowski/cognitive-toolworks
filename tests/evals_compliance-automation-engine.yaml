@@ -1,0 +1,188 @@
+# Evaluation scenarios for Compliance Automation Engine skill
+# Format: test name, inputs, expected behavior/outputs
+
+test_suite: compliance-automation-engine
+version: 1.0.0
+last_updated: 2025-10-25T21:30:36-04:00
+
+scenarios:
+  - name: "T1 Quick FedRAMP Moderate Coverage Check"
+    tier: T1
+    description: "Fast coverage assessment for FedRAMP Moderate baseline without detailed analysis"
+    inputs:
+      framework: "fedramp-moderate"
+      control_baseline: "moderate"
+      evidence_path: "/mock/evidence/fedramp-mod"
+      system_context:
+        system_name: "Test SaaS Platform"
+        system_id: "TEST-001"
+        boundary_description: "Mock AWS VPC"
+        authorization_boundary: "VPC vpc-test123"
+      validation_mode: "quick"
+    expected_outputs:
+      - compliance_report.summary.total_controls: 325
+      - compliance_report.summary.coverage_pct: "between 0 and 100"
+      - compliance_report.summary.status: "one of [ready, ready-with-findings, gaps-identified, not-ready]"
+      - compliance_report.metadata.timestamp: "ISO-8601 format with NOW_ET"
+      - compliance_report.metadata.assessment_tier: "T1"
+    token_budget_check: "≤2000 tokens"
+    pass_criteria:
+      - "Report generated in < 5 seconds"
+      - "Critical gaps identified if coverage < 95%"
+      - "No OSCAL artifacts generated (T1 quick check only)"
+
+  - name: "T2 FedRAMP Moderate with OSCAL SSP Generation"
+    tier: T2
+    description: "Standard assessment with detailed gap analysis and OSCAL SSP document generation"
+    inputs:
+      framework: "fedramp-moderate"
+      control_baseline: "moderate"
+      evidence_path: "/mock/evidence/fedramp-mod-complete"
+      system_context:
+        system_name: "Production SaaS"
+        system_id: "PROD-042"
+        boundary_description: "AWS GovCloud multi-tier architecture"
+        authorization_boundary: "VPC vpc-prod456, RDS rds-prod789, S3 buckets prod-*"
+      validation_mode: "standard"
+    expected_outputs:
+      - compliance_report.summary.total_controls: 325
+      - compliance_report.gaps: "array of gap objects with control_id, severity, remediation"
+      - oscal_artifacts.ssp: "valid OSCAL 1.1.2 JSON SSP document"
+      - remediation_plan: "markdown with prioritized action items"
+      - compliance_report.metrics.controls_by_family: "object with AC, AU, CA, CM, etc."
+    token_budget_check: "≤6000 tokens"
+    pass_criteria:
+      - "OSCAL SSP validates against official schema"
+      - "Gap analysis includes risk scores"
+      - "Remediation plan has effort estimates in weeks"
+      - "Evidence freshness warnings for artifacts >90 days"
+      - "Control inheritance documented for AWS GovCloud"
+
+  - name: "T3 Multi-Framework Compliance (FedRAMP + HIPAA)"
+    tier: T3
+    description: "Comprehensive multi-framework analysis with cross-mapping and full OSCAL artifact suite"
+    inputs:
+      framework: ["fedramp-moderate", "hipaa"]
+      control_baseline: "moderate"
+      evidence_path: "/mock/evidence/healthcare-saas"
+      system_context:
+        system_name: "Healthcare Data Platform"
+        system_id: "HEALTH-001"
+        boundary_description: "HIPAA-compliant AWS environment with PHI storage"
+        authorization_boundary: "Dedicated VPC with encrypted RDS and S3"
+        data_classification: "PHI (Protected Health Information)"
+      validation_mode: "comprehensive"
+    expected_outputs:
+      - compliance_report.metadata.frameworks: ["fedramp-moderate", "hipaa"]
+      - multi_framework_mapping: "object showing control overlap and framework-specific requirements"
+      - oscal_artifacts.ssp: "OSCAL SSP with HIPAA-specific controls documented"
+      - oscal_artifacts.sap: "OSCAL Security Assessment Plan"
+      - oscal_artifacts.sar: "OSCAL Security Assessment Report"
+      - oscal_artifacts.poam: "OSCAL POA&M if gaps exist"
+      - dashboard_data: "time-series metrics for continuous monitoring"
+    token_budget_check: "≤12000 tokens"
+    pass_criteria:
+      - "Cross-framework mapping uses NIST CSF as pivot"
+      - "HIPAA-specific controls (164.308, 164.310, 164.312) mapped"
+      - "All four OSCAL artifacts generated (SSP, SAP, SAR, POA&M)"
+      - "Continuous monitoring design includes real-time alerting for critical controls"
+      - "Risk-based prioritization using NIST RMF framework"
+
+  - name: "T2 GDPR Compliance Assessment (EU Cloud)"
+    tier: T2
+    description: "GDPR compliance check for European cloud deployment with data protection controls"
+    inputs:
+      framework: "gdpr"
+      control_baseline: "N/A"
+      evidence_path: "/mock/evidence/eu-cloud-gdpr"
+      system_context:
+        system_name: "EU SaaS Platform"
+        system_id: "EU-001"
+        boundary_description: "Azure EU West region deployment"
+        authorization_boundary: "Azure resource group rg-eu-prod"
+        data_residency: "EU only, no cross-border transfers"
+      validation_mode: "standard"
+    expected_outputs:
+      - compliance_report.summary.framework: "gdpr"
+      - compliance_report.gaps: "GDPR Article references (e.g., Article 32, Article 33)"
+      - compliance_report.metrics.gdpr_principles: "object tracking lawfulness, fairness, transparency, etc."
+      - remediation_plan: "GDPR-specific actions (DPIAs, consent management, right to erasure)"
+    token_budget_check: "≤6000 tokens"
+    pass_criteria:
+      - "GDPR articles mapped to technical controls"
+      - "Data protection by design and default assessed"
+      - "Data breach notification procedures (72-hour rule) documented"
+      - "Data subject rights implementation verified"
+      - "DPIA (Data Protection Impact Assessment) requirements flagged if needed"
+
+  - name: "T3 Continuous Monitoring Design for FedRAMP High"
+    tier: T3
+    description: "Design continuous monitoring strategy for FedRAMP High baseline with real-time alerting"
+    inputs:
+      framework: "fedramp-high"
+      control_baseline: "high"
+      evidence_path: "/mock/evidence/fedramp-high-gov"
+      system_context:
+        system_name: "Federal Agency Platform"
+        system_id: "GOV-AGENCY-001"
+        boundary_description: "AWS GovCloud FedRAMP High authorized environment"
+        authorization_boundary: "Dedicated GovCloud region with FIPS 140-2 encryption"
+        classification_level: "CUI (Controlled Unclassified Information)"
+      validation_mode: "comprehensive"
+      continuous_monitoring_required: true
+    expected_outputs:
+      - compliance_report.summary.total_controls: 421
+      - dashboard_data.metrics: "array of real-time monitoring metrics per control"
+      - dashboard_data.alerting.critical: "controls requiring immediate alerts (AC, IA, SC families)"
+      - dashboard_data.monitoring_frequency: "object with real-time, daily, weekly, monthly controls"
+      - oscal_artifacts.ssp: "SSP with continuous monitoring section"
+      - continuous_monitoring_plan: "markdown with monitoring tools, frequencies, and escalation paths"
+    token_budget_check: "≤12000 tokens"
+    pass_criteria:
+      - "FedRAMP High 421 controls loaded"
+      - "Real-time monitoring configured for AC, AU, IA, SC, SI families"
+      - "Monitoring dashboard schema includes thresholds and alert rules"
+      - "Integration with SIEM/SOAR tools documented"
+      - "Continuous monitoring plan includes ConMon frequency requirements (monthly assessments)"
+      - "FIPS 140-2 compliance verified for cryptographic modules"
+
+validation_rules:
+  global:
+    - "All timestamps use NOW_ET in ISO-8601 format"
+    - "All OSCAL artifacts validate against OSCAL 1.1.2 schemas"
+    - "No secrets or PII in any generated artifacts"
+    - "Token budgets strictly enforced per tier"
+    - "All external sources cited with access dates"
+    - "Control IDs match official NIST SP 800-53 Rev 5 catalog"
+
+  tier_specific:
+    T1:
+      - "No OSCAL artifact generation"
+      - "Coverage percentage calculated"
+      - "Critical gaps identified"
+    T2:
+      - "OSCAL SSP generated and schema-valid"
+      - "Remediation plan includes effort estimates"
+      - "Gap analysis includes severity ratings"
+    T3:
+      - "Full OSCAL artifact suite (SSP, SAP, SAR, POA&M)"
+      - "Multi-framework mapping if applicable"
+      - "Continuous monitoring design included"
+      - "Risk-based prioritization with calculated scores"
+
+error_handling:
+  - scenario: "Invalid framework specified"
+    input: {framework: "invalid-framework"}
+    expected: "Error message listing valid frameworks"
+
+  - scenario: "Missing system_context required fields"
+    input: {framework: "fedramp-moderate", system_context: {system_name: "Test"}}
+    expected: "TODO list of missing fields: system_id, boundary_description, authorization_boundary"
+
+  - scenario: "Evidence path inaccessible"
+    input: {framework: "fedramp-moderate", evidence_path: "/nonexistent/path"}
+    expected: "Warning issued, gap analysis proceeds with zero evidence assumption"
+
+  - scenario: "OSCAL schema validation failure"
+    input: {framework: "fedramp-moderate", validation_mode: "standard", oscal_version: "0.9.0"}
+    expected: "Error reported, artifact generation halted, recommendation to upgrade to OSCAL 1.1.2"

@@ -1,0 +1,32 @@
+# Example: Deploying a Node.js API to Kubernetes (T1 Quick Start)
+
+INPUT:
+  application_type: microservices
+  target_platform: kubernetes
+  cloud_provider: aws
+  deployment_tier: T1
+  requirements:
+    performance: medium (100 req/sec)
+    security: standard
+    cost: optimize
+
+OUTPUT:
+  platform: kubernetes (EKS)
+  rationale: Microservices architecture with moderate load requires orchestration.
+            Kubernetes provides better cost efficiency than serverless for steady traffic.
+
+  manifest: Deployment with 3 replicas, 250m CPU / 512Mi memory per pod
+  ingress: ALB Ingress Controller for HTTPS termination
+  autoscaling: HPA based on 70% CPU utilization
+
+  estimated_monthly_cost: $250 USD
+    - 3x t3.medium nodes ($100/month)
+    - ALB ($23/month)
+    - Data transfer and monitoring (~$127/month)
+
+  next_steps:
+    1. Build Docker image with multi-stage Dockerfile
+    2. Push to ECR (AWS container registry)
+    3. Apply manifests: kubectl apply -f deployment.yaml
+    4. Configure Route53 DNS for custom domain
+    5. T2 iteration: Add NetworkPolicy, Secrets management, monitoring
