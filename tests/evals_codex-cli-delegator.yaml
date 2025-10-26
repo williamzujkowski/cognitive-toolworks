@@ -1,0 +1,129 @@
+# Evaluation Scenarios for Codex CLI Delegator Skill
+# Version: 1.0.0
+# Skill: codex-cli-delegator
+
+scenarios:
+  - id: eval-001
+    name: "Generate Boilerplate REST API (Delegate to Codex)"
+    description: "User requests generation of a new REST API with CRUD operations - should delegate to Codex"
+    input:
+      task_description: "Create a REST API for product management with CRUD operations using FastAPI"
+      task_type: generation
+      existing_files: []
+      context_required: false
+      complexity: simple
+    expected_output:
+      delegation_decision: codex
+      execution_mode: non-interactive
+      quality_checks_include:
+        - lint
+        - test
+        - security_scan
+        - review
+      review_required: true
+    success_criteria:
+      - delegation_decision == "codex"
+      - codex_command is present and valid
+      - rationale mentions "boilerplate" or "new generation"
+      - quality_checks includes at least ["lint", "review"]
+    rationale: "New boilerplate generation with zero existing files strongly favors Codex delegation"
+
+  - id: eval-002
+    name: "Generate Test Suite from Existing Code (Delegate to Codex)"
+    description: "User requests test generation for existing code - should delegate to Codex"
+    input:
+      task_description: "Generate comprehensive pytest tests for calculator.py"
+      task_type: testing
+      existing_files: ["src/calculator.py"]
+      context_required: true
+      complexity: moderate
+    expected_output:
+      delegation_decision: codex
+      execution_mode: non-interactive
+      codex_command_pattern: "codex exec --file.*calculator.py.*pytest"
+    success_criteria:
+      - delegation_decision == "codex"
+      - codex_command includes "--file src/calculator.py"
+      - codex_command mentions "pytest" or "test"
+      - quality_checks includes "test"
+    rationale: "Test generation from existing code is a Codex strength with clear specifications"
+
+  - id: eval-003
+    name: "Fix Authentication Bug (Keep in Claude)"
+    description: "User requests bug fix in security-sensitive authentication code - should keep in Claude"
+    input:
+      task_description: "Fix the session timeout bug in auth/login.py causing premature logouts"
+      task_type: modification
+      existing_files: ["auth/login.py", "auth/session.py", "config/security.py"]
+      context_required: true
+      complexity: complex
+    expected_output:
+      delegation_decision: claude
+      execution_mode: null
+    success_criteria:
+      - delegation_decision == "claude"
+      - rationale mentions "security" or "context" or "debugging"
+      - codex_command is null or undefined
+    rationale: "Bug fixes in security-sensitive code with complex context require Claude's reasoning"
+
+  - id: eval-004
+    name: "Generate Multi-File Project Scaffold (Delegate to Codex)"
+    description: "User requests multi-file project initialization - should delegate to Codex"
+    input:
+      task_description: "Create a complete microservice scaffold with FastAPI, PostgreSQL, Docker, Redis, and comprehensive tests"
+      task_type: generation
+      existing_files: []
+      context_required: false
+      complexity: complex
+    expected_output:
+      delegation_decision: codex
+      execution_mode: interactive
+      estimated_files: ">= 10"
+    success_criteria:
+      - delegation_decision == "codex"
+      - estimated_files >= 10
+      - execution_mode == "interactive" (complex generation benefits from interaction)
+      - review_required == true
+    rationale: "Large-scale project scaffolding with clear structure is ideal for Codex generation"
+
+  - id: eval-005
+    name: "Refactor with Architectural Context (Keep in Claude)"
+    description: "User requests refactoring existing codebase - should keep in Claude"
+    input:
+      task_description: "Refactor the user service to implement repository pattern and separate business logic from data access"
+      task_type: modification
+      existing_files:
+        - "services/user_service.py"
+        - "models/user.py"
+        - "database/connection.py"
+        - "api/routes/users.py"
+      context_required: true
+      complexity: complex
+    expected_output:
+      delegation_decision: claude
+      execution_mode: null
+    success_criteria:
+      - delegation_decision == "claude"
+      - rationale mentions "refactoring" or "architectural" or "existing code"
+      - existing_files.length >= 3 (significant context)
+    rationale: "Architectural refactoring of existing code requires deep context understanding and design expertise"
+
+# Additional test metadata
+test_config:
+  timeout_seconds: 30
+  retry_count: 0
+  parallel_execution: true
+
+# Scoring rubric
+scoring:
+  correct_delegation: 40  # 40 points for correct delegate/keep decision
+  valid_command: 20       # 20 points for valid Codex command when delegating
+  quality_checks: 20      # 20 points for appropriate quality checks
+  rationale: 10           # 10 points for clear rationale
+  security: 10            # 10 points for security considerations
+  # Total: 100 points
+
+# Pass criteria
+pass_threshold:
+  minimum_score: 80       # Must score at least 80/100 to pass
+  required_scenarios: 4   # Must pass at least 4 of 5 scenarios

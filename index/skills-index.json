@@ -108,6 +108,24 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/cloud-native-deployment-orchestrator/SKILL.md"
   },
   {
+    "slug": "codex-cli-delegator",
+    "name": "Codex CLI Delegation & Code Generation Routing",
+    "summary": "Intelligently delegate code generation, boilerplate creation, and automation tasks to OpenAI Codex CLI for rapid prototyping and development.",
+    "keywords": [
+      "code-generation",
+      "delegation",
+      "codex",
+      "automation",
+      "scaffolding",
+      "boilerplate",
+      "routing",
+      "ai-agents"
+    ],
+    "owner": "personal",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/codex-cli-delegator/SKILL.md"
+  },
+  {
     "slug": "coding-standards-polyglot",
     "name": "Polyglot Coding Standards Analyzer",
     "summary": "Evaluate code quality across 8+ languages using language-agnostic principles and language-specific best practices.",

@@ -1,0 +1,18 @@
+{
+  "slug": "codex-cli-delegator",
+  "name": "Codex CLI Delegation & Code Generation Routing",
+  "summary": "Intelligently delegate code generation, boilerplate creation, and automation tasks to OpenAI Codex CLI for rapid prototyping and development.",
+  "keywords": [
+    "code-generation",
+    "delegation",
+    "codex",
+    "automation",
+    "scaffolding",
+    "boilerplate",
+    "routing",
+    "ai-agents"
+  ],
+  "owner": "personal",
+  "version": "1.0.0",
+  "entry": "skills/codex-cli-delegator/SKILL.md"
+}

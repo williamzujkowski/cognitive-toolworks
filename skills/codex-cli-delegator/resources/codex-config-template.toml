@@ -1,0 +1,78 @@
+# OpenAI Codex CLI Configuration Template
+# Location: ~/.codex/config.toml
+# Version: 1.0.0
+
+# Authentication (choose one method)
+[auth]
+# Option 1: ChatGPT account (recommended)
+method = "chatgpt"
+# Option 2: API key (use placeholder, never commit real keys)
+# api_key = "sk-proj-PLACEHOLDER_REPLACE_WITH_REAL_KEY"
+
+# Model Configuration
+[model]
+# Default model (GPT-5-Codex recommended for coding tasks)
+default = "gpt-5-codex"
+# Fallback model
+fallback = "gpt-5"
+# Temperature (0.0-1.0, lower = more deterministic)
+temperature = 0.2
+# Max tokens per request
+max_tokens = 4096
+
+# Execution Settings
+[execution]
+# Auto-confirm file writes (use with caution)
+auto_confirm_writes = false
+# Auto-confirm command execution
+auto_confirm_commands = false
+# Timeout for command execution (seconds)
+command_timeout = 300
+# Working directory (default: current directory)
+# workdir = "/path/to/project"
+
+# Code Quality
+[quality]
+# Enable linting before file writes
+lint_before_write = true
+# Enable formatting before file writes
+format_before_write = true
+# Language-specific linters
+[quality.linters]
+python = "flake8"
+javascript = "eslint"
+typescript = "eslint"
+rust = "clippy"
+
+# Logging and Tracing
+[logging]
+# Log level: debug, info, warn, error
+level = "info"
+# Log file location
+file = "~/.codex/codex.log"
+# Enable tracing for debugging
+trace = false
+
+# Model Context Protocol (MCP) Servers
+[[mcp_servers]]
+name = "filesystem"
+enabled = true
+config = { root = "." }
+
+# Security
+[security]
+# Block execution of dangerous commands
+block_dangerous_commands = true
+# Commands to block (regex patterns)
+blocked_commands = ["rm -rf /", "DROP DATABASE", "sudo rm"]
+# Require review for file modifications
+require_review_for_modifications = true
+
+# Output Preferences
+[output]
+# Colorize terminal output
+colorize = true
+# Verbose output
+verbose = false
+# Show token usage
+show_token_usage = true
