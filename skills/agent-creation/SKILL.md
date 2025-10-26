@@ -181,59 +181,25 @@ tools: ["Read", "Bash", "Grep", "Task"]
 ```
 
 **Output (simplified)**:
-```yaml
-# agents/security-auditor/AGENT.md
----
-name: "security-auditor"
-description: "Orchestrates comprehensive security audits across multi-tier applications with vulnerability scanning and compliance checks."
-model: "inherit"
-tools: ["Read", "Bash", "Grep", "Task"]
-persona: "Senior security engineer conducting systematic audits"
-version: "1.0.0"
-owner: "cognitive-toolworks"
-keywords: ["security", "audit", "vulnerability", "compliance"]
----
+```text
+agents/security-auditor/AGENT.md created with:
 
-## Purpose & When-To-Use
-Invoke when user requests: "orchestrator audit security of <application>".
-Handles multi-step workflows: 1) Scan codebase → 2) Check compliance → 3) Generate findings report.
+Frontmatter:
+  name: security-auditor
+  description: Orchestrates comprehensive security audits across multi-tier applications
+  model: inherit
+  tools: [Read, Bash, Grep, Task]
+  persona: Senior security engineer conducting systematic audits
 
-## System Prompt
-You are a senior security engineer. Your role:
-1. Systematically scan codebases for vulnerabilities (OWASP Top 10)
-2. Verify compliance against standards (NIST, CIS)
-3. Generate actionable reports with prioritized findings
-
-Invoke skills: security-assessment-framework, compliance-automation-engine.
-Always enforce CLAUDE.md accuracy and citation rules.
-
-## Tool Usage Guidelines
-- **Read**: Access configuration files, source code
-- **Bash**: Run security scanners (semgrep, trivy)
-- **Grep**: Search for secret patterns, unsafe functions
-- **Task**: Delegate complex analysis to specialized agents
-
-## Workflow Patterns
-1. Discovery: Grep for sensitive patterns → Read config files
-2. Analysis: Invoke security-assessment-framework skill
-3. Compliance: Invoke compliance-automation-engine skill
-4. Report: Aggregate findings → Generate markdown report
-
-## Skills Integration
-- `security-assessment-framework` (T3): Deep vulnerability analysis
-- `compliance-automation-engine` (T2): NIST/FedRAMP checks
-
-## Examples
-[User request → workflow steps → outputs]
-
-## Quality Gates
-- All vulnerabilities categorized by severity
-- Compliance findings mapped to controls
-- Report includes remediation guidance
-
-## Resources
-- OWASP Top 10: https://owasp.org/www-project-top-ten/
-- NIST SP 800-53: https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/final
+Sections:
+  - Purpose & When-To-Use: Trigger = "orchestrator audit security..."
+  - System Prompt: ≤1500 tokens, references security-assessment-framework skill
+  - Tool Usage: Read configs, Bash scanners, Grep patterns, Task delegation
+  - Workflow: Discovery → Analysis → Compliance → Report
+  - Skills Integration: security-assessment-framework, compliance-automation-engine
+  - Examples: 3 interaction scenarios (breach, false positive, partial data)
+  - Quality Gates: Severity categorization, control mapping, remediation guidance
+  - Resources: OWASP Top 10, NIST SP 800-53
 ```
 
 ## Quality Gates
