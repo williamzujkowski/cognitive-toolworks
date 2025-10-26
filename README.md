@@ -1,6 +1,6 @@
 # cognitive-toolworks
 
-30 production-ready Skills for Claude CLI. No fluff, no marketing nonsense.
+31 production-ready Skills for Claude CLI. No fluff, no marketing nonsense.
 
 ## What This Is
 
@@ -103,7 +103,7 @@ Personal project - cognitive-toolworks
 
 ---
 
-**Last Updated**: 2025-10-26T03:43:18-04:00
+**Last Updated**: 2025-10-26T00:23:51-04:00
 **CLAUDE.md Version**: 1.1.0
-**Skills**: 30
+**Skills**: 31
 **Status**: Production
