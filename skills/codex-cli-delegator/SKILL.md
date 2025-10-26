@@ -29,7 +29,7 @@ keywords:
   - boilerplate
   - routing
   - ai-agents
-version: 1.0.0
+version: 1.1.0
 owner: personal
 license: Apache-2.0
 security:
@@ -65,7 +65,7 @@ links:
 
 **Time normalization:**
 ```
-NOW_ET = 2025-10-25T23:27:14-04:00
+NOW_ET = 2025-10-26T01:18:52-04:00
 ```
 
 **Input validation:**
@@ -78,218 +78,131 @@ NOW_ET = 2025-10-25T23:27:14-04:00
 
 **Source freshness:**
 
-* Codex CLI repo (https://github.com/openai/codex, accessed 2025-10-25T23:27:14-04:00)
-* Codex documentation (https://developers.openai.com/codex/cli/, accessed 2025-10-25T23:27:14-04:00)
-* Codex getting started guide (https://help.openai.com/en/articles/11096431, accessed 2025-10-25T23:27:14-04:00)
-* AI code generation best practices (https://getdx.com/blog/ai-code-enterprise-adoption/, accessed 2025-10-25T23:27:14-04:00)
+* Codex CLI repo (https://github.com/openai/codex, accessed 2025-10-26T01:18:52-04:00)
+* Codex documentation (https://developers.openai.com/codex/cli/, accessed 2025-10-26T01:18:52-04:00)
+* Codex getting started guide (https://help.openai.com/en/articles/11096431, accessed 2025-10-26T01:18:52-04:00)
+* AI code generation best practices (https://getdx.com/blog/ai-code-enterprise-adoption/, accessed 2025-10-26T01:18:52-04:00)
 
 ## Procedure
 
-### T1: Fast-Path Simple Delegation (≤2k tokens)
+### T1: Simple Delegation Decision (≤2k tokens)
 
-**Use when:** task_type = generation AND complexity = simple AND existing_files is empty
+**Steps:**
 
-1. Match task against delegation matrix (see Resources)
-2. If match → boilerplate/scaffold:
-   * delegation_decision = codex
-   * execution_mode = non-interactive
-   * Generate `codex exec --prompt "<task_description>"`
-3. If match → modification with context:
-   * delegation_decision = claude
-   * Abort T1, explain why Claude is better suited
-4. Return delegation_decision with one-line rationale
+1. **Check task type** against delegation matrix (see `resources/delegation-decision-matrix.md`):
+   * Boilerplate/scaffold/code-generation from scratch? → Delegate to Codex
+   * Modification/debugging/refactoring existing code? → Keep in Claude
+   * Security-sensitive or requires business context? → Keep in Claude
+
+2. **Return decision** with rationale and command (if delegating):
+   * If delegating → provide `codex exec --prompt "<task_description>"` command
+   * If keeping → explain why Claude is better suited
+   * Set `review_required = true` for all Codex delegations
 
 **Token budget: ≤2k**
 
-### T2: Extended Routing with Validation (≤6k tokens)
-
-**Use when:** complexity = moderate OR complex OR existing_files is not empty
-
-1. **Analyze task characteristics:**
-   * New file creation? → +1 Codex score
-   * Existing file modification? → +1 Claude score
-   * Requires business logic context? → +1 Claude score
-   * Repetitive patterns? → +1 Codex score
-   * Security-sensitive? → +1 Claude score
-   * Boilerplate/templates? → +2 Codex score
-
-2. **Apply decision thresholds:**
-   * Codex score ≥ 3 AND Claude score ≤ 1 → delegate to Codex
-   * Claude score ≥ 3 → keep in Claude
-   * Scores within 1 point → hybrid (Codex generates, Claude reviews)
-
-3. **Generate Codex command:**
-   * Interactive mode: `codex "<natural_language_prompt>"`
-   * Non-interactive mode: `codex exec --prompt "<prompt>"`
-   * With file context: `codex --file <filepath> "<prompt>"`
-
-4. **Define quality checks:**
-   * Lint generated code (language-specific linters)
-   * Run tests if test files exist
-   * Security scan for common vulnerabilities
-   * Code review checklist (see Resources)
-
-5. **Return full delegation contract:**
-   ```json
-   {
-     "delegation_decision": "codex|claude|hybrid",
-     "codex_command": "codex exec --prompt '...'",
-     "rationale": "...",
-     "execution_mode": "interactive|non-interactive",
-     "quality_checks": ["lint", "test", "security_scan"],
-     "estimated_files": 3,
-     "review_required": true
-   }
-   ```
-
-**Token budget: ≤6k**
+**Note:** For complex validation workflows with scoring matrices, use a separate validation agent. This skill focuses on fast, simple routing decisions.
 
 ## Decision Rules
 
-### When to Delegate to Codex
+### Delegate to Codex (simple criteria)
 
-**Always delegate:**
-* Generate new boilerplate code from scratch
-* Create project scaffolds (REST APIs, web apps, CLIs)
-* Generate test suites from existing code
-* Convert specifications/diagrams to code
-* Create repetitive code patterns (CRUD operations, data models)
+* New boilerplate generation from scratch
+* Project scaffolding (REST APIs, CLIs, web apps)
+* Test suite generation from specifications
+* Repetitive code patterns (CRUD, data models)
+* Zero or minimal existing files
+* Clear natural language specifications
 
-**Prefer delegate (score ≥3):**
-* Multi-file project initialization
-* Code completion for large sections
-* Pseudocode to implementation conversion
-* Template-based code generation
+### Keep in Claude (simple criteria)
 
-**Thresholds:**
-* New file count ≥ 3 → always Codex
-* Repetitive pattern count ≥ 5 → always Codex
-* Zero existing files → prefer Codex
-* Natural language spec completeness ≥ 80% → prefer Codex
+* Modifying existing code
+* Debugging or refactoring
+* Security-sensitive operations (auth, encryption, data)
+* Code requiring business context or domain knowledge
+* Architecture analysis or code review
+* Interactive problem-solving
 
-### When to Keep in Claude
+### Abort and escalate if:
 
-**Always keep:**
-* Debugging existing code with business context
-* Security-sensitive modifications (auth, encryption, data handling)
-* Code review and architecture analysis
-* Refactoring with complex dependencies
-
-**Prefer keep (score ≥3):**
-* Bug fixes requiring context understanding
-* Performance optimization with profiling
-* API integration requiring domain knowledge
-* Database migrations with data preservation
-
-**Thresholds:**
-* Existing file modification count ≥ 2 → prefer Claude
-* Security sensitivity = high → always Claude
-* Business logic complexity ≥ moderate → prefer Claude
-* User requires interactive problem-solving → always Claude
-
-### Hybrid Mode
-
-**Use when:**
-* Scores within 1 point of each other
-* Large code generation requiring thorough review
-* New feature with security implications
-* Unfamiliar language/framework combination
-
-**Process:**
-1. Codex generates initial implementation
-2. Claude reviews for logic, security, and best practices
-3. Claude proposes refinements
-4. User approves final version
+* Task type is ambiguous or unclear
+* Security implications are uncertain
+* Codex CLI is not installed or authenticated
+* User input validation fails
 
 ## Output Contract
 
 **Required fields:**
 ```typescript
 interface DelegationResult {
-  delegation_decision: "codex" | "claude" | "hybrid";
+  delegation_decision: "codex" | "claude";
   rationale: string; // ≤160 chars
-  codex_command?: string; // if delegation_decision includes codex
-  execution_mode: "interactive" | "non-interactive";
-  quality_checks: string[]; // ["lint", "test", "security_scan", "review"]
-  estimated_files?: number;
-  estimated_tokens?: number;
-  review_required: boolean;
-  abort_conditions?: string[]; // conditions to stop and escalate to user
+  codex_command?: string; // required if delegation_decision = codex
+  review_required: boolean; // always true for codex delegations
 }
 ```
 
 **Validation rules:**
-* `codex_command` required if delegation_decision ∈ {codex, hybrid}
-* `quality_checks` must include at least ["lint", "review"]
-* `review_required` = true for all hybrid and security-sensitive tasks
-* `abort_conditions` populated if pre-checks fail
+* `codex_command` required if delegation_decision = "codex"
+* `rationale` must be ≤160 characters
+* `review_required` = true for all Codex delegations
 
 ## Examples
 
-**Example 1: Simple REST API Generation (Delegate to Codex)**
+**Example 1: Delegate to Codex (new scaffold)**
 
 ```yaml
 input:
   task_description: "Create a REST API for user management with CRUD operations"
   task_type: generation
   existing_files: []
-  complexity: simple
 
 output:
   delegation_decision: codex
-  rationale: "New boilerplate generation, zero existing files, clear spec"
+  rationale: "New boilerplate generation from scratch"
   codex_command: "codex exec --prompt 'Generate REST API for user management with CREATE, READ, UPDATE, DELETE endpoints using Express.js and TypeScript'"
-  execution_mode: non-interactive
-  quality_checks: [lint, test, security_scan, review]
-  estimated_files: 5
   review_required: true
+```
+
+**Example 2: Keep in Claude (existing code modification)**
+
+```yaml
+input:
+  task_description: "Fix authentication bug in login.py"
+  task_type: modification
+  existing_files: ["src/auth/login.py"]
+
+output:
+  delegation_decision: claude
+  rationale: "Debugging existing code with security implications"
+  review_required: false
 ```
 
 ## Quality Gates
 
 **Token budgets (enforced):**
-* T1 fast-path: ≤2k tokens (80% of simple delegations)
-* T2 extended: ≤6k tokens (complex routing with validation)
-* T3 not applicable (code generation delegation doesn't require deep research paths)
-
-**Code quality validation:**
-* All generated code must pass language-specific linters
-* Security scan for OWASP Top 10 vulnerabilities
-* Test coverage ≥ 70% if tests generated
-* No hardcoded secrets or credentials
+* T1 simple delegation: ≤2k tokens (covers all use cases)
+* T2/T3 not used (complex validation should use separate agent)
 
 **Delegation quality:**
 * Rationale must be ≤160 chars and actionable
-* Codex commands must be valid and tested
-* Quality checks must include minimum: [lint, review]
-* Abort conditions clearly defined for failure scenarios
-
-**Auditability:**
-* Log all delegation decisions with timestamps
-* Record Codex commands executed and outputs
-* Track quality check results
-* Maintain decision matrix scores for continuous improvement
+* Codex commands must be syntactically valid
+* All Codex delegations require manual review (`review_required = true`)
 
 **Safety:**
-* Never execute Codex commands automatically without user confirmation in interactive mode
-* Always review generated code before committing
-* Validate all file paths before write operations
-* Check for destructive operations (rm, drop, delete) in generated code
+* Never execute Codex commands without user confirmation
+* Validate all input parameters before generating commands
+* Abort if pre-checks fail (CLI not installed, auth missing)
 
 ## Resources
 
 **Official documentation:**
-* Codex CLI repository: https://github.com/openai/codex (accessed 2025-10-25T23:27:14-04:00)
-* Codex CLI docs: https://developers.openai.com/codex/cli/ (accessed 2025-10-25T23:27:14-04:00)
-* Codex getting started: https://help.openai.com/en/articles/11096431 (accessed 2025-10-25T23:27:14-04:00)
-* AI code generation best practices: https://getdx.com/blog/ai-code-enterprise-adoption/ (accessed 2025-10-25T23:27:14-04:00)
+* Codex CLI repository: https://github.com/openai/codex (accessed 2025-10-26T01:18:52-04:00)
+* Codex CLI docs: https://developers.openai.com/codex/cli/ (accessed 2025-10-26T01:18:52-04:00)
+* Codex getting started: https://help.openai.com/en/articles/11096431 (accessed 2025-10-26T01:18:52-04:00)
+* AI code generation best practices: https://getdx.com/blog/ai-code-enterprise-adoption/ (accessed 2025-10-26T01:18:52-04:00)
 
 **Local resources:**
-* Delegation decision matrix: `resources/delegation-decision-matrix.md`
+* Delegation decision matrix: `resources/delegation-decision-matrix.md` (for detailed scoring; use separate agent for complex validation)
 * Codex command reference: `resources/codex-commands.md`
 * Configuration template: `resources/codex-config-template.toml`
-
-**Integration guides:**
-* GitHub Action: https://github.com/openai/codex#github-action
-* TypeScript SDK: https://github.com/openai/codex#typescript-sdk
-* VS Code extension: search "Codex" in VS Code marketplace
