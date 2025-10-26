@@ -71,7 +71,7 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/aws-cloud-architect/AGENT.md"
+    "entry": "agents/cloud-aws-orchestrator/AGENT.md"
   },
   {
     "slug": "cloud-native-orchestrator",
