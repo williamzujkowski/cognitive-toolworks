@@ -1,0 +1,26 @@
+{
+  "slug": "api-design-validator",
+  "name": "API Design Validator",
+  "summary": "Design and validate REST and GraphQL APIs with OpenAPI/GraphQL schema generation, security hardening, and OWASP API Security compliance.",
+  "category": "api",
+  "keywords": [
+    "api-design",
+    "rest-api",
+    "graphql",
+    "openapi",
+    "swagger",
+    "api-security",
+    "owasp-api-security",
+    "schema-validation",
+    "api-versioning"
+  ],
+  "dependencies": [
+    "security-assessment-framework"
+  ],
+  "priority": "P1",
+  "phase": 2,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "/skills/api-design-validator/SKILL.md"
+}

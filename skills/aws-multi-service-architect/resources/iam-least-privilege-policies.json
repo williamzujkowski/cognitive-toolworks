@@ -1,0 +1,104 @@
+{
+  "description": "Example IAM policies following least-privilege principles",
+  "policies": [
+    {
+      "name": "LambdaDynamoDBReadWrite",
+      "description": "Lambda function accessing single DynamoDB table",
+      "policy": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "dynamodb:GetItem",
+              "dynamodb:PutItem",
+              "dynamodb:UpdateItem",
+              "dynamodb:Query"
+            ],
+            "Resource": "arn:aws:dynamodb:REGION:ACCOUNT_ID:table/TABLE_NAME"
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "logs:CreateLogGroup",
+              "logs:CreateLogStream",
+              "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:REGION:ACCOUNT_ID:log-group:/aws/lambda/FUNCTION_NAME:*"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EC2ReadOnlyS3Write",
+      "description": "EC2 instance reading from one S3 bucket and writing to another",
+      "policy": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "s3:GetObject",
+              "s3:ListBucket"
+            ],
+            "Resource": [
+              "arn:aws:s3:::source-bucket",
+              "arn:aws:s3:::source-bucket/*"
+            ]
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "s3:PutObject",
+              "s3:PutObjectAcl"
+            ],
+            "Resource": "arn:aws:s3:::destination-bucket/*"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ECSTaskExecutionRole",
+      "description": "ECS task execution role for pulling images and writing logs",
+      "policy": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ecr:GetAuthorizationToken",
+              "ecr:BatchCheckLayerAvailability",
+              "ecr:GetDownloadUrlForLayer",
+              "ecr:BatchGetImage"
+            ],
+            "Resource": "*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "logs:CreateLogStream",
+              "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:REGION:ACCOUNT_ID:log-group:/ecs/TASK_FAMILY:*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "secretsmanager:GetSecretValue"
+            ],
+            "Resource": "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:SECRET_NAME-*"
+          }
+        ]
+      }
+    }
+  ],
+  "best_practices": [
+    "Use IAM roles instead of access keys for AWS services",
+    "Grant least privilege - only permissions required for the task",
+    "Use specific resource ARNs instead of wildcards (*) when possible",
+    "Enable CloudTrail to audit IAM policy usage",
+    "Use IAM Access Analyzer to validate policies",
+    "Implement permission boundaries for delegated administration",
+    "Rotate credentials and review policies regularly"
+  ]
+}

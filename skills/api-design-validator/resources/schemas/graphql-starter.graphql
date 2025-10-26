@@ -1,0 +1,112 @@
+# GraphQL Schema Starter Template with Security Best Practices
+
+"""
+Authentication directive for field-level authorization
+"""
+directive @auth(
+  requires: Role = USER
+) on OBJECT | FIELD_DEFINITION
+
+"""
+Rate limiting directive
+"""
+directive @rateLimit(
+  limit: Int!
+  duration: Int!
+) on FIELD_DEFINITION
+
+enum Role {
+  ADMIN
+  USER
+  GUEST
+}
+
+"""
+Relay-style PageInfo for cursor pagination
+"""
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+"""
+Generic edge type for connections
+"""
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+
+"""
+Relay-style connection for paginated users
+"""
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+User object with field-level auth
+"""
+type User @auth(requires: USER) {
+  id: ID!
+  name: String!
+  email: String! @auth(requires: ADMIN)
+  createdAt: DateTime!
+}
+
+"""
+Input for filtering users
+"""
+input UserFilter {
+  role: Role
+  searchTerm: String
+}
+
+"""
+Custom scalar for DateTime
+"""
+scalar DateTime
+
+type Query {
+  """
+  Get paginated users with rate limiting
+  """
+  users(
+    first: Int = 20
+    after: String
+    filter: UserFilter
+  ): UserConnection! @rateLimit(limit: 100, duration: 60)
+
+  """
+  Get single user by ID
+  """
+  user(id: ID!): User
+}
+
+type Mutation {
+  """
+  Create a new user
+  """
+  createUser(input: CreateUserInput!): CreateUserPayload! @auth(requires: ADMIN)
+}
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  role: Role = USER
+}
+
+type CreateUserPayload {
+  user: User
+  errors: [Error!]
+}
+
+type Error {
+  message: String!
+  code: String!
+  path: [String!]
+}

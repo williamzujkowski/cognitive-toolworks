@@ -1,0 +1,26 @@
+{
+  "slug": "database-optimization-analyzer",
+  "name": "Database Optimization Analyzer",
+  "summary": "Optimize SQL and NoSQL databases with schema design, query performance tuning, and indexing strategies.",
+  "category": "data",
+  "keywords": [
+    "database",
+    "performance",
+    "optimization",
+    "indexing",
+    "query-tuning",
+    "SQL",
+    "NoSQL",
+    "PostgreSQL",
+    "MySQL",
+    "MongoDB",
+    "Redis"
+  ],
+  "dependencies": [],
+  "priority": "P1",
+  "phase": 2,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/database-optimization-analyzer/SKILL.md"
+}

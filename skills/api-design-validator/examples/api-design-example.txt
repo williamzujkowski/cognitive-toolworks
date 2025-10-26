@@ -1,0 +1,32 @@
+# Example: REST API Validation with Security Hardening (T2)
+
+## Input:
+api_type: REST
+validation_tier: T2
+api_spec:
+  openapi: 3.1.0
+  info:
+    title: Orders API
+    version: 2.0
+  paths:
+    /orders/{orderId}:
+      get:
+        parameters:
+          - name: orderId
+            in: path
+        responses:
+          200:
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Order'
+
+## Output (abridged):
+status: warning
+findings:
+  - severity: high
+    message: "Missing authentication (securitySchemes)"
+    owasp_mapping: API2:2023
+  - severity: medium
+    message: "No rate limiting defined"
+    owasp_mapping: API4:2023
