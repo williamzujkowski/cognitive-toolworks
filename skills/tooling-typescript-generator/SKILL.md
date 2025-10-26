@@ -458,34 +458,46 @@ links:
 
 ## Examples
 
-**Example: React Application with Vite**
+**Quick Start: TypeScript Library** (29 lines)
 
-```yaml
-INPUT: {project_type: "react", package_manager: "pnpm", typescript_version: "5.5"}
-OUTPUT:
-structure:
-  - src/{App.tsx, main.tsx, vite-env.d.ts}
-  - public/
-  - index.html, vite.config.ts, tsconfig.json
-vite.config.ts:
-  import { defineConfig } from 'vite';
-  import react from '@vitejs/plugin-react';
-  export default defineConfig({ plugins: [react()] });
-tsconfig.json:
-  {
-    "compilerOptions": {
-      "target": "ES2020", "module": "ESNext",
-      "lib": ["ES2020", "DOM"],
-      "jsx": "react-jsx", "strict": true,
-      "moduleResolution": "bundler"
-    }
+```typescript
+// examples/library-example.ts
+export interface CalculationResult {
+  value: number;
+  timestamp: Date;
+}
+
+export class Calculator {
+  private history: number[] = [];
+
+  add(a: number, b: number): CalculationResult {
+    const value = a + b;
+    this.history.push(value);
+    return { value, timestamp: new Date() };
   }
-commands:
-  install: "pnpm install"
-  dev: "pnpm vite"
-  build: "pnpm vite build"
-  test: "pnpm vitest"
+
+  multiply(a: number, b: number): CalculationResult {
+    const value = a * b;
+    this.history.push(value);
+    return { value, timestamp: new Date() };
+  }
+
+  getHistory(): readonly number[] {
+    return Object.freeze([...this.history]);
+  }
+
+  clear(): void { this.history = []; }
+}
 ```
+
+**Additional Examples:**
+- **CLI Tool**: `examples/cli-example.ts` (28 lines) - shebang, args, file operations
+- **Express API**: `examples/api-example.ts` (30 lines) - typed routes, middleware, error handling
+
+**Template Resources** (see `resources/`)
+- `tsconfig-library.json` / `tsconfig-react.json` / `tsconfig-node.json`
+- `package-library.json` / `package-cli.json` / `package-api.json`
+- `jest.config.js` - Jest testing configuration
 
 ---
 
