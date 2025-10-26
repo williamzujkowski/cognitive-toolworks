@@ -89,7 +89,7 @@ scenarios:
       contains:
         - commitment_recommendations
         - plan_type: committed_use_discount
-        - term: ["1_year", "3_year"]  # One of these values
+        - term: "1_year" or "3_year"
         - monthly_savings
         - break_even_months
       validations:
