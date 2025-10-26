@@ -49,9 +49,7 @@ def extract_skill_references(agent_md_path: Path) -> list[str]:
     return sorted(skills)
 
 
-def build_dependency_graph() -> tuple[
-    dict[str, dict[str, Any]], dict[str, list[str]]
-]:
+def build_dependency_graph() -> tuple[dict[str, dict[str, Any]], dict[str, list[str]]]:
     """Build agent→skill dependency graph"""
     agents = load_agents_index()
     skills_set = {s["slug"] for s in load_skills_index()}

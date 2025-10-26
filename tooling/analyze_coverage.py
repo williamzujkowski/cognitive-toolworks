@@ -61,9 +61,7 @@ def analyze_coverage(
     """Analyze skill coverage by domain and tier"""
     by_tier: dict[str, list[str]] = defaultdict(list)
     by_domain: dict[str, int] = defaultdict(int)
-    domain_tier_map: dict[str, dict[str, list[str]]] = defaultdict(
-        lambda: defaultdict(list)
-    )
+    domain_tier_map: dict[str, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
 
     for skill in skills:
         slug = skill["slug"]
