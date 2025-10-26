@@ -1,0 +1,85 @@
+---
+# Evaluation scenarios for oscal-ssp-validate skill
+# Version: 1.0.0
+# Last updated: 2025-10-25T21:04:34-04:00
+
+skill: oscal-ssp-validate
+version: 1.0.0
+
+scenarios:
+  - name: valid_ssp_t1_schema_only
+    description: T1 validation of well-formed SSP with valid schema
+    tier: 1
+    inputs:
+      ssp_path: "test-fixtures/valid-ssp-minimal.json"
+      profile: null
+      strict: false
+    expected_output:
+      status: "valid"
+      schema_valid: true
+      total_errors: 0
+    token_budget: 2000
+
+  - name: malformed_json_abort
+    description: T1 validation should abort on malformed JSON
+    tier: 1
+    inputs:
+      ssp_path: "test-fixtures/malformed-ssp.json"
+      profile: null
+      strict: false
+    expected_output:
+      status: "error"
+      total_errors: 1
+      error_type: "schema"
+    token_budget: 2000
+
+  - name: profile_alignment_partial
+    description: T2 validation with partial profile coverage
+    tier: 2
+    inputs:
+      ssp_path: "test-fixtures/partial-implementation-ssp.json"
+      profile: "test-fixtures/fedramp-low-profile.json"
+      strict: false
+    expected_output:
+      status: "invalid"
+      schema_valid: true
+      profile_aligned: false
+      coverage_percent_min: 80.0
+      coverage_percent_max: 95.0
+    token_budget: 6000
+
+  - name: strict_mode_profile_gap_failure
+    description: T2 strict mode fails on any control gap
+    tier: 2
+    inputs:
+      ssp_path: "test-fixtures/partial-implementation-ssp.json"
+      profile: "test-fixtures/fedramp-low-profile.json"
+      strict: true
+    expected_output:
+      status: "invalid"
+      profile_aligned: false
+      total_errors_min: 1
+    token_budget: 6000
+
+  - name: deep_cross_ref_validation
+    description: T3 comprehensive validation with component cross-refs
+    tier: 3
+    inputs:
+      ssp_path: "test-fixtures/complex-ssp-with-components.json"
+      profile: "test-fixtures/fedramp-moderate-profile.json"
+      strict: true
+    expected_output:
+      status: "valid"
+      schema_valid: true
+      profile_aligned: true
+      cross_refs_valid: true
+      total_errors: 0
+      total_warnings_max: 2
+    token_budget: 12000
+
+assertions:
+  - all_scenarios_respect_token_budgets
+  - citations_include_access_dates
+  - output_conforms_to_json_schema
+  - deterministic_results_same_inputs
+  - no_secrets_in_error_messages

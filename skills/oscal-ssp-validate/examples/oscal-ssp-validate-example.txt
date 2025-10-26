@@ -1,0 +1,30 @@
+# OSCAL SSP Validation Example - Tier 2 Profile Check
+
+INPUT:
+  ssp_path: "https://example.gov/ssp/system-x-ssp.json"
+  profile: "FedRAMP_rev5_HIGH-baseline_profile.json"
+  strict: true
+
+FLOW:
+1. Fetch SSP → parse JSON → extract oscal-version "1.1.2"
+2. Validate against JSON Schema v1.1.2 → 2 warnings
+3. Load profile → 325 required controls
+4. Check control-implementation → 320 found
+5. Calculate coverage → 98.5% (5 missing)
+
+OUTPUT:
+{
+  "tier": "2",
+  "status": "invalid",
+  "summary": {
+    "total_errors": 5,
+    "schema_valid": true,
+    "profile_aligned": false
+  },
+  "profile_report": {
+    "controls_required": 325,
+    "controls_implemented": 320,
+    "coverage_percent": 98.5,
+    "missing_controls": ["AC-2(1)", "AC-6(9)", "AU-9(3)", "CM-3(6)", "SC-7(21)"]
+  }
+}

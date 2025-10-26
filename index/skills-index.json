@@ -1,0 +1,49 @@
+[
+  {
+    "slug": "fedramp-poam-qc",
+    "name": "FedRAMP POAM Quality Check",
+    "summary": "Validates FedRAMP Plan of Action and Milestones (POAM) files for structural integrity, naming conventions, deduplication, and cross-sheet consistency",
+    "keywords": [
+      "fedramp",
+      "poam",
+      "quality-check",
+      "validation",
+      "vulnerability-tracking",
+      "compliance"
+    ],
+    "owner": "william@cognitive-toolworks.com",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/fedramp-poam-qc/SKILL.md"
+  },
+  {
+    "slug": "oscal-ssp-validate",
+    "name": "OSCAL SSP Validator",
+    "summary": "Validates OSCAL System Security Plan documents against schemas, profiles, and cross-reference requirements with tiered validation depth.",
+    "keywords": [
+      "oscal",
+      "ssp",
+      "validation",
+      "schema",
+      "profile",
+      "compliance",
+      "security"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/oscal-ssp-validate/SKILL.md"
+  },
+  {
+    "slug": "skill-creation",
+    "name": "Create a New Skill from Topic",
+    "summary": "Generate a production-ready SKILL.md + tiny examples, evals, and an index entry aligned to Anthropic Skills.",
+    "keywords": [
+      "authoring",
+      "generator",
+      "skills.md",
+      "progressive-disclosure"
+    ],
+    "owner": "cloud.gov OCS",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/skill-creation/SKILL.md"
+  }
+]

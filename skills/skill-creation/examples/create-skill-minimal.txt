@@ -1,0 +1,29 @@
+# Minimal Skill Creation Example
+
+INPUT:
+  topic: "OSCAL SSP validator for FedRAMP Moderate"
+  constraints: { "strict": true }
+
+PROCESS:
+1. Compute NOW_ET → 2025-10-25T21:04:34-04:00
+2. Generate slug → "oscal-ssp-validate"
+3. Research 2-4 sources (OSCAL/FedRAMP docs)
+4. Draft SKILL.md with metadata + required sections
+5. Create example (≤30 lines) in examples/
+6. Generate evals (3-5 scenarios) in tests/
+7. Emit index entry JSON
+
+OUTPUT FILES:
+  skills/oscal-ssp-validate/SKILL.md
+  skills/oscal-ssp-validate/examples/oscal-ssp-validate-example.txt
+  tests/evals_oscal-ssp-validate.yaml
+
+INDEX_ENTRY:
+  {
+    "slug": "oscal-ssp-validate",
+    "name": "OSCAL SSP Validator for FedRAMP Moderate",
+    "summary": "Validates OSCAL SSP against FedRAMP Moderate baseline.",
+    "keywords": ["oscal", "ssp", "fedramp", "validation"],
+    "version": "1.0.0",
+    "entry": "skills/oscal-ssp-validate/SKILL.md"
+  }
