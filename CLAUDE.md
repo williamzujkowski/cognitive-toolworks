@@ -2,9 +2,9 @@
 
 ```
 STATUS: AUTHORITATIVE
-VERSION: 1.5.0
-LAST_AUDIT: 2025-10-26T16:00:00-04:00
-NEXT_REVIEW: 2026-01-24T16:00:00-05:00
+VERSION: 1.6.0
+LAST_AUDIT: 2025-10-26T18:30:00-04:00
+NEXT_REVIEW: 2026-01-24T18:30:00-05:00
 SCOPE: Personal/public Skills library (Anthropic Skills standard)
 ```
 
@@ -881,6 +881,572 @@ PRs fail if any step fails. Keep the pipeline fast.
 
 ---
 
+## 8A) Repository Maintenance Standards (mandatory workflows)
+
+**Philosophy: The Repository is a Living System**
+
+Skills and agents are not static artifacts. The repository has interconnected systems (indices, coverage analysis, dependency graphs) that must be kept synchronized. Every addition, modification, or deletion triggers maintenance workflows.
+
+### Coverage Matrix & Gap Analysis (required after changes)
+
+**When to Update:**
+
+* After adding **any** new skill or agent
+* After deleting or deprecating skills/agents
+* After major domain expansion (e.g., adding 3+ skills in new domain)
+* At minimum: **monthly** audit cycle
+
+**Rebuild Process:**
+
+```bash
+# Rebuild coverage matrix
+python tooling/analyze_coverage.py
+
+# Review output
+cat docs/COVERAGE_MATRIX.md
+
+# Update gap analysis manually if needed
+# (The script updates counts, you update strategic gaps in "Gap Analysis" section)
+```
+
+**Coverage Matrix Requirements:**
+
+* **Total counts accurate**: Skills, agents, per-domain breakdowns
+* **Tier percentages current**: Core, Domain, Specialized distribution
+* **Heat map reflects reality**: Top 10 domains by count
+* **Gap analysis updated**: Mark completed high-priority items with ✅, add new gaps
+* **Recent additions section**: Document what was added in latest expansion (with date)
+
+**Gap Analysis Standards:**
+
+* **Completed items stay visible**: Show what was recently addressed (builds momentum)
+* **Priority triaging**: High (P0 gaps), Medium (P1), Low (P2) based on user demand + strategic value
+* **Specific, actionable**: Not "improve testing" but "add mutation testing skill (Stryker, PIT)"
+* **Technology-specific**: Call out exact tools/frameworks (Datadog, not "APM tool")
+
+**Commit Requirements:**
+
+```bash
+git add docs/COVERAGE_MATRIX.md
+git commit -m "docs(coverage): rebuild matrix after <expansion-name>
+
+Updates:
+- Total skills: <old> → <new> (+X)
+- <Domain> expanded: <old> → <new> skills
+- Gap analysis: marked <item> as completed
+- Added <new-gap> to high priority
+"
+```
+
+### Index Rebuilding (required after skill/agent changes)
+
+**When to Rebuild:**
+
+* After creating new skill → rebuild `skills-index.json`
+* After creating new agent → rebuild `agents-index.json`
+* After renaming skill/agent → rebuild both indices
+* After deleting skill/agent → rebuild and verify no dangling references
+
+**Rebuild Commands:**
+
+```bash
+# Skills index (always run after skill changes)
+python tooling/build_index.py
+# Output: index/skills-index.json updated
+
+# Agents index (implicit via agent tooling, or manual)
+# Usually auto-updated when agent added to agents/ directory
+# Verify: cat index/agents-index.json | jq length
+
+# With embeddings (optional, for semantic search)
+python tooling/build_index.py --with-embeddings
+```
+
+**Index Validation:**
+
+```bash
+# Verify no duplicate slugs
+jq -r '.[].slug' index/skills-index.json | sort | uniq -d
+# Should be empty
+
+jq -r '.[].slug' index/agents-index.json | sort | uniq -d
+# Should be empty
+
+# Verify all skills/agents present
+ls -1 skills/ | wc -l  # Should match jq length of skills-index.json
+ls -1 agents/ | wc -l  # Should match jq length of agents-index.json
+```
+
+**Commit Index Updates:**
+
+* **Always commit index updates** in the same commit as skill/agent additions
+* Indices are **generated artifacts** but **version controlled** (enables fast routing without rebuild)
+
+### Agent Dependency Analysis (required after agent changes)
+
+**When to Run:**
+
+* After creating new agent
+* After modifying agent's skill references
+* After renaming or deleting skills (to find broken agent references)
+* **Monthly** as part of audit cycle
+
+**Analysis Command:**
+
+```bash
+python tooling/analyze_agent_dependencies.py
+# Generates: docs/AGENT_DEPENDENCIES.md
+```
+
+**Dependency Graph Outputs:**
+
+* **Agent → Skill mapping**: Which skills each agent orchestrates
+* **Skill usage**: Which agents reference each skill (reverse mapping)
+* **Orphaned skills**: Skills not referenced by any agent (user-invoked or routing-based)
+* **Heavily referenced skills**: Skills used by multiple agents (critical dependencies)
+* **Mermaid diagram**: Visual dependency graph
+
+**Orphaned Skill Triage:**
+
+Orphaned skills are **not necessarily bad**:
+
+* ✅ **Expected orphans**: Direct user-invoked skills (testing-unit-generator, rust-analyzer)
+* ✅ **Routing-based**: Skills selected by routing logic, not hardcoded in agents
+* ⚠️ **Potential gaps**: If a skill should be orchestrated but isn't, consider creating an agent
+
+**Broken Reference Detection:**
+
+```bash
+# Find skills referenced in agents but don't exist
+python tooling/analyze_agent_dependencies.py 2>&1 | grep -i "not found"
+
+# Manual check: search for backtick-slugs in AGENT.md files
+grep -r '`[a-z-]*`' agents/ | grep -v ".git"
+```
+
+**Commit Dependency Updates:**
+
+```bash
+git add docs/AGENT_DEPENDENCIES.md
+git commit -m "docs(deps): rebuild agent dependency graph
+
+Updates:
+- <agent-name> now orchestrates <skill-1>, <skill-2>
+- <skill-name> used by <count> agents
+- Orphaned skills: <count> (reviewed, intentional)
+"
+```
+
+### Directory Structure Validation
+
+**Required Empty Directory Markers:**
+
+Every otherwise-empty directory **must** contain a `.gitkeep` file:
+
+```bash
+# Check for missing .gitkeep files
+find skills/ agents/ -type d -empty ! -path "*/\.*"
+# Should be empty (all empty dirs have .gitkeep)
+
+# Auto-fix missing .gitkeep
+find skills/ agents/ -type d -empty -exec touch {}/.gitkeep \;
+```
+
+**Standard Directory Structure Per Skill:**
+
+```
+skills/<slug>/
+  SKILL.md              # Required
+  CHANGELOG.md          # Required
+  examples/             # Optional (but .gitkeep if empty)
+    .gitkeep
+  resources/            # Optional (but .gitkeep if empty)
+    .gitkeep
+  scripts/              # Optional (but .gitkeep if empty)
+    .gitkeep
+```
+
+**Standard Directory Structure Per Agent:**
+
+```
+agents/<slug>/
+  AGENT.md              # Required
+  CHANGELOG.md          # Required
+  examples/             # Optional (but .gitkeep if empty)
+    .gitkeep
+  workflows/            # Optional (but .gitkeep if empty)
+    .gitkeep
+  resources/            # Optional (but .gitkeep if empty)
+    .gitkeep
+  scripts/              # Optional (but .gitkeep if empty)
+    .gitkeep
+```
+
+### CHANGELOG Standards
+
+**Required Format** (Keep-a-Changelog style):
+
+```markdown
+# Changelog
+
+## [Unreleased]
+
+### Added
+- New capability X
+- Support for Y
+
+### Changed
+- Improved Z performance
+
+### Deprecated
+- Feature W will be removed in v2.0
+
+### Removed
+- Obsolete feature V
+
+### Fixed
+- Bug in edge case Q
+
+## [1.2.0] - 2025-10-26
+
+### Added
+- Feature A
+- Feature B
+```
+
+**Version Bumping Rules:**
+
+* **Major (X.0.0)**: Breaking changes to inputs, outputs, or behavior
+* **Minor (1.X.0)**: New features, new capabilities, backward-compatible
+* **Patch (1.2.X)**: Bug fixes, documentation improvements, no functional changes
+
+**Changelog Update Timing:**
+
+* Update CHANGELOG.md **in the same commit** as the feature/fix
+* Move `[Unreleased]` section to versioned section on release
+* Always keep `[Unreleased]` header present for next changes
+
+### Post-Addition Workflow (checklist after adding skill/agent)
+
+**After adding a new skill:**
+
+```bash
+# 1. Validate
+python tooling/validate_skill.py
+
+# 2. Rebuild skills index
+python tooling/build_index.py
+
+# 3. Rebuild coverage matrix
+python tooling/analyze_coverage.py
+
+# 4. Update gap analysis in COVERAGE_MATRIX.md (manual)
+#    - Mark completed items with ✅
+#    - Add new gaps discovered
+#    - Re-prioritize if needed
+
+# 5. Verify directory structure
+ls -la skills/<slug>/  # Should have SKILL.md, CHANGELOG.md, .gitkeep in empty dirs
+
+# 6. Commit all updates together
+git add skills/<slug>/ tests/evals_<slug>.yaml index/skills-index.json docs/COVERAGE_MATRIX.md
+git commit -m "feat(skill): add <slug> skill
+
+<Description>
+
+Validation: All checks pass
+Coverage: <domain> expanded from <X> to <Y> skills
+"
+```
+
+**After adding a new agent:**
+
+```bash
+# 1. Validate agent spec (if validator exists)
+python tooling/validate_agent.py  # If available
+
+# 2. Rebuild agents index
+# (Usually auto-updated, verify manually)
+cat index/agents-index.json | jq '.[] | select(.slug=="<slug>")'
+
+# 3. Rebuild agent dependency graph
+python tooling/analyze_agent_dependencies.py
+
+# 4. Rebuild coverage matrix
+python tooling/analyze_coverage.py
+
+# 5. Update gap analysis (manual)
+
+# 6. Verify directory structure
+ls -la agents/<slug>/  # Should have AGENT.md, CHANGELOG.md, .gitkeep in empty dirs
+
+# 7. Commit all updates together
+git add agents/<slug>/ index/agents-index.json docs/AGENT_DEPENDENCIES.md docs/COVERAGE_MATRIX.md
+git commit -m "feat(agent): add <slug> orchestrator
+
+<Description>
+
+Dependencies: Orchestrates <skill-1>, <skill-2>, ...
+Coverage: <domain> orchestrators expanded
+"
+```
+
+**After renaming skill/agent:**
+
+```bash
+# 1. Rename directory
+mv skills/<old-slug> skills/<new-slug>
+
+# 2. Update SKILL.md front-matter slug
+
+# 3. Update all cross-references (search repo)
+grep -r "<old-slug>" skills/ agents/ docs/
+
+# 4. Rename test file
+mv tests/evals_<old-slug>.yaml tests/evals_<new-slug>.yaml
+
+# 5. Rebuild indices
+python tooling/build_index.py
+
+# 6. Rebuild dependency graph (if agent)
+python tooling/analyze_agent_dependencies.py
+
+# 7. Rebuild coverage matrix
+python tooling/analyze_coverage.py
+
+# 8. Verify no dangling references
+grep -r "<old-slug>" skills/ agents/ docs/ index/
+# Should be empty
+
+# 9. Commit with clear rename message
+git add -A
+git commit -m "refactor(<domain>): rename <old-slug> to <new-slug>
+
+Rationale: <why>
+
+Updated:
+- Skill/agent slug and directory
+- Test file
+- All cross-references
+- Indices and coverage matrix
+"
+```
+
+**After deleting skill/agent:**
+
+```bash
+# 1. Check for dependencies (if agent)
+python tooling/analyze_agent_dependencies.py
+# Ensure no agents reference this skill
+
+# 2. Remove directory
+rm -rf skills/<slug>  # or agents/<slug>
+
+# 3. Remove test file
+rm tests/evals_<slug>.yaml
+
+# 4. Rebuild indices
+python tooling/build_index.py
+
+# 5. Rebuild dependency graph
+python tooling/analyze_agent_dependencies.py
+
+# 6. Rebuild coverage matrix
+python tooling/analyze_coverage.py
+
+# 7. Update gap analysis
+#    - If skill addressed a gap, move gap back to "Missing"
+#    - Document deprecation reason
+
+# 8. Commit with deprecation note
+git add -A
+git commit -m "chore(<domain>): deprecate <slug>
+
+Reason: <why deprecated>
+
+Impact:
+- <domain> skills reduced from <X> to <Y>
+- Gap analysis updated
+- No dependent agents affected (verified)
+"
+```
+
+### Cross-Reference Validation
+
+**Agent → Skill Reference Rules:**
+
+* Agents reference skills by **slug only** (backtick-enclosed: `skill-slug`)
+* All skill references **must resolve** via skills-index.json
+* **No inline skill definitions** in agents (always use skill routing)
+
+**Validation Process:**
+
+```bash
+# Extract all backtick-slugs from agents
+grep -ohr '`[a-z0-9-]\+`' agents/ | sort -u > /tmp/agent-refs.txt
+
+# Extract all skill slugs from index
+jq -r '.[].slug' index/skills-index.json | sort > /tmp/skill-slugs.txt
+
+# Find unresolved references (agent refs not in skill index)
+comm -23 /tmp/agent-refs.txt /tmp/skill-slugs.txt
+# Investigate anything that looks like a skill slug (has hyphens, lowercase)
+```
+
+**Broken Reference Remediation:**
+
+* If skill was renamed: update agent to use new slug
+* If skill was deleted: remove reference or add skill back
+* If typo: fix slug in agent
+* If skill doesn't exist yet: create skill or mark as `[TODO: create <slug> skill]`
+
+### Documentation Completeness
+
+**Required Documentation Files:**
+
+```
+/docs/
+  COVERAGE_MATRIX.md       # Domain coverage analysis
+  AGENT_DEPENDENCIES.md    # Agent→skill dependency graph
+  ARCHITECTURE.md          # (Optional) High-level repo architecture
+  CONTRIBUTING.md          # (Optional) Contributor onboarding
+```
+
+**Documentation Quality Standards:**
+
+* **Auto-generated docs** (COVERAGE_MATRIX.md, AGENT_DEPENDENCIES.md) are **committed** (not gitignored)
+* All docs use **Smart Brevity** style (see §1A)
+* Stats/counts in docs must be **current** (rebuild after changes)
+* Links in docs must **resolve** (no 404s, no link rot)
+
+### Audit Cycle (monthly maintenance)
+
+**Monthly Audit Checklist** (first Monday of month):
+
+```bash
+# 1. Rebuild all indices
+python tooling/build_index.py
+python tooling/build_index.py --with-embeddings  # If using semantic search
+
+# 2. Rebuild coverage matrix
+python tooling/analyze_coverage.py
+
+# 3. Rebuild agent dependencies
+python tooling/analyze_agent_dependencies.py
+
+# 4. Validate all skills
+python tooling/validate_skill.py
+
+# 5. Check for orphaned files
+find skills/ agents/ -name "*.md" ! -name "SKILL.md" ! -name "AGENT.md" ! -name "CHANGELOG.md" ! -name "README.md"
+# Investigate unexpected .md files
+
+# 6. Check for missing CHANGELOGs
+find skills/ agents/ -mindepth 1 -maxdepth 1 -type d ! -exec test -e '{}/CHANGELOG.md' \; -print
+# Should be empty
+
+# 7. Verify .gitkeep presence
+find skills/ agents/ -type d -empty ! -name ".git" ! -exec test -e '{}/.gitkeep' \; -print
+# Should be empty
+
+# 8. Update LAST_AUDIT timestamp in CLAUDE.md
+# Update to NOW_ET, set NEXT_REVIEW = +90 days
+
+# 9. Commit audit results
+git add -A
+git commit -m "chore(audit): monthly repository maintenance
+
+Audit date: $(date -I)
+
+Updated:
+- Skills index
+- Coverage matrix
+- Agent dependency graph
+- Validated all skills (X passing)
+- Verified directory structure
+- Updated CLAUDE.md audit timestamps
+"
+```
+
+### Version-Controlled vs Generated Files
+
+**Version Controlled (commit these):**
+
+* ✅ `index/skills-index.json` (enables fast routing)
+* ✅ `index/agents-index.json` (enables agent discovery)
+* ✅ `docs/COVERAGE_MATRIX.md` (shows project health)
+* ✅ `docs/AGENT_DEPENDENCIES.md` (shows orchestration map)
+* ⚠️ `index/embeddings/` (optional, can be regenerated)
+
+**Gitignored (regenerate on demand):**
+
+* ❌ `__pycache__/` (Python bytecode)
+* ❌ `node_modules/` (JS dependencies)
+* ❌ `.pytest_cache/` (Test cache)
+* ❌ `.coverage` (Coverage data)
+* ❌ `*.pyc` (Python compiled)
+
+### Enforcement in CI
+
+**Pre-Commit Hooks (local enforcement):**
+
+```yaml
+# .pre-commit-config.yaml additions for repo maintenance
+
+- repo: local
+  hooks:
+    - id: validate-directory-structure
+      name: Validate skill/agent directory structure
+      entry: bash -c 'find skills/ agents/ -type d -empty ! -path "*/\.*" -exec test -e {}/.gitkeep \; || exit 1'
+      language: system
+      pass_filenames: false
+
+    - id: rebuild-indices
+      name: Rebuild indices if skills/agents changed
+      entry: bash -c 'git diff --cached --name-only | grep -qE "^(skills|agents)/" && python tooling/build_index.py || exit 0'
+      language: system
+      pass_filenames: false
+```
+
+**GitHub Actions (CI enforcement):**
+
+```yaml
+# .github/workflows/repo-maintenance.yaml
+
+name: Repository Maintenance
+
+on:
+  pull_request:
+    paths:
+      - 'skills/**'
+      - 'agents/**'
+
+jobs:
+  validate-repo-state:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check indices are current
+        run: |
+          python tooling/build_index.py --check
+          # --check flag: rebuild in temp, diff with committed, fail if different
+
+      - name: Check for missing .gitkeep
+        run: |
+          missing=$(find skills/ agents/ -type d -empty ! -path "*/\.*" ! -exec test -e {}/.gitkeep \; -print)
+          if [ -n "$missing" ]; then
+            echo "Missing .gitkeep files in: $missing"
+            exit 1
+          fi
+
+      - name: Validate cross-references
+        run: |
+          python tooling/validate_cross_references.py  # If tool exists
+```
+
+---
+
 ## 9) Small, Reusable Agent Prompts
 
 **A) Author a new Skill**
@@ -932,6 +1498,8 @@ Do not open SKILL.md unless requested.
 
 ## 10) PR Checklist (must self-certify)
 
+**Content Quality:**
+
 * [ ] `NOW_ET` computed; used for access dates
 * [ ] No secrets or PII; no long pasted sources
 * [ ] Required sections and front-matter keys present
@@ -947,9 +1515,43 @@ Do not open SKILL.md unless requested.
   * [ ] All claims traceable to tier 1–3 sources (see §4 hierarchy)
   * [ ] All sources explicitly state what is claimed (no inference leaps)
   * [ ] Access dates = `NOW_ET` for all time-sensitive or version-specific content
-* [ ] Index updated and deterministic; no duplicate slugs
+
+**Repository Maintenance (§8A):**
+
+* [ ] **Indices rebuilt** (if adding/modifying/deleting skills or agents):
+  * [ ] `python tooling/build_index.py` executed
+  * [ ] `index/skills-index.json` and/or `index/agents-index.json` updated
+  * [ ] No duplicate slugs (verified via `jq -r '.[].slug' index/*.json | sort | uniq -d`)
+* [ ] **Coverage matrix updated** (if adding/deleting skills or agents):
+  * [ ] `python tooling/analyze_coverage.py` executed
+  * [ ] `docs/COVERAGE_MATRIX.md` counts accurate (total skills, per-domain)
+  * [ ] Gap analysis section updated (mark completed items with ✅, add new gaps)
+  * [ ] Recent additions section includes this PR's changes
+* [ ] **Agent dependencies updated** (if adding/modifying agents or deleting skills):
+  * [ ] `python tooling/analyze_agent_dependencies.py` executed
+  * [ ] `docs/AGENT_DEPENDENCIES.md` reflects current agent→skill mappings
+  * [ ] No broken references (all agent-referenced skills exist)
+* [ ] **Directory structure compliant**:
+  * [ ] CHANGELOG.md present in skill/agent directory
+  * [ ] `.gitkeep` present in empty directories (examples/, resources/, scripts/)
+  * [ ] No orphaned files or unexpected directory structure
+* [ ] **CHANGELOG updated** (in same commit):
+  * [ ] Version bumped appropriately (major/minor/patch)
+  * [ ] Changes documented under correct version section
+  * [ ] Follows Keep-a-Changelog format
+
+**Code Quality (§2B):**
+
 * [ ] Evals added/updated and pass locally
+* [ ] Pre-commit hooks pass (black, ruff, mypy, gitleaks)
+* [ ] No linting errors, type errors, or security warnings
+* [ ] Tests pass (if applicable)
+
+**Git & Commit:**
+
 * [ ] Commit message: clear, imperative, ≤72 chars first line
+* [ ] Conventional Commits format: `type(scope): description`
+* [ ] All generated artifacts committed (indices, coverage matrix, dependency graph)
 
 ---
 
