@@ -1,0 +1,28 @@
+DELEGATION DECISION TREE EXAMPLE
+=================================
+
+Scenario: User asks "Review the entire src/ directory for performance issues"
+
+Step 1: Count Files
+  $ find src/ -type f -name "*.js" -o -name "*.ts" | wc -l
+  → 87 files
+
+Step 2: Apply Decision Rule
+  87 files > 50 file threshold → DELEGATE TO GEMINI
+
+Step 3: Format MCP Command
+  delegation_command: "ask gemini to analyze @src/ and identify performance bottlenecks, inefficient algorithms, and optimization opportunities"
+
+Step 4: Return Result
+  {
+    "delegation_decision": true,
+    "recommended_tool": "gemini-mcp",
+    "delegation_command": "ask gemini to analyze @src/ and identify performance bottlenecks, inefficient algorithms, and optimization opportunities",
+    "rationale": "File count 87 exceeds 50-file threshold; codebase-wide analysis suits Gemini",
+    "context_estimate": {
+      "file_count": 87,
+      "total_size_kb": 2340,
+      "estimated_tokens": 585000
+    },
+    "security_flags": []
+  }

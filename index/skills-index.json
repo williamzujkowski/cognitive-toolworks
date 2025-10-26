@@ -302,6 +302,22 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/frontend-framework-advisor/SKILL.md"
   },
   {
+    "slug": "gemini-cli-delegator",
+    "name": "Gemini CLI Delegation & Large Context Routing",
+    "summary": "Intelligently delegate large-context tasks to Gemini CLI via MCP integration for document analysis, codebase review, and multi-file processing.",
+    "keywords": [
+      "delegation",
+      "gemini",
+      "mcp",
+      "large-context",
+      "task-routing",
+      "codebase-analysis"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/gemini-cli-delegator/SKILL.md"
+  },
+  {
     "slug": "incident-response-playbook-generator",
     "name": "Incident Response Playbook Generator",
     "summary": "Generate incident response playbooks for security incidents, outages, and disaster recovery with NIST SP 800-61 compliance and escalation paths.",

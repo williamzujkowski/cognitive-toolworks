@@ -1,0 +1,164 @@
+# Evaluation Scenarios for gemini-cli-delegator Skill
+# Version: 1.0.0
+# Last Updated: 2025-10-25T23:14:09-04:00
+
+skill: gemini-cli-delegator
+version: 1.0.0
+total_scenarios: 5
+
+scenarios:
+  - id: eval_001
+    name: "Large PDF Analysis - Delegate to Gemini"
+    description: "User requests analysis of a 4.2MB research paper PDF"
+    input:
+      task_description: "Summarize key findings, methodology, and conclusions from this AI research paper"
+      file_paths:
+        - "./research/transformers-architecture-2024.pdf"
+      context_size_estimate: 4200  # KB
+      task_type: "analysis"
+    expected_output:
+      delegation_decision: true
+      recommended_tool: "gemini-mcp"
+      delegation_command: "ask gemini to analyze @./research/transformers-architecture-2024.pdf and summarize key findings, methodology, and conclusions"
+      rationale_contains: "exceeds 100KB threshold"
+      security_flags: []
+    pass_criteria:
+      - delegation_decision must be true
+      - recommended_tool must be "gemini-mcp"
+      - delegation_command must include "@" file reference syntax
+      - rationale must cite size threshold
+      - security_flags must be empty array
+
+  - id: eval_002
+    name: "Entire Codebase Review - Delegate to Gemini"
+    description: "User requests performance review of entire src/ directory with 87 TypeScript files"
+    input:
+      task_description: "Review the entire src/ directory for performance bottlenecks and optimization opportunities"
+      file_paths:
+        - "src/"
+      context_size_estimate: "unknown"
+      task_type: "review"
+    expected_output:
+      delegation_decision: true
+      recommended_tool: "gemini-mcp"
+      delegation_command: "ask gemini to analyze @src/ and identify performance bottlenecks, inefficient algorithms, and optimization opportunities"
+      rationale_contains: "file count"
+      context_estimate:
+        file_count: 87  # actual count from find command
+        total_size_kb: 2340  # approximate
+        estimated_tokens: 585000
+    pass_criteria:
+      - delegation_decision must be true
+      - context_estimate.file_count must be computed
+      - rationale must cite file count threshold (>50)
+      - delegation_command must use @src/ directory reference
+
+  - id: eval_003
+    name: "Small File Query - Keep in Claude"
+    description: "User asks question about a single 15KB configuration file"
+    input:
+      task_description: "Explain what this webpack config does and suggest improvements"
+      file_paths:
+        - "./config/webpack.config.js"
+      context_size_estimate: 15  # KB
+      task_type: "analysis"
+    expected_output:
+      delegation_decision: false
+      recommended_tool: "claude"
+      delegation_command: null
+      rationale_contains: "below threshold"
+      context_estimate:
+        file_count: 1
+        total_size_kb: 15
+        estimated_tokens: 3750
+    pass_criteria:
+      - delegation_decision must be false
+      - recommended_tool must be "claude"
+      - delegation_command must be null or absent
+      - context_estimate.total_size_kb must be <50
+      - rationale must explain why Claude is preferred
+
+  - id: eval_004
+    name: "Multi-File Dependency Analysis - Delegate to Gemini"
+    description: "User requests dependency tracking across 34 Python modules"
+    input:
+      task_description: "Map all import dependencies and identify circular dependencies in the services/ module"
+      file_paths:
+        - "services/"
+      context_size_estimate: 890  # KB
+      task_type: "analysis"
+    expected_output:
+      delegation_decision: true
+      recommended_tool: "gemini-mcp"
+      delegation_command: "ask gemini to analyze @services/ and map all import dependencies, identifying circular dependencies and module coupling"
+      rationale_contains: "multi-file"
+      context_estimate:
+        file_count: 34
+        total_size_kb: 890
+    pass_criteria:
+      - delegation_decision must be true
+      - context_estimate.file_count must be 20-50 range
+      - rationale must cite multi-file analysis strength of Gemini
+      - delegation_command must include dependency analysis instructions
+
+  - id: eval_005
+    name: "Sandbox Code Test - Always Delegate"
+    description: "User wants to safely test unfamiliar Python script"
+    input:
+      task_description: "Run this data processing script in a sandbox and verify it doesn't have side effects"
+      file_paths:
+        - "./scripts/process_user_data.py"
+      context_size_estimate: 45  # KB
+      task_type: "test"
+    expected_output:
+      delegation_decision: true
+      recommended_tool: "gemini-mcp"
+      delegation_command: "use gemini sandbox to test @./scripts/process_user_data.py and verify it has no unintended side effects or security issues"
+      rationale_contains: "sandbox"
+      security_flags: []
+    pass_criteria:
+      - delegation_decision must be true
+      - recommended_tool must be "gemini-mcp"
+      - delegation_command must include "sandbox" keyword
+      - rationale must cite sandbox isolation requirement
+      - task_type "test" must always trigger delegation
+
+  - id: eval_006_bonus
+    name: "Secret Detection - Abort Delegation"
+    description: "User tries to analyze file containing API keys (negative test)"
+    input:
+      task_description: "Review this configuration file for best practices"
+      file_paths:
+        - "./.env.production"
+      context_size_estimate: 2  # KB
+      task_type: "review"
+    expected_output:
+      delegation_decision: false
+      recommended_tool: null
+      delegation_command: null
+      rationale_contains: "secret"
+      security_flags:
+        - "Potential secrets detected in file path: .env.production"
+        - "Abort: Cannot delegate files that may contain credentials"
+    pass_criteria:
+      - delegation_decision must be false
+      - security_flags must be non-empty
+      - security_flags must mention ".env" or "secrets"
+      - rationale or error message must instruct user to sanitize
+      - delegation_command must be null
+
+# Evaluation Metadata
+evaluation_notes: |
+  - Run these scenarios against the skill implementation to verify routing logic
+  - Scenarios cover: large file, many files, small file, multi-file, sandbox, security
+  - Pass criteria are explicit and testable
+  - eval_006_bonus is a negative test for secret detection (extra credit)
+  - Context estimates should be computed, not hardcoded
+  - Rationale must cite specific thresholds from decision matrix
+
+execution_instructions: |
+  1. Load skill from skills/gemini-cli-delegator/SKILL.md
+  2. For each scenario, invoke skill with input parameters
+  3. Compare actual output against expected_output
+  4. Check all pass_criteria (must ALL pass for scenario to pass)
+  5. Report: passed/total scenarios and any failures with diffs

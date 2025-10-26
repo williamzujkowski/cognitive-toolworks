@@ -1,0 +1,33 @@
+{
+  "slug": "gemini-cli-delegator",
+  "name": "Gemini CLI Delegation & Large Context Routing",
+  "summary": "Intelligently delegate large-context tasks to Gemini CLI via MCP integration for document analysis, codebase review, and multi-file processing.",
+  "keywords": [
+    "delegation",
+    "gemini",
+    "mcp",
+    "large-context",
+    "task-routing",
+    "codebase-analysis"
+  ],
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/gemini-cli-delegator/SKILL.md",
+  "tier": "T2",
+  "max_tokens": 6000,
+  "capabilities": [
+    "Large file and codebase analysis delegation",
+    "Context window optimization (Claude ≤200k vs Gemini ≤1M tokens)",
+    "Multi-file dependency tracking via Gemini",
+    "Sandbox code testing through Gemini MCP",
+    "Strategic task routing between Claude and Gemini"
+  ],
+  "trigger_conditions": [
+    "Single file >100KB",
+    "File count >20",
+    "Estimated tokens >150k",
+    "Codebase-wide analysis",
+    "Sandbox code testing"
+  ],
+  "last_updated": "2025-10-25T23:14:09-04:00"
+}
