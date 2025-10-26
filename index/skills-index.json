@@ -59,6 +59,29 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/api-graphql-designer/SKILL.md"
   },
   {
+    "slug": "api-rest-designer",
+    "name": "REST API Designer",
+    "summary": "Design RESTful APIs with OpenAPI 3.1/3.2, resource modeling, HTTP semantics, versioning strategies, pagination patterns, HATEOAS, and OWASP API Security compliance.",
+    "keywords": [
+      "rest-api",
+      "openapi",
+      "api-design",
+      "resource-modeling",
+      "http-methods",
+      "richardson-maturity-model",
+      "hateoas",
+      "api-versioning",
+      "pagination",
+      "api-security",
+      "owasp",
+      "swagger",
+      "api-gateway"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/api-rest-designer/SKILL.md"
+  },
+  {
     "slug": "architecture-decision-framework",
     "name": "Architecture Decision Framework",
     "summary": "Guide architecture decisions using ADRs, trade-off analysis, pattern catalogs, and C4 diagrams for layered, hexagonal, event-driven, and CQRS patterns.",
