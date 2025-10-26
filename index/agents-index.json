@@ -50,6 +50,30 @@
     "entry": "agents/architecture-decision-orchestrator/AGENT.md"
   },
   {
+    "slug": "cloud-azure-orchestrator",
+    "name": "Azure Cloud Architect",
+    "description": "Orchestrates Azure solution delivery by coordinating requirements, architecture design, cost optimization, and deployment planning.",
+    "keywords": [
+      "azure-orchestration",
+      "solution-architecture",
+      "workflow-coordination",
+      "requirements-discovery",
+      "architecture-decisions",
+      "deployment-planning"
+    ],
+    "model": "inherit",
+    "tools": [
+      "Read",
+      "Write",
+      "Bash",
+      "Grep",
+      "Glob"
+    ],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/cloud-azure-orchestrator/AGENT.md"
+  },
+  {
     "slug": "cloud-aws-orchestrator",
     "name": "AWS Cloud Architect",
     "description": "Orchestrates AWS solution delivery by coordinating requirements, architecture design, cost optimization, and deployment planning.",
