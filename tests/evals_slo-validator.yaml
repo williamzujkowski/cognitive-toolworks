@@ -1,0 +1,109 @@
+# Evaluation scenarios for slo-validator skill
+# Each scenario tests a specific validation use case
+
+- scenario: "availability_slo_pass"
+  description: "Validate passing 99.9% availability SLO over 28 days"
+  input:
+    slo_definition:
+      name: "API Availability"
+      target: 99.9
+      window: "30d"
+      sli_query: "sum(rate(http_requests_total{status!~\"5..\"}[5m])) / sum(rate(http_requests_total[5m]))"
+    metrics_source: "prometheus"
+    time_window: "28d"
+    error_budget_policy: "moderate"
+  expected_output:
+    validation_report:
+      overall_compliance: "PASS"
+      windows:
+        - period: "28d"
+          actual_slo: 99.92
+          compliance: "PASS"
+          error_budget_remaining: ">0"
+    error_budget_status:
+      recommended_action: "continue_normal_operations"
+
+- scenario: "latency_slo_fail"
+  description: "Detect latency SLO breach (95th percentile > 200ms)"
+  input:
+    slo_definition:
+      name: "API Latency"
+      target: 95.0
+      window: "30d"
+      sli_query: "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) < 0.2"
+    metrics_source: "prometheus"
+    time_window: "28d"
+    error_budget_policy: "strict"
+  expected_output:
+    validation_report:
+      overall_compliance: "FAIL"
+      windows:
+        - compliance: "FAIL"
+          breach_count: ">0"
+    error_budget_status:
+      budget_policy_triggered: true
+      recommended_action: "freeze_deploys"
+
+- scenario: "fast_burn_rate_alert"
+  description: "Generate critical alert for fast error budget burn (1h window)"
+  input:
+    slo_definition:
+      name: "Service Availability"
+      target: 99.9
+      window: "30d"
+      sli_query: "sum(rate(requests_total{status=\"success\"}[5m])) / sum(rate(requests_total[5m]))"
+    metrics_source: "prometheus"
+    time_window: "7d"
+    error_budget_policy: "moderate"
+  expected_output:
+    alerting_rules:
+      platform: "prometheus"
+      rules:
+        - name: "SLOFastBurn"
+          severity: "critical"
+          expr: "contains:14.4"
+          for: "2m"
+
+- scenario: "multi_window_validation"
+  description: "Validate SLO across 7d, 28d, 90d windows"
+  input:
+    slo_definition:
+      name: "Database Availability"
+      target: 99.95
+      window: "30d"
+      sli_query: "sum(up{job=\"postgres\"}) / count(up{job=\"postgres\"})"
+    metrics_source: "prometheus"
+    time_window: "90d"
+    error_budget_policy: "flexible"
+  expected_output:
+    validation_report:
+      windows:
+        - period: "7d"
+        - period: "28d"
+        - period: "90d"
+    dashboard_config:
+      platform: "grafana"
+      format: "json"
+      config:
+        panels: ">3"
+
+- scenario: "error_budget_exhausted"
+  description: "Handle scenario where error budget is completely exhausted"
+  input:
+    slo_definition:
+      name: "Payment API"
+      target: 99.99
+      window: "30d"
+      sli_query: "sum(rate(payment_requests_total{status=\"200\"}[5m])) / sum(rate(payment_requests_total[5m]))"
+    metrics_source: "prometheus"
+    time_window: "28d"
+    error_budget_policy: "strict"
+  expected_output:
+    validation_report:
+      overall_compliance: "FAIL"
+      windows:
+        - error_budget_remaining: "<0"
+    error_budget_status:
+      time_to_exhaustion: "N/A (budget exhausted)"
+      budget_policy_triggered: true
+      recommended_action: "freeze_deploys"

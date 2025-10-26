@@ -1,0 +1,91 @@
+---
+# Evaluations for mobile-cicd-generator skill
+skill: mobile-cicd-generator
+version: 1.0.0
+
+scenarios:
+  - id: ios-testflight-basic
+    description: Generate basic iOS build with TestFlight distribution
+    inputs:
+      platform: ios
+      ci_platform: github-actions
+      distribution: testflight
+      signing_method: fastlane-match
+    expected_outputs:
+      - ci_pipeline file with macos-latest runner
+      - fastlane_config with beta lane
+      - secrets_checklist including MATCH_PASSWORD, APP_STORE_CONNECT_API_KEY
+    success_criteria:
+      - CI YAML parses without errors
+      - Fastfile contains upload_to_testflight action
+      - Token usage ≤ 6000 (T2)
+
+  - id: android-play-release
+    description: Generate Android release pipeline with Play Store internal testing
+    inputs:
+      platform: android
+      ci_platform: gitlab-ci
+      distribution: play-internal
+      signing_method: manual
+      crash_reporting: firebase-crashlytics
+    expected_outputs:
+      - ci_pipeline for GitLab CI with ubuntu runner
+      - gradle_config with signing configuration
+      - distribution_setup for Play Console service account
+    success_criteria:
+      - GitLab CI YAML includes gradle assembleRelease
+      - Signing config references KEYSTORE_PASSWORD secret
+      - Crashlytics symbol upload step present
+
+  - id: react-native-dual-platform
+    description: React Native app with iOS and Android builds, Sentry crash reporting
+    inputs:
+      platform: react-native
+      ci_platform: github-actions
+      distribution: firebase
+      signing_method: fastlane-match
+      crash_reporting: sentry
+      enable_codepush: true
+    expected_outputs:
+      - ci_pipeline with separate ios-beta and android-beta jobs
+      - fastlane_config for iOS
+      - gradle_config for Android
+      - Sentry dSYM upload steps
+      - CodePush deployment configuration
+    success_criteria:
+      - Both iOS and Android jobs present in YAML
+      - Sentry CLI upload commands included
+      - CodePush CLI steps documented
+      - Token usage ≤ 12000 (T3)
+
+  - id: flutter-minimal-build
+    description: Flutter app with minimal build pipeline (no distribution)
+    inputs:
+      platform: flutter
+      ci_platform: github-actions
+    expected_outputs:
+      - ci_pipeline with flutter build commands
+      - No distribution or signing configuration
+    success_criteria:
+      - YAML includes flutter test and flutter build
+      - No Fastlane or distribution steps
+      - Token usage ≤ 2000 (T1)
+
+  - id: ios-production-release
+    description: Full iOS production release with App Store submission
+    inputs:
+      platform: ios
+      ci_platform: github-actions
+      distribution: testflight
+      signing_method: fastlane-match
+      crash_reporting: sentry
+    expected_outputs:
+      - ci_pipeline with production release job
+      - fastlane_config with release lane using deliver
+      - Screenshot and metadata upload configuration
+      - Version bumping automation
+    success_criteria:
+      - Fastfile includes deliver action for App Store submission
+      - Metadata management documented
+      - Version increment step present
+      - Token usage ≤ 12000 (T3)

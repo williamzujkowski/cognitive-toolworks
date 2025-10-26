@@ -1,0 +1,40 @@
+# Federated E-Commerce Product Service Schema
+# Demonstrates Apollo Federation v2 with DataLoader optimization
+
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.0",
+        import: ["@key", "@shareable", "@external", "@requires"])
+
+type Product @key(fields: "id") {
+  id: ID!
+  sku: String!
+  name: String!
+  price: Money!
+  inventory: Int!
+  category: Category!
+  reviews: [Review!]! # Loaded via DataLoader batching
+}
+
+type Category @shareable {
+  id: ID!
+  name: String!
+  slug: String!
+}
+
+type Review @key(fields: "id") {
+  id: ID!
+  rating: Int!
+  comment: String
+  userId: ID! @external
+  productId: ID! @external
+}
+
+type Money @shareable {
+  amount: Float!
+  currency: String!
+}
+
+type Query {
+  product(id: ID!): Product
+  products(first: Int, after: String, categoryId: ID): ProductConnection!
+}

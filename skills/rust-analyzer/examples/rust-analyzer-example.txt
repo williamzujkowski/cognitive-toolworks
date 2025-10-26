@@ -1,0 +1,24 @@
+Example: Async Rust service concurrency analysis
+
+INPUT: {code_path: "src/server.rs", analysis_focus: "concurrency"}
+
+CODE (server.rs):
+use tokio::sync::Mutex;
+async fn handle(db: Arc<Mutex<DB>>) {
+    let mut lock = db.lock().await;
+    let data = lock.query().await; // Lock held across .await
+}
+
+OUTPUT:
+{
+  "overall_score": 65,
+  "concurrency_analysis": {
+    "async_issues": [{
+      "file": "src/server.rs",
+      "line": 4,
+      "severity": "high",
+      "message": "Mutex held across .await (line 3-4)",
+      "fix": "Minimize critical section or clone data"
+    }]
+  }
+}

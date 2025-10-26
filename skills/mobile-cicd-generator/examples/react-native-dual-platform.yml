@@ -1,0 +1,29 @@
+# React Native Dual-Platform CI/CD Example
+name: Mobile CI/CD
+on: [push, pull_request]
+
+jobs:
+  ios-beta:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '18' }
+      - run: npm ci && cd ios && pod install
+      - name: Fastlane Beta
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        run: cd ios && bundle exec fastlane beta
+
+  android-beta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { java-version: '17' }
+      - run: npm ci
+      - name: Build & Distribute
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+        run: cd android && ./gradlew assembleRelease && firebase appdistribution:distribute app/build/outputs/apk/release/app-release.apk --app $FIREBASE_APP_ID

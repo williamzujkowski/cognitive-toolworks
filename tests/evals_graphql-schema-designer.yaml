@@ -1,0 +1,135 @@
+skill: graphql-schema-designer
+version: 1.0.0
+scenarios:
+  - name: "Basic standalone GraphQL schema"
+    tier: T1
+    inputs:
+      schema_type: "standalone"
+      optimization_level: "basic"
+      entities:
+        - name: "User"
+          fields:
+            - name: "id"
+              type: "ID"
+              nullable: false
+            - name: "email"
+              type: "String"
+              nullable: false
+            - name: "posts"
+              type: "[Post]"
+              nullable: false
+        - name: "Post"
+          fields:
+            - name: "id"
+              type: "ID"
+              nullable: false
+            - name: "title"
+              type: "String"
+              nullable: false
+            - name: "authorId"
+              type: "ID"
+              nullable: false
+    expected_outputs:
+      - schema_definition contains "type User"
+      - schema_definition contains "type Post"
+      - schema_definition contains "type Query"
+      - schema_definition contains "type Mutation"
+      - resolver_patterns includes basic error_handling
+    token_budget: 2000
+
+  - name: "Federated microservices schema with DataLoader"
+    tier: T2
+    inputs:
+      schema_type: "federated"
+      use_case: "microservices"
+      optimization_level: "production"
+      entities:
+        - name: "Product"
+          fields:
+            - name: "id"
+              type: "ID"
+              nullable: false
+            - name: "name"
+              type: "String"
+              nullable: false
+            - name: "reviews"
+              type: "[Review]"
+              nullable: false
+      federation_config:
+        version: "v2"
+        subgraph_name: "products"
+        shared_types: ["Money"]
+    expected_outputs:
+      - schema_definition contains "@key(fields: \"id\")"
+      - schema_definition contains "extend schema"
+      - optimization_config.dataloader_enabled == true
+      - optimization_config.pagination_type == "cursor"
+      - federation_config.version == "v2"
+      - resolver_patterns.dataloader_setup is present
+    token_budget: 6000
+
+  - name: "GraphQL with subscriptions and authorization"
+    tier: T3
+    inputs:
+      schema_type: "standalone"
+      optimization_level: "production"
+      entities:
+        - name: "Message"
+          fields:
+            - name: "id"
+              type: "ID"
+              nullable: false
+            - name: "text"
+              type: "String"
+              nullable: false
+            - name: "userId"
+              type: "ID"
+              nullable: false
+    expected_outputs:
+      - schema_definition contains "type Subscription"
+      - security_directives includes "@auth"
+      - optimization_config.query_complexity_limit > 0
+      - optimization_config.depth_limit <= 10
+      - resolver_patterns includes subscription patterns
+    token_budget: 12000
+
+  - name: "Mobile BFF with cursor pagination"
+    tier: T2
+    inputs:
+      schema_type: "standalone"
+      use_case: "mobile-bff"
+      optimization_level: "production"
+      entities:
+        - name: "Feed"
+          fields:
+            - name: "id"
+              type: "ID"
+              nullable: false
+            - name: "items"
+              type: "[FeedItem]"
+              nullable: false
+    expected_outputs:
+      - schema_definition contains "Connection"
+      - schema_definition contains "PageInfo"
+      - schema_definition contains "cursor: String"
+      - optimization_config.pagination_type == "cursor"
+      - resolver_patterns.batch_loading is present
+    token_budget: 6000
+
+  - name: "Schema stitching for legacy integration"
+    tier: T3
+    inputs:
+      schema_type: "stitched"
+      optimization_level: "production"
+      entities:
+        - name: "LegacyUser"
+          fields:
+            - name: "id"
+              type: "ID"
+              nullable: false
+    expected_outputs:
+      - resolver_patterns includes schema_delegation
+      - resolver_patterns includes type_merging
+      - optimization_config.caching_strategy is present
+      - schema_definition contains type definitions
+    token_budget: 12000

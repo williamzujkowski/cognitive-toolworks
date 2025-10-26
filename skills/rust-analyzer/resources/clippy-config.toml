@@ -1,0 +1,29 @@
+# Clippy configuration for Rust Safety & Performance Analyzer
+# Place in project root as .clippy.toml or clippy.toml
+
+# Safety-focused lints
+[lints.clippy]
+# Memory safety
+await-holding-lock = "deny"
+await-holding-refcell-ref = "deny"
+large-stack-arrays = "warn"
+mut-from-ref = "deny"
+
+# Concurrency
+mutex-atomic = "warn"
+rc-mutex = "deny"
+
+# Performance
+inefficient-to-string = "warn"
+unnecessary-clone = "warn"
+redundant-clone = "warn"
+needless-collect = "warn"
+
+# Unsafe code
+undocumented-unsafe-blocks = "warn"
+multiple-unsafe-ops-per-block = "warn"
+
+# General correctness
+unwrap-used = "warn"
+expect-used = "warn"
+panic = "warn"
