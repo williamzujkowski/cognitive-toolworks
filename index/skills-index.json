@@ -19,6 +19,26 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/api-design-validator/SKILL.md"
   },
   {
+    "slug": "architecture-decision-framework",
+    "name": "Architecture Decision Framework",
+    "summary": "Guide architecture decisions using ADRs, trade-off analysis, pattern catalogs, and C4 diagrams for layered, hexagonal, event-driven, and CQRS patterns.",
+    "keywords": [
+      "architecture-decision-records",
+      "ADR",
+      "trade-off-analysis",
+      "ATAM",
+      "C4-model",
+      "layered-architecture",
+      "hexagonal-architecture",
+      "event-driven",
+      "CQRS",
+      "Y-statements"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/architecture-decision-framework/SKILL.md"
+  },
+  {
     "slug": "aws-multi-service-architect",
     "name": "AWS Multi-Service Architect",
     "summary": "Design AWS solutions across compute, storage, networking, and serverless with cost optimization, security hardening, and Well-Architected Framework alignment.",
@@ -106,6 +126,26 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/compliance-automation-engine/SKILL.md"
   },
   {
+    "slug": "data-engineering-pipeline-designer",
+    "name": "Data Engineering Pipeline Designer",
+    "summary": "Design data pipelines with quality checks, orchestration, and governance using modern data stack patterns for robust ELT/ETL workflows.",
+    "keywords": [
+      "data-engineering",
+      "airflow",
+      "dbt",
+      "great-expectations",
+      "kafka",
+      "data-quality",
+      "orchestration",
+      "ETL",
+      "ELT",
+      "data-pipeline"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/data-engineering-pipeline-designer/SKILL.md"
+  },
+  {
     "slug": "database-optimization-analyzer",
     "name": "Database Optimization Analyzer",
     "summary": "Optimize SQL and NoSQL databases with schema design, query performance tuning, and indexing strategies.",
@@ -161,6 +201,53 @@
     "owner": "william@cognitive-toolworks.com",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/fedramp-poam-qc/SKILL.md"
+  },
+  {
+    "slug": "frontend-framework-advisor",
+    "name": "Frontend Framework Advisor",
+    "summary": "Guide React, Vue, and mobile (iOS/Android/React Native) development with component architecture, state management, and performance optimization patterns.",
+    "keywords": [
+      "react",
+      "vue",
+      "ios",
+      "android",
+      "react-native",
+      "frontend-architecture",
+      "state-management",
+      "component-design",
+      "mobile-development",
+      "performance-optimization",
+      "swiftui",
+      "jetpack-compose",
+      "hooks",
+      "composition-api"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/frontend-framework-advisor/SKILL.md"
+  },
+  {
+    "slug": "microservices-pattern-architect",
+    "name": "Microservices Pattern Architect",
+    "summary": "Apply microservices patterns (Saga, CQRS, Event Sourcing, Circuit Breaker, API Gateway, Service Discovery) with implementation guidance and templates.",
+    "keywords": [
+      "microservices",
+      "saga",
+      "cqrs",
+      "event-sourcing",
+      "circuit-breaker",
+      "api-gateway",
+      "service-discovery",
+      "distributed-transactions",
+      "eventual-consistency",
+      "fault-tolerance",
+      "resilience",
+      "choreography",
+      "orchestration"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/microservices-pattern-architect/SKILL.md"
   },
   {
     "slug": "oscal-ssp-validate",

@@ -1,0 +1,215 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Order Domain Events",
+  "description": "Event schemas for order processing saga pattern",
+  "events": [
+    {
+      "eventType": "OrderCreated",
+      "version": "1.0.0",
+      "description": "Published when customer places an order",
+      "schema": {
+        "type": "object",
+        "required": ["eventId", "aggregateId", "timestamp", "payload"],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique event identifier for idempotency"
+          },
+          "aggregateId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Order ID (aggregate root)"
+          },
+          "eventType": {
+            "type": "string",
+            "const": "OrderCreated"
+          },
+          "version": {
+            "type": "string",
+            "const": "1.0.0"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO-8601 timestamp"
+          },
+          "payload": {
+            "type": "object",
+            "required": ["customerId", "items", "totalAmount"],
+            "properties": {
+              "customerId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["productId", "quantity", "price"],
+                  "properties": {
+                    "productId": { "type": "string", "format": "uuid" },
+                    "quantity": { "type": "integer", "minimum": 1 },
+                    "price": { "type": "number", "minimum": 0 }
+                  }
+                }
+              },
+              "totalAmount": {
+                "type": "number",
+                "minimum": 0
+              },
+              "shippingAddress": {
+                "type": "object",
+                "properties": {
+                  "street": { "type": "string" },
+                  "city": { "type": "string" },
+                  "state": { "type": "string" },
+                  "zipCode": { "type": "string" },
+                  "country": { "type": "string" }
+                }
+              }
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "correlationId": { "type": "string", "format": "uuid" },
+              "causationId": { "type": "string", "format": "uuid" },
+              "userId": { "type": "string" },
+              "source": { "type": "string", "example": "OrderService" }
+            }
+          }
+        }
+      },
+      "example": {
+        "eventId": "550e8400-e29b-41d4-a716-446655440001",
+        "aggregateId": "550e8400-e29b-41d4-a716-446655440002",
+        "eventType": "OrderCreated",
+        "version": "1.0.0",
+        "timestamp": "2025-10-25T21:30:36-04:00",
+        "payload": {
+          "customerId": "550e8400-e29b-41d4-a716-446655440003",
+          "items": [
+            { "productId": "550e8400-e29b-41d4-a716-446655440004", "quantity": 2, "price": 29.99 }
+          ],
+          "totalAmount": 59.98,
+          "shippingAddress": {
+            "street": "123 Main St",
+            "city": "New York",
+            "state": "NY",
+            "zipCode": "10001",
+            "country": "USA"
+          }
+        },
+        "metadata": {
+          "correlationId": "550e8400-e29b-41d4-a716-446655440005",
+          "source": "OrderService"
+        }
+      }
+    },
+    {
+      "eventType": "PaymentProcessed",
+      "version": "1.0.0",
+      "description": "Published when payment is successfully charged",
+      "schema": {
+        "type": "object",
+        "required": ["eventId", "aggregateId", "timestamp", "payload"],
+        "properties": {
+          "eventId": { "type": "string", "format": "uuid" },
+          "aggregateId": { "type": "string", "format": "uuid", "description": "Order ID" },
+          "eventType": { "type": "string", "const": "PaymentProcessed" },
+          "version": { "type": "string", "const": "1.0.0" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "payload": {
+            "type": "object",
+            "required": ["transactionId", "amount", "status"],
+            "properties": {
+              "transactionId": { "type": "string" },
+              "amount": { "type": "number", "minimum": 0 },
+              "status": { "type": "string", "enum": ["success", "failed"] },
+              "paymentMethod": { "type": "string", "enum": ["credit_card", "debit_card", "paypal"] },
+              "lastFourDigits": { "type": "string", "pattern": "^[0-9]{4}$" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "eventType": "InventoryReserved",
+      "version": "1.0.0",
+      "description": "Published when stock is reserved for order items",
+      "schema": {
+        "type": "object",
+        "required": ["eventId", "aggregateId", "timestamp", "payload"],
+        "properties": {
+          "eventId": { "type": "string", "format": "uuid" },
+          "aggregateId": { "type": "string", "format": "uuid", "description": "Order ID" },
+          "eventType": { "type": "string", "const": "InventoryReserved" },
+          "version": { "type": "string", "const": "1.0.0" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "payload": {
+            "type": "object",
+            "required": ["reservationId", "items"],
+            "properties": {
+              "reservationId": { "type": "string", "format": "uuid" },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["productId", "quantity", "warehouseId"],
+                  "properties": {
+                    "productId": { "type": "string", "format": "uuid" },
+                    "quantity": { "type": "integer", "minimum": 1 },
+                    "warehouseId": { "type": "string" }
+                  }
+                }
+              },
+              "expiresAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Reservation expiry if order not fulfilled"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "eventType": "OrderCancelled",
+      "version": "1.0.0",
+      "description": "Compensation event when order processing fails",
+      "schema": {
+        "type": "object",
+        "required": ["eventId", "aggregateId", "timestamp", "payload"],
+        "properties": {
+          "eventId": { "type": "string", "format": "uuid" },
+          "aggregateId": { "type": "string", "format": "uuid", "description": "Order ID" },
+          "eventType": { "type": "string", "const": "OrderCancelled" },
+          "version": { "type": "string", "const": "1.0.0" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "payload": {
+            "type": "object",
+            "required": ["reason"],
+            "properties": {
+              "reason": {
+                "type": "string",
+                "enum": ["payment_failed", "inventory_unavailable", "shipment_failed", "customer_requested"]
+              },
+              "failedStep": { "type": "string" },
+              "errorMessage": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "versioningStrategy": {
+    "approach": "Semantic versioning with upcasting",
+    "rules": [
+      "Major version: Breaking changes (field removal, type change)",
+      "Minor version: Backward-compatible additions (new optional fields)",
+      "Patch version: Documentation or metadata updates only"
+    ],
+    "migration": "Deploy upcasters before publishing new version events"
+  }
+}

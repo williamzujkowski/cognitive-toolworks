@@ -1,0 +1,31 @@
+# Microservices Pattern Architect - Example Usage
+
+## Scenario: E-Commerce Order Processing with Distributed Transaction
+
+INPUT:
+scenario: distributed transaction
+architecture_context:
+  services:
+    - OrderService: creates orders, manages order state
+    - PaymentService: processes credit card payments via Stripe
+    - InventoryService: reserves stock from warehouse
+    - ShipmentService: schedules delivery via FedEx API
+  communication: REST APIs over HTTP
+  data_stores: PostgreSQL per service
+deployment_tier: T2
+framework_preference: spring-boot
+
+OUTPUT:
+pattern_recommendation: Saga (choreography variant)
+justification: "Event-driven choreography enables loosely coupled order fulfillment workflow with compensating transactions for payment failures or stock unavailability."
+implementation_template: saga-choreography-spring-boot (see resources/)
+event_schemas:
+  - OrderCreated (v1.0.0): { orderId, customerId, items[], totalAmount }
+  - PaymentProcessed (v1.0.0): { orderId, transactionId, status }
+  - InventoryReserved (v1.0.0): { orderId, items[], reservationId }
+  - ShipmentScheduled (v1.0.0): { orderId, trackingNumber, estimatedDelivery }
+anti_patterns: Missing idempotency keys, no compensation for inventory release
+monitoring_strategy:
+  metrics: saga_duration_seconds, compensation_rate, step_failure_count
+  traces: Distributed tracing with correlation ID across all 4 services
+  alerts: Alert if compensation_rate > 10% or saga_duration > 30s

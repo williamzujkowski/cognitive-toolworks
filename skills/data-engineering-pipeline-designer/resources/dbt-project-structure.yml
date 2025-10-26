@@ -1,0 +1,72 @@
+# dbt project structure following layered modeling pattern
+# Layers: staging (raw cleanup) -> intermediate (business logic) -> marts (analytics-ready)
+
+name: 'ecommerce_analytics'
+version: '1.0.0'
+
+models:
+  ecommerce_analytics:
+    # Staging layer: minimal transformations, 1:1 with sources
+    staging:
+      +materialized: view  # Always fresh, low compute cost
+      +schema: staging
+      stg_orders:
+        columns:
+          - name: order_id
+            tests:
+              - unique
+              - not_null
+          - name: customer_id
+            tests:
+              - not_null
+              - relationships:
+                  to: ref('stg_customers')
+                  field: customer_id
+          - name: order_total
+            tests:
+              - dbt_utils.accepted_range:
+                  min_value: 0.01
+      stg_customers:
+        columns:
+          - name: customer_id
+            tests: [unique, not_null]
+          - name: email
+            tests:
+              - dbt_utils.email
+
+    # Intermediate layer: business logic, calculations
+    intermediate:
+      +materialized: table  # Pre-compute for performance
+      +schema: intermediate
+      int_customer_orders:
+        description: "Aggregate order metrics per customer"
+      int_product_revenue:
+        description: "Revenue rollups by product"
+
+    # Marts layer: denormalized, analytics-ready
+    marts:
+      +materialized: table
+      +schema: analytics
+      fct_daily_revenue:
+        description: "Daily revenue by product category"
+        columns:
+          - name: revenue_date
+            tests: [not_null]
+          - name: total_revenue
+            tests:
+              - dbt_utils.accepted_range:
+                  min_value: 0
+      dim_customers:
+        description: "Customer dimension with lifetime value"
+
+# Seeds (small reference data)
+seeds:
+  ecommerce_analytics:
+    +schema: seeds
+    product_categories:
+      +column_types:
+        category_id: integer
+        category_name: varchar(50)
+
+# Macros for DRY code
+# Example: {{ generate_date_spine() }} for date dimensions

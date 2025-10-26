@@ -1,0 +1,167 @@
+# Evaluation Scenarios for Microservices Pattern Architect Skill
+
+skill: microservices-pattern-architect
+version: 1.0.0
+scenarios:
+
+  - id: eval_001
+    name: "Saga Pattern - Distributed Transaction"
+    description: "Test saga pattern recommendation for e-commerce order processing"
+    input:
+      scenario: "distributed transaction"
+      architecture_context:
+        services:
+          - OrderService: "manages orders"
+          - PaymentService: "processes payments"
+          - InventoryService: "reserves stock"
+          - ShipmentService: "schedules delivery"
+        communication: "REST APIs"
+        data_stores: "PostgreSQL per service"
+      deployment_tier: "T1"
+    expected_output:
+      pattern_recommendation:
+        primary_pattern: "Saga"
+        variant: "choreography OR orchestration"
+        complexity: "medium"
+      implementation_template:
+        dependencies:
+          - "message broker (Kafka/RabbitMQ/EventBridge)"
+          - "idempotency mechanism"
+          - "distributed tracing"
+      anti_patterns:
+        - name: "missing compensation logic"
+        - name: "non-idempotent operations"
+    assertions:
+      - "Output must include 'Saga' pattern"
+      - "Trade-offs must mention eventual consistency"
+      - "Must recommend message broker for choreography OR orchestrator for orchestration"
+      - "Anti-patterns must warn about missing compensation logic"
+
+  - id: eval_002
+    name: "CQRS Pattern - Read/Write Scale Mismatch"
+    description: "Test CQRS recommendation for high-read, low-write scenario"
+    input:
+      scenario: "data consistency"
+      architecture_context:
+        services:
+          - ProductCatalogService: "manages product data"
+        read_write_ratio: "100:1"
+        current_bottleneck: "read queries slow on write-optimized database"
+      deployment_tier: "T2"
+      framework_preference: "spring-boot"
+    expected_output:
+      pattern_recommendation:
+        primary_pattern: "CQRS"
+        justification: "Separate read and write models to optimize for 100:1 read/write ratio"
+      event_schemas:
+        - event_type: "ProductUpdated"
+      monitoring_strategy:
+        metrics:
+          - "command_latency_seconds"
+          - "query_latency_seconds"
+          - "projection_lag_seconds"
+    assertions:
+      - "Output must recommend CQRS pattern"
+      - "Must include read store recommendation (Redis/Elasticsearch/MongoDB)"
+      - "Must include projection lag monitoring (T2 tier)"
+      - "Must mention eventual consistency trade-off"
+
+  - id: eval_003
+    name: "Circuit Breaker Pattern - External API Fault Tolerance"
+    description: "Test circuit breaker for unreliable external payment gateway"
+    input:
+      scenario: "fault tolerance"
+      architecture_context:
+        services:
+          - PaymentService: "calls external Stripe API"
+        external_dependencies:
+          - name: "Stripe Payment API"
+            reliability: "99.5% (occasional 5xx errors)"
+      deployment_tier: "T1"
+    expected_output:
+      pattern_recommendation:
+        primary_pattern: "Circuit Breaker"
+        complexity: "low"
+      implementation_template:
+        dependencies:
+          - "Resilience4j OR Polly OR opossum"
+      anti_patterns:
+        - name: "timeout too long"
+        - name: "no fallback"
+    assertions:
+      - "Output must recommend Circuit Breaker"
+      - "Must include failure threshold configuration (e.g., 50% errors)"
+      - "Must include fallback strategy recommendation"
+      - "Must mention timeout configuration"
+
+  - id: eval_004
+    name: "API Gateway Pattern - Multiple Client Types"
+    description: "Test API Gateway with BFF variant for web and mobile clients"
+    input:
+      scenario: "api composition"
+      architecture_context:
+        services:
+          - UserService: "user profiles"
+          - OrderService: "order history"
+          - ProductService: "product catalog"
+        clients:
+          - web: "needs rich nested data"
+          - mobile: "needs minimal payloads"
+      deployment_tier: "T1"
+    expected_output:
+      pattern_recommendation:
+        primary_pattern: "API Gateway"
+        variant: "BFF"
+        justification: "Separate backend for web and mobile to optimize payloads per client type"
+      implementation_template:
+        dependencies:
+          - "Kong OR Spring Cloud Gateway OR AWS API Gateway"
+    assertions:
+      - "Output must recommend API Gateway"
+      - "Must recommend BFF variant for client-specific optimization"
+      - "Must mention cross-cutting concerns (auth, rate limiting, CORS)"
+
+  - id: eval_005
+    name: "Pattern Composition - Saga + Event Sourcing"
+    description: "Test pattern composition for complex scenario requiring audit trail"
+    input:
+      scenario: "distributed transaction, audit trail"
+      architecture_context:
+        services:
+          - OrderService: "order management"
+          - PaymentService: "payment processing"
+          - InventoryService: "stock management"
+        requirements:
+          - "Distributed transaction across services"
+          - "Full audit trail of all state changes"
+          - "Ability to replay events for debugging"
+      deployment_tier: "T2"
+    expected_output:
+      pattern_recommendation:
+        primary_pattern: "Saga"
+        additional_patterns:
+          - "Event Sourcing"
+        justification: "Saga for distributed transaction + Event Sourcing for audit trail and event replay"
+      event_schemas:
+        - event_type: "OrderCreated"
+        - event_type: "PaymentProcessed"
+      monitoring_strategy:
+        metrics:
+          - "saga_duration_seconds"
+          - "event_store_write_throughput"
+    assertions:
+      - "Output must recommend both Saga and Event Sourcing"
+      - "Must explain how patterns compose (events from Event Store feed Saga)"
+      - "Must include event schema examples (T2 tier)"
+      - "Must include monitoring for both patterns"
+
+# Success Criteria
+success_criteria:
+  - "All 5 scenarios pass assertions"
+  - "T1 outputs are ≤2k tokens"
+  - "T2 outputs are ≤6k tokens"
+  - "All pattern recommendations include trade-offs (pros/cons)"
+  - "All outputs include anti-patterns section"
+  - "T2 outputs include monitoring strategy"
+  - "No secrets or PII in any output"
+  - "All implementation templates reference valid frameworks"

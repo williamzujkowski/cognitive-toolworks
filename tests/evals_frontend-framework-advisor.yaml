@@ -1,0 +1,119 @@
+# Evaluation scenarios for frontend-framework-advisor skill
+# 5 scenarios covering different platforms, tiers, and complexity levels
+
+skill: frontend-framework-advisor
+version: 1.0.0
+scenarios:
+  - id: eval-001
+    name: "React T1 - Simple state, new project"
+    input:
+      platform: "react"
+      project_type: "new"
+      tier: "T1"
+      state_complexity: "simple"
+      performance_requirements: "standard"
+    expected_outputs:
+      - architecture_plan.pattern: "container/presentational"
+      - state_management_recommendation.approach: contains "useState" or "local state"
+      - performance_patterns: length >= 2
+      - testing_integration.unit_testing_tools: contains "Jest"
+    assertions:
+      - "token_count <= 2000"
+      - "response_time_ms <= 3000"
+      - "no_errors: true"
+
+  - id: eval-002
+    name: "Vue T2 - Complex state, accessibility WCAG-AA"
+    input:
+      platform: "vue"
+      project_type: "refactor"
+      tier: "T2"
+      state_complexity: "complex"
+      accessibility_level: "WCAG-AA"
+    expected_outputs:
+      - state_management_recommendation.approach: contains "Pinia"
+      - architecture_plan.file_structure: contains "/composables"
+      - accessibility_checklist: length >= 5
+      - performance_patterns: length >= 4
+    assertions:
+      - "token_count <= 6000"
+      - "response_time_ms <= 5000"
+      - "accessibility_checklist includes 'color contrast'"
+      - "no_errors: true"
+
+  - id: eval-003
+    name: "React Native T1 - Cross-platform mobile strategy"
+    input:
+      platform: "react-native"
+      project_type: "new"
+      tier: "T1"
+      state_complexity: "moderate"
+      performance_requirements: "high-performance"
+    expected_outputs:
+      - architecture_plan.file_structure: contains "/src/components"
+      - state_management_recommendation.approach: contains "Context" or "Redux"
+      - performance_patterns: includes "FlatList optimization"
+      - platform_scaffolding: not_null
+    assertions:
+      - "token_count <= 2000"
+      - "performance_patterns includes 'Hermes' or 'FlatList' or 'memo'"
+      - "no_errors: true"
+
+  - id: eval-004
+    name: "iOS SwiftUI T2 - Complex state, high performance"
+    input:
+      platform: "ios"
+      project_type: "new"
+      tier: "T2"
+      state_complexity: "complex"
+      performance_requirements: "high-performance"
+    expected_outputs:
+      - state_management_recommendation.approach: contains "@StateObject" or "Combine"
+      - performance_patterns: length >= 4
+      - architecture_plan.pattern: contains "MVVM" or "SwiftUI"
+      - testing_integration.unit_testing_tools: contains "XCTest"
+    assertions:
+      - "token_count <= 6000"
+      - "state_management uses SwiftUI best practices"
+      - "no_errors: true"
+
+  - id: eval-005
+    name: "Android Jetpack Compose T1 - Migration from XML"
+    input:
+      platform: "android"
+      project_type: "migration"
+      tier: "T1"
+      state_complexity: "moderate"
+    expected_outputs:
+      - architecture_plan.pattern: contains "MVVM" or "MVI"
+      - state_management_recommendation.approach: contains "ViewModel" or "StateFlow"
+      - migration_notes: not_null
+      - migration_notes: contains "XML" or "legacy"
+      - testing_integration.unit_testing_tools: contains "JUnit"
+    assertions:
+      - "token_count <= 2000"
+      - "migration_guidance_provided: true"
+      - "no_errors: true"
+
+  - id: eval-006
+    name: "Framework selection - Multi-platform comparison T2"
+    input:
+      platform: "react"  # Starting point for comparison
+      project_type: "new"
+      tier: "T2"
+      state_complexity: "moderate"
+    expected_outputs:
+      - architecture_plan: not_null
+      - state_management_recommendation.rationale: length >= 50
+    assertions:
+      - "token_count <= 6000"
+      - "provides framework selection guidance"
+      - "no_errors: true"
+
+pass_criteria:
+  all_scenarios_pass: true
+  avg_token_count_t1: <= 2000
+  avg_token_count_t2: <= 6000
+  all_platforms_covered: ["react", "vue", "ios", "android", "react-native"]
+  no_deprecated_patterns: true
+  official_docs_cited: true

@@ -1,0 +1,29 @@
+# ADR-003: Adopt Event-Driven Architecture for Order Processing
+
+Status: Accepted
+
+## Context
+
+Our e-commerce platform currently uses synchronous REST APIs for order processing.
+This creates tight coupling between services and makes it difficult to scale
+individual components independently. We need to handle 50k orders/hour during
+peak periods with <500ms end-to-end latency while enabling independent deployment
+of inventory, payment, and shipping services.
+
+## Decision
+
+Implement event-driven architecture using message queues (Apache Kafka) for
+asynchronous order processing. Order service publishes events; inventory,
+payment, shipping subscribe and process independently.
+
+## Consequences
+
+**Positive:**
+- Services can scale independently based on load
+- Loose coupling enables team autonomy
+- Event log provides audit trail and replay capability
+
+**Negative:**
+- Eventual consistency requires careful UX design
+- Increased operational complexity (Kafka management)
+- Debugging distributed flows harder than synchronous calls

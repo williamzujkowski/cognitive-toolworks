@@ -1,0 +1,83 @@
+{
+  "streaming_pipeline": {
+    "name": "realtime_clickstream_processing",
+    "type": "kafka_streaming",
+    "kafka_config": {
+      "bootstrap_servers": ["kafka1:9092", "kafka2:9092", "kafka3:9092"],
+      "topics": {
+        "source_topic": {
+          "name": "clickstream_events",
+          "partitions": 12,
+          "replication_factor": 3,
+          "retention_ms": 604800000,
+          "compression_type": "snappy"
+        },
+        "sink_topic": {
+          "name": "aggregated_metrics",
+          "partitions": 6,
+          "replication_factor": 3
+        }
+      },
+      "schema_registry": {
+        "url": "http://schema-registry:8081",
+        "strategy": "TopicNameStrategy",
+        "compatibility": "BACKWARD"
+      }
+    },
+    "producer": {
+      "acks": "all",
+      "retries": 3,
+      "max_in_flight_requests_per_connection": 5,
+      "idempotence": true,
+      "compression_type": "snappy"
+    },
+    "consumer_group": {
+      "group_id": "clickstream_processors",
+      "auto_offset_reset": "earliest",
+      "enable_auto_commit": false,
+      "max_poll_records": 500,
+      "isolation_level": "read_committed"
+    },
+    "stream_processing": {
+      "framework": "ksqlDB",
+      "queries": [
+        {
+          "name": "enrich_clickstream",
+          "type": "stream",
+          "sql": "CREATE STREAM enriched_clicks AS SELECT c.user_id, c.page_url, u.country FROM clickstream c LEFT JOIN users u ON c.user_id = u.user_id;"
+        },
+        {
+          "name": "aggregate_hourly_views",
+          "type": "table",
+          "sql": "CREATE TABLE hourly_page_views AS SELECT page_url, COUNT(*) AS view_count FROM enriched_clicks WINDOW TUMBLING (SIZE 1 HOUR) GROUP BY page_url;"
+        }
+      ]
+    },
+    "monitoring": {
+      "metrics": [
+        "consumer_lag",
+        "throughput_bytes_per_sec",
+        "error_rate",
+        "partition_rebalance_count"
+      ],
+      "alerts": [
+        {
+          "condition": "consumer_lag > 10000",
+          "action": "page_oncall"
+        },
+        {
+          "condition": "error_rate > 0.01",
+          "action": "slack_alert"
+        }
+      ]
+    },
+    "quality_checks": {
+      "schema_validation": "enforce",
+      "duplicate_detection": "enabled",
+      "late_data_handling": {
+        "strategy": "watermark",
+        "max_lateness_minutes": 60
+      }
+    }
+  }
+}

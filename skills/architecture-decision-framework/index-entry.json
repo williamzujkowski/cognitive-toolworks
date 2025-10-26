@@ -1,0 +1,27 @@
+{
+  "slug": "architecture-decision-framework",
+  "name": "Architecture Decision Framework",
+  "summary": "Guide architecture decisions using ADRs, trade-off analysis, pattern catalogs, and C4 diagrams for layered, hexagonal, event-driven, and CQRS patterns.",
+  "category": "architecture",
+  "keywords": [
+    "architecture-decision-records",
+    "ADR",
+    "trade-off-analysis",
+    "ATAM",
+    "C4-model",
+    "layered-architecture",
+    "hexagonal-architecture",
+    "event-driven",
+    "CQRS",
+    "Y-statements",
+    "pattern-catalog",
+    "technical-decisions"
+  ],
+  "dependencies": [],
+  "priority": "P1",
+  "phase": 2,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/architecture-decision-framework/SKILL.md"
+}
