@@ -1,0 +1,183 @@
+# Evaluations for supply-chain-security-validator skill
+# 5 scenarios covering T1 and T2 tiers, multiple artifact types, and edge cases
+
+skill: supply-chain-security-validator
+version: 1.0.0
+scenarios:
+  - id: eval-001
+    name: "T1: Container image SBOM generation with vulnerability scan"
+    tier: T1
+    description: "Generate SPDX SBOM for container image and scan for HIGH+ vulnerabilities"
+    inputs:
+      artifact_type: "container"
+      artifact_location: "ghcr.io/example/app:v1.2.3"
+      sbom_format: "spdx"
+      vulnerability_threshold: "high"
+      verification_tier: "T1"
+    expected_outputs:
+      - sbom_location: "app-v1.2.3-sbom.spdx.json"
+      - format: "spdx"
+      - component_count: ">0"
+      - vulnerabilities: "array"
+      - critical_count: "number"
+      - high_count: "number"
+      - compliance: "PASS|PASS_WITH_WARNINGS|FAIL"
+    success_criteria:
+      - "SBOM file generated in SPDX 2.3 format"
+      - "Component count matches image dependencies"
+      - "Vulnerabilities filtered by HIGH threshold"
+      - "Compliance status accurately reflects findings"
+      - "Execution completes within 60 seconds"
+    token_budget: "≤2000"
+
+  - id: eval-002
+    name: "T1: Node.js source code dual SBOM format generation"
+    tier: T1
+    description: "Generate both SPDX and CycloneDX SBOMs for Node.js application"
+    inputs:
+      artifact_type: "source"
+      artifact_location: "/path/to/nodejs-app"
+      sbom_format: "both"
+      vulnerability_threshold: "medium"
+      verification_tier: "T1"
+    expected_outputs:
+      - sbom_location: "nodejs-app-sbom.spdx.json AND nodejs-app-sbom.cdx.json"
+      - format: "spdx,cyclonedx"
+      - component_count: ">100"
+      - vulnerabilities: "array with severity >= MEDIUM"
+      - compliance: "PASS_WITH_WARNINGS"
+    success_criteria:
+      - "Both SPDX and CycloneDX SBOMs generated"
+      - "NTIA minimum elements present in both formats"
+      - "Package.json dependencies correctly parsed"
+      - "Transitive dependencies included"
+      - "Vulnerabilities from NVD/OSV databases"
+    token_budget: "≤2000"
+
+  - id: eval-003
+    name: "T2: SLSA provenance verification for signed artifact"
+    tier: T2
+    description: "Full T2 validation with SLSA L3 provenance and Sigstore signature verification"
+    inputs:
+      artifact_type: "container"
+      artifact_location: "ghcr.io/slsa-framework/example:v1.0.0"
+      sbom_format: "spdx"
+      slsa_level: 3
+      vulnerability_threshold: "critical"
+      verification_tier: "T2"
+    expected_outputs:
+      - sbom: "T1 output structure"
+      - provenance:
+          available: true
+          slsa_level: "SLSA_BUILD_LEVEL_3"
+          builder: "https://github.com/slsa-framework/..."
+          source_repo: "https://github.com/..."
+          commit_sha: "matches artifact"
+      - signature_verification:
+          verified: true
+          signer: "sigstore.dev"
+          transparency_log_entry: "https://rekor.sigstore.dev/..."
+      - dependency_provenance_coverage: "percentage"
+      - risk_score: "number 0-100"
+      - eo_14028_compliance:
+          sbom_present: true
+          sbom_machine_readable: true
+          cryptographic_signing: true
+          provenance_attestation: true
+          overall: "COMPLIANT"
+    success_criteria:
+      - "SLSA provenance retrieved and validated"
+      - "Provenance meets SLSA L3 requirements"
+      - "Sigstore signature verified via Rekor"
+      - "EO 14028 compliance COMPLIANT status"
+      - "Risk score calculated accurately"
+      - "Execution completes within 180 seconds"
+    token_budget: "≤6000"
+
+  - id: eval-004
+    name: "T2: Supply chain risk assessment for unsigned artifact"
+    tier: T2
+    description: "Assess supply chain risk for artifact without SLSA provenance or signatures"
+    inputs:
+      artifact_type: "binary"
+      artifact_location: "/path/to/unsigned-binary"
+      sbom_format: "cyclonedx"
+      slsa_level: 2
+      vulnerability_threshold: "low"
+      verification_tier: "T2"
+    expected_outputs:
+      - provenance:
+          available: false
+      - signature_verification:
+          verified: false
+      - risk_score: "<50"
+      - eo_14028_compliance:
+          overall: "NON_COMPLIANT"
+    success_criteria:
+      - "Missing provenance detected and reported"
+      - "Risk score reflects lack of attestation (penalized)"
+      - "EO 14028 compliance NON_COMPLIANT"
+      - "Recommendations provided for remediation"
+      - "Vulnerabilities still scanned despite missing provenance"
+    token_budget: "≤6000"
+
+  - id: eval-005
+    name: "Edge case: Artifact with critical vulnerabilities blocking deployment"
+    tier: T1
+    description: "Vulnerability threshold enforcement with CRITICAL blocking"
+    inputs:
+      artifact_type: "package"
+      artifact_location: "pkg:npm/vulnerable-package@1.0.0"
+      sbom_format: "spdx"
+      vulnerability_threshold: "critical"
+      verification_tier: "T1"
+    expected_outputs:
+      - critical_count: ">0"
+      - compliance: "FAIL"
+      - abort_reason: "Critical vulnerabilities exceed threshold"
+    success_criteria:
+      - "CRITICAL vulnerabilities detected accurately"
+      - "Deployment blocked with FAIL status"
+      - "Remediation guidance includes fixed versions"
+      - "Clear abort message with CVE details"
+      - "Exit code non-zero for CI/CD pipeline integration"
+    token_budget: "≤2000"
+
+  - id: eval-006
+    name: "T2: Python application with dependency provenance coverage"
+    tier: T2
+    description: "Assess dependency provenance coverage for Python app with mixed sources"
+    inputs:
+      artifact_type: "source"
+      artifact_location: "/path/to/python-app"
+      sbom_format: "both"
+      slsa_level: 1
+      vulnerability_threshold: "medium"
+      verification_tier: "T2"
+    expected_outputs:
+      - sbom:
+          component_count: ">50"
+          format: "spdx,cyclonedx"
+      - dependency_provenance_coverage: "percentage (0-100%)"
+      - risk_score: "number"
+      - unpinned_dependencies: "array of floating version specs"
+    success_criteria:
+      - "Requirements.txt dependencies parsed correctly"
+      - "Provenance coverage calculated per dependency"
+      - "Unpinned dependencies (e.g., package>=1.0) flagged"
+      - "Risk score reflects provenance gaps"
+      - "Recommendations include pinning strategies"
+    token_budget: "≤6000"
+
+evaluation_criteria:
+  pass_threshold: 5
+  token_budget_enforcement: strict
+  required_outputs:
+    - sbom_location
+    - format
+    - component_count
+    - vulnerabilities
+    - compliance
+  performance_targets:
+    T1_max_seconds: 60
+    T2_max_seconds: 180

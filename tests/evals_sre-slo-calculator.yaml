@@ -1,0 +1,146 @@
+---
+skill: sre-slo-calculator
+version: 1.0.0
+test_scenarios:
+
+  - name: basic_api_slo
+    description: "Define SLO for simple REST API with 99.9% target"
+    tier: T1
+    input:
+      service_type: api
+      user_journey:
+        - "User submits search query"
+        - "API returns search results"
+      availability_target: 99.9
+      monitoring_platform: prometheus
+    expected_output:
+      sli_definitions:
+        - type: availability
+          measurement_method: "ratio of successful HTTP responses to total requests"
+      slo_targets:
+        - target: 99.9
+          window: "30d"
+      error_budget:
+        total_minutes_30d: 43.2
+      monitoring_queries:
+        platform: prometheus
+    validation:
+      - "SLI definition includes availability"
+      - "SLO target matches 99.9%"
+      - "Error budget is 43.2 minutes"
+      - "Prometheus query is syntactically valid PromQL"
+
+  - name: multi_sli_frontend
+    description: "Define multiple SLIs for frontend service (availability + latency)"
+    tier: T2
+    input:
+      service_type: frontend
+      user_journey:
+        - "User loads dashboard"
+        - "User navigates between pages"
+        - "User submits form"
+      availability_target: 99.95
+      monitoring_platform: datadog
+    expected_output:
+      sli_definitions:
+        - type: availability
+        - type: latency
+      slo_targets:
+        - target: 99.95
+      error_budget:
+        total_minutes_30d: 21.6
+        burn_rate_thresholds:
+          critical_1h: 14.4
+          warning_6h: 6
+          info_3d: 1
+      alerting_policy:
+        - severity: critical
+        - severity: warning
+        - severity: info
+    validation:
+      - "Multiple SLIs defined (availability and latency)"
+      - "Error budget reflects 99.95% target"
+      - "Burn rate thresholds present for multi-window alerting"
+      - "Datadog queries generated"
+
+  - name: batch_freshness_slo
+    description: "Define freshness SLO for batch data pipeline"
+    tier: T2
+    input:
+      service_type: batch
+      user_journey:
+        - "Daily analytics report generated"
+        - "Report data is fresh within 1 hour"
+      monitoring_platform: cloudwatch
+    expected_output:
+      sli_definitions:
+        - type: freshness
+          threshold: 3600
+          unit: "seconds"
+      slo_targets:
+        - window: "30d"
+      monitoring_queries:
+        platform: cloudwatch
+    validation:
+      - "Freshness SLI defined with time threshold"
+      - "SLO appropriate for batch processing"
+      - "CloudWatch metrics query generated"
+
+  - name: error_budget_policy
+    description: "Generate comprehensive error budget policy with escalation"
+    tier: T2
+    input:
+      service_type: api
+      user_journey:
+        - "Critical payment processing"
+      availability_target: 99.99
+      monitoring_platform: prometheus
+    expected_output:
+      error_budget:
+        total_minutes_30d: 4.32
+        burn_rate_thresholds:
+          critical_1h: 14.4
+          warning_6h: 6
+          info_3d: 1
+      alerting_policy:
+        - severity: critical
+          condition: "2% budget consumed in 1 hour"
+          notification: "page"
+      error_budget_policy:
+        freeze_threshold: 10
+        escalation_path:
+          - "SRE team"
+          - "Engineering manager"
+          - "VP Engineering"
+    validation:
+      - "Four nines SLO reflected in 4.32 min error budget"
+      - "Critical alerting policy defined"
+      - "Error budget policy includes freeze conditions"
+      - "Escalation path specified"
+
+  - name: multi_window_slo
+    description: "Define SLO with multiple time windows (7d, 30d, 28d)"
+    tier: T2
+    input:
+      service_type: storage
+      user_journey:
+        - "User uploads file"
+        - "User retrieves file"
+      availability_target: 99.95
+      monitoring_platform: newrelic
+    expected_output:
+      slo_targets:
+        - window: "7d"
+          target: 99.95
+        - window: "30d"
+          target: 99.95
+        - window: "28d"
+          target: 99.95
+          window_type: "calendar"
+      monitoring_queries:
+        platform: newrelic
+    validation:
+      - "Multiple time windows defined"
+      - "Calendar and rolling windows supported"
+      - "New Relic NRQL queries generated"
+      - "Error budgets calculated per window"

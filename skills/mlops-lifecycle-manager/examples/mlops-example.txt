@@ -1,0 +1,39 @@
+# MLOps Lifecycle Manager - Example Usage
+
+## Scenario: Production Fraud Detection Model
+
+**Requirement:** Deploy XGBoost fraud detection model with <200ms latency,
+monitor for drift, auto-retrain weekly
+
+**Input:**
+model_type: classification
+deployment_target: online
+scale_requirements: {rps: 500, latency_ms: 150}
+governance_level: production
+existing_stack: kubernetes
+
+**T1 Output (Quick Setup):**
+- Tracking: MLflow on Kubernetes
+- Registry: MLflow Model Registry
+- Deploy: KServe with XGBoost runtime
+- Monitor: Prometheus + Evidently AI
+
+**T2 Output (Production Pipeline):**
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: fraud-detection
+spec:
+  predictor:
+    xgboost:
+      storageUri: s3://models/fraud/v2.1.0
+      resources: {cpu: "2", memory: 4Gi}
+    minReplicas: 2
+    maxReplicas: 10
+
+**Monitoring:** PSI > 0.2 triggers alert, p95 latency < 200ms SLO
+
+**T3 Output (Full Lifecycle):**
+- Retraining: Weekly on Sunday 2 AM OR drift PSI > 0.25
+- Governance: Model card required, approval workflow enabled
+- Deployment: Canary 10% → 100% with auto-rollback

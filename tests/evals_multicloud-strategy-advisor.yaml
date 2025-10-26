@@ -1,0 +1,179 @@
+---
+skill: multicloud-strategy-advisor
+version: 1.0.0
+description: Evaluation scenarios for Multi-Cloud Strategy Advisor skill
+last_updated: 2025-10-25T21:30:36-04:00
+
+scenarios:
+  - id: eval-01-single-cloud-detection
+    name: "T1: Detect when single cloud is sufficient"
+    tier: T1
+    input:
+      requirements:
+        latency: <100ms US-only
+        compliance: HIPAA
+        budget: $100k/year
+        workloads: 50 VMs, 10TB storage
+        risk_tolerance: low
+    expected_output:
+      strategy_type: single-cloud
+      vendors:
+        - name: AWS
+          role: primary
+          score: 9.0
+          justification: HIPAA certified, US regions sufficient
+      token_usage: <2000
+    validation:
+      - assert: strategy_type == "single-cloud"
+      - assert: len(vendors) == 1
+      - assert: vendors[0].name in ["AWS", "Azure", "GCP"]
+      - assert: token_usage <= 2000
+
+  - id: eval-02-multi-cloud-vendor-comparison
+    name: "T2: Multi-cloud vendor comparison with TCO"
+    tier: T2
+    input:
+      requirements:
+        latency: <50ms global
+        compliance: GDPR, SOC2
+        budget: $500k/year
+        workloads: 200 VMs, 80TB PostgreSQL, 50TB object storage
+        risk_tolerance: medium
+    expected_output:
+      strategy_type: multi-cloud
+      vendors:
+        - name: AWS
+          role: primary
+          score: 8.5
+        - name: GCP
+          role: secondary
+          score: 8.0
+      tco_analysis:
+        time_horizon_years: 5
+        total_tco_usd: 2000000-3000000
+        breakdown:
+          compute: present
+          storage: present
+          network: present
+      integration_patterns:
+        - pattern: IaC
+          tool: Terraform
+        - pattern: Kubernetes
+          tool: EKS/GKE
+      token_usage: <6000
+    validation:
+      - assert: strategy_type == "multi-cloud"
+      - assert: len(vendors) >= 2
+      - assert: tco_analysis.time_horizon_years in [3, 5, 7]
+      - assert: tco_analysis.total_tco_usd > 0
+      - assert: len(integration_patterns) >= 2
+      - assert: token_usage <= 6000
+
+  - id: eval-03-hybrid-cloud-on-prem
+    name: "T2: Hybrid cloud with on-premises integration"
+    tier: T2
+    input:
+      requirements:
+        latency: <100ms
+        compliance: PCI-DSS, data residency (EU)
+        budget: $300k/year
+        workloads: On-prem DC + cloud burst
+        risk_tolerance: high
+    expected_output:
+      strategy_type: hybrid-cloud
+      vendors:
+        - name: Azure
+          role: primary
+          score: 9.0
+          justification: Azure Arc best hybrid support
+      integration_patterns:
+        - pattern: Hybrid
+          tool: "Azure Arc"
+        - pattern: Network
+          tool: ExpressRoute
+      lock_in_mitigation:
+        - risk: data
+          mitigation: "Use open formats (Parquet)"
+          priority: high
+      token_usage: <6000
+    validation:
+      - assert: strategy_type == "hybrid-cloud"
+      - assert: any(p.pattern == "Hybrid" for p in integration_patterns)
+      - assert: len(lock_in_mitigation) >= 3
+      - assert: token_usage <= 6000
+
+  - id: eval-04-tco-optimization-high-egress
+    name: "T2: TCO analysis flagging high egress costs"
+    tier: T2
+    input:
+      requirements:
+        latency: <100ms
+        compliance: none
+        budget: $400k/year
+        workloads: 100 VMs, 500TB monthly egress
+        risk_tolerance: medium
+    expected_output:
+      tco_analysis:
+        breakdown:
+          network: ">30% of total"
+        notes: "Egress costs exceed 30% threshold - recommend CDN optimization"
+      integration_patterns:
+        - pattern: CDN
+          tool: CloudFront/CloudFlare
+          rationale: "Reduce egress costs"
+      token_usage: <6000
+    validation:
+      - assert: tco_analysis.breakdown.network > (tco_analysis.total_tco_usd * 0.30)
+      - assert: any("CDN" in p.pattern or "egress" in p.rationale.lower() for p in integration_patterns)
+      - assert: token_usage <= 6000
+
+  - id: eval-05-vendor-lock-in-mitigation
+    name: "T2: Lock-in mitigation for high-risk tolerance"
+    tier: T2
+    input:
+      requirements:
+        latency: <100ms
+        compliance: none
+        budget: $250k/year
+        workloads: 150 VMs, 30TB PostgreSQL
+        risk_tolerance: high
+    expected_output:
+      lock_in_mitigation:
+        - risk: data
+          mitigation: "Use Parquet/Avro open formats"
+          priority: high
+        - risk: API
+          mitigation: "Abstract vendor SDKs"
+          priority: high
+        - risk: schema
+          mitigation: "PostgreSQL (not Aurora/CosmosDB)"
+          priority: medium
+        - risk: network
+          mitigation: "VPN over Direct Connect"
+          priority: low
+      integration_patterns:
+        - pattern: IaC
+          tool: Terraform
+        - pattern: Kubernetes
+          tool: EKS/AKS/GKE
+      roadmap:
+        - phase: pilot
+          deliverables: ["Quarterly DR drill"]
+      token_usage: <6000
+    validation:
+      - assert: len(lock_in_mitigation) >= 4
+      - assert: any(m.risk == "data" and m.priority == "high" for m in lock_in_mitigation)
+      - assert: any(p.tool == "Terraform" or p.tool == "Pulumi" for p in integration_patterns)
+      - assert: any("DR" in d or "drill" in d.lower() for phase in roadmap for d in phase.deliverables)
+      - assert: token_usage <= 6000
+
+pass_criteria:
+  - All T1 scenarios complete in ≤2k tokens
+  - All T2 scenarios complete in ≤6k tokens
+  - Vendor scores justified with comparison criteria
+  - TCO calculations include all categories (compute, storage, network, services, support)
+  - Integration patterns include ≥2 recommendations
+  - Lock-in mitigation includes ≥3 strategies for high-risk scenarios
+  - All sources cited with access_date = 2025-10-25T21:30:36-04:00
+  - No secrets or PII in outputs
+  - JSON output schema valid per SKILL.md contract

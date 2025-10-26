@@ -1,0 +1,46 @@
+{
+  "_type": "https://in-toto.io/Statement/v0.1",
+  "subject": [
+    {
+      "name": "ghcr.io/org/app",
+      "digest": {
+        "sha256": "abc123def456..."
+      }
+    }
+  ],
+  "predicateType": "https://slsa.dev/provenance/v0.2",
+  "predicate": {
+    "builder": {
+      "id": "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/builder.yml@refs/tags/v1.2.0"
+    },
+    "buildType": "https://github.com/slsa-framework/slsa-github-generator/container@v1",
+    "invocation": {
+      "configSource": {
+        "uri": "git+https://github.com/org/repo@refs/heads/main",
+        "digest": {
+          "sha1": "abc123def456..."
+        },
+        "entryPoint": ".github/workflows/release.yml"
+      }
+    },
+    "metadata": {
+      "buildInvocationId": "1234567890",
+      "buildStartedOn": "2025-10-24T14:30:00Z",
+      "buildFinishedOn": "2025-10-24T14:35:00Z",
+      "completeness": {
+        "parameters": true,
+        "environment": false,
+        "materials": true
+      },
+      "reproducible": false
+    },
+    "materials": [
+      {
+        "uri": "git+https://github.com/org/repo@refs/heads/main",
+        "digest": {
+          "sha1": "abc123def456..."
+        }
+      }
+    ]
+  }
+}

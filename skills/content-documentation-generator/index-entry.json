@@ -1,0 +1,23 @@
+{
+  "slug": "content-documentation-generator",
+  "name": "Content & Documentation Generator",
+  "summary": "Generate technical documentation, API docs, and content with accessibility and SEO optimization.",
+  "category": "content",
+  "keywords": [
+    "documentation",
+    "technical-writing",
+    "api-docs",
+    "markdown",
+    "accessibility",
+    "content-generation",
+    "openapi",
+    "wcag"
+  ],
+  "dependencies": [],
+  "priority": "P2",
+  "phase": 3,
+  "token_budget": "T1",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/content-documentation-generator/SKILL.md"
+}

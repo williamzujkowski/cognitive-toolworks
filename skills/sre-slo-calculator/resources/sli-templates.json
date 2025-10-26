@@ -1,0 +1,49 @@
+{
+  "sli_templates": {
+    "availability": {
+      "name": "Availability SLI",
+      "description": "Ratio of successful requests to total requests",
+      "measurement_method": "Count of good events divided by count of total events",
+      "good_events": "Requests with successful status codes (2xx, 3xx)",
+      "total_events": "All requests",
+      "typical_threshold": "99.9% success rate",
+      "applicable_to": ["api", "frontend", "storage", "database"]
+    },
+    "latency": {
+      "name": "Latency SLI",
+      "description": "Proportion of requests completed within threshold",
+      "measurement_method": "Count of fast requests divided by total requests",
+      "good_events": "Requests completed within latency threshold (e.g., <200ms)",
+      "total_events": "All requests",
+      "typical_threshold": "95th percentile < 200ms or 99th percentile < 500ms",
+      "applicable_to": ["api", "frontend", "database"]
+    },
+    "freshness": {
+      "name": "Freshness SLI",
+      "description": "Proportion of data updated within staleness threshold",
+      "measurement_method": "Ratio of fresh data to total data",
+      "good_events": "Data updated within acceptable staleness window (e.g., <5 minutes)",
+      "total_events": "All data items",
+      "typical_threshold": "95% of data updated within 5 minutes",
+      "applicable_to": ["batch", "streaming", "database"]
+    },
+    "correctness": {
+      "name": "Correctness SLI",
+      "description": "Proportion of data passing quality validation",
+      "measurement_method": "Valid records divided by total records",
+      "good_events": "Records passing validation rules",
+      "total_events": "All records processed",
+      "typical_threshold": "99.9% data quality",
+      "applicable_to": ["batch", "streaming"]
+    },
+    "throughput": {
+      "name": "Throughput SLI",
+      "description": "Minimum events processed per time window",
+      "measurement_method": "Events processed compared to minimum threshold",
+      "good_events": "Time windows meeting minimum throughput",
+      "total_events": "All time windows",
+      "typical_threshold": "95% of windows meet minimum throughput",
+      "applicable_to": ["streaming", "batch"]
+    }
+  }
+}

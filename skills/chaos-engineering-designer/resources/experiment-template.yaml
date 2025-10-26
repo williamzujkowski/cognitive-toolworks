@@ -1,0 +1,99 @@
+# Chaos Experiment Template
+# Complete specification for hypothesis-driven chaos engineering experiments
+
+experiment_id: "<service>-<failure-type>-<timestamp>"
+version: "1.0"
+owner: "<team-name>"
+created: "<ISO-8601-timestamp>"
+
+# Hypothesis Definition
+hypothesis:
+  statement: "System maintains SLO under <failure-condition>"
+  steady_state_metrics:
+    - name: "p95_latency_ms"
+      baseline: 150
+      threshold_max: 200
+      query: "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))*1000"
+    - name: "error_rate_percent"
+      baseline: 0.05
+      threshold_max: 0.5
+      query: "sum(rate(http_requests_total{status=~'5..'}[5m]))/sum(rate(http_requests_total[5m]))*100"
+    - name: "request_throughput_rps"
+      baseline: 1000
+      threshold_min: 950
+      query: "sum(rate(http_requests_total[5m]))"
+
+# Failure Injection Configuration
+failure_injection:
+  type: "pod-kill"  # pod-kill|network-delay|cpu-stress|memory-stress|disk-failure|region-outage
+  target:
+    service: "<service-name>"
+    namespace: "<kubernetes-namespace>"
+    label_selector: "app=<app-label>"
+  parameters:
+    # For pod-kill
+    mode: "one"  # one|fixed|fixed-percent|random-max-percent
+    value: 1
+    # For network-delay
+    # latency: "100ms"
+    # jitter: "10ms"
+    # correlation: "50"
+    # For resource stress
+    # workers: 4
+    # load: 80  # percentage
+
+# Blast Radius Controls
+blast_radius:
+  scope: "single-az"  # single-az|multi-az|region|global
+  geographic_bounds:
+    - "us-east-1a"
+  service_bounds:
+    - "<service-name>"
+  percentage: 20  # max percentage of instances affected
+  max_instances: 2  # hard cap on affected instances
+
+# Execution Configuration
+execution:
+  duration: "PT5M"  # ISO 8601 duration
+  schedule: "manual"  # manual|cron:<expression>|continuous
+  environment: "staging"  # staging|production
+
+# Safety and Abort Conditions
+safety:
+  abort_conditions:
+    - "steady_state_deviation > 15%"
+    - "error_rate > 1%"
+    - "customer_facing_slo_breach"
+    - "manual_kill_switch_activated"
+  pre_checks:
+    - "monitoring_operational"
+    - "rollback_capability_verified"
+    - "stakeholders_notified"
+  rollback_procedure: |
+    1. Immediately terminate fault injection
+    2. Scale up healthy instances if needed
+    3. Verify service recovery within 2 minutes
+    4. Check downstream dependencies for cascading failures
+    5. Generate incident report if SLO breached
+
+# Observability
+observability:
+  dashboards:
+    - "https://grafana.example.com/d/<dashboard-id>"
+  alerts:
+    - name: "ChaosExperimentSteadyStateViolation"
+      severity: "critical"
+      notification_channels: ["pagerduty", "slack"]
+  metrics_export:
+    - "chaos_experiment_active{id='<experiment-id>'}"
+    - "chaos_blast_radius_instances"
+    - "chaos_steady_state_deviation_percent"
+
+# Reporting
+reporting:
+  success_criteria: "All steady_state_metrics within thresholds for entire duration"
+  output_artifacts:
+    - "experiment_results.json"
+    - "metrics_timeseries.csv"
+    - "grafana_snapshot_url"
+  postmortem_required: false  # true if experiment fails or SLO breached

@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "W3C Design Tokens Validation Schema",
+  "description": "Validation schema for design tokens following W3C Design Tokens Community Group spec (accessed 2025-10-25)",
+  "type": "object",
+  "properties": {
+    "color": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "pattern": "^(#[0-9A-Fa-f]{6}|rgb\\(.*\\)|hsl\\(.*\\))$"
+            },
+            "type": { "const": "color" },
+            "description": { "type": "string" },
+            "contrast_ratio": {
+              "type": "number",
+              "minimum": 1,
+              "description": "WCAG contrast ratio if text color"
+            }
+          },
+          "required": ["value", "type"]
+        }
+      }
+    },
+    "dimension": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "pattern": "^[0-9]+(px|rem|em|%)$"
+            },
+            "type": { "const": "dimension" }
+          },
+          "required": ["value", "type"]
+        }
+      }
+    },
+    "typography": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "properties": {
+            "fontFamily": { "type": "string" },
+            "fontSize": { "type": "string" },
+            "fontWeight": { "type": ["string", "number"] },
+            "lineHeight": { "type": ["string", "number"] }
+          }
+        }
+      }
+    }
+  },
+  "accessibility_requirements": {
+    "description": "Tokens must meet WCAG 2.2 AA requirements",
+    "rules": [
+      "Text contrast tokens >= 4.5:1 (3:1 for large text)",
+      "Touch target dimensions >= 24x24 CSS pixels",
+      "Focus indicator contrast >= 3:1",
+      "Non-text contrast (UI components) >= 3:1"
+    ]
+  },
+  "semantic_layering": {
+    "description": "Recommended 3-tier token structure",
+    "tiers": {
+      "core": "Foundation tokens (primitives): color.blue.500",
+      "semantic": "Purpose tokens: color.brand.primary",
+      "component": "Component-specific: button.primary.background"
+    }
+  }
+}

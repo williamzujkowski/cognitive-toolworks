@@ -1,0 +1,121 @@
+# Evaluation scenarios for mlops-lifecycle-manager skill
+
+skill: mlops-lifecycle-manager
+version: 1.0.0
+scenarios:
+  - id: eval-1
+    name: T1 Quick Setup for Online Classification
+    tier: T1
+    inputs:
+      model_type: classification
+      deployment_target: online
+      scale_requirements:
+        rps: 200
+        latency_ms: 300
+      governance_level: staging
+      existing_stack: kubernetes
+    expected_outputs:
+      - experiment_tracker: mlflow
+      - model_registry: mlflow
+      - deployment_platform: kserve
+      - monitoring_tool: prometheus
+    success_criteria:
+      - Recommends appropriate stack for K8s environment
+      - Latency target achievable with proposed setup
+      - No governance overhead for staging level
+    token_budget: 2000
+
+  - id: eval-2
+    name: T2 Production Pipeline with Drift Detection
+    tier: T2
+    inputs:
+      model_type: regression
+      deployment_target: online
+      scale_requirements:
+        rps: 1000
+        latency_ms: 100
+        concurrent_users: 5000
+      governance_level: production
+      existing_stack: mlflow
+    expected_outputs:
+      - deployment_manifest: KServe InferenceService YAML with autoscaling
+      - monitoring_config: Evidently AI drift detection
+      - model_registry_schema: includes versioning and metadata
+      - feature_drift_thresholds: PSI > 0.2 for alerts
+    success_criteria:
+      - Autoscaling configured for 1000 rps
+      - p95 latency optimization recommendations included
+      - Drift detection integrated with monitoring
+      - Model approval workflow for production governance
+    token_budget: 6000
+
+  - id: eval-3
+    name: T3 Full Lifecycle with Automated Retraining
+    tier: T3
+    inputs:
+      model_type: classification
+      deployment_target: online
+      scale_requirements:
+        rps: 500
+        latency_ms: 150
+      governance_level: production
+      existing_stack: kubeflow
+    expected_outputs:
+      - retraining_pipeline: Kubeflow Pipeline with triggers
+      - model_governance: Model cards and lineage tracking
+      - deployment_strategy: Canary with auto-rollback
+      - monitoring_dashboard: Grafana with drift and performance metrics
+      - cost_optimization: Recommendations for compute/storage
+    success_criteria:
+      - Retraining triggers for drift (PSI > 0.25) and performance (<0.85 F1)
+      - Model card template with fairness metrics
+      - Canary deployment 10% → 100% with SLO gates
+      - Full observability (metrics, logs, traces)
+      - Token budget ≤ 12000
+    token_budget: 12000
+
+  - id: eval-4
+    name: Edge Deployment for Low-Latency Computer Vision
+    tier: T2
+    inputs:
+      model_type: computer-vision
+      deployment_target: edge
+      scale_requirements:
+        latency_ms: 30
+        data_volume_gb: 0.1
+      governance_level: experimental
+      existing_stack: null
+    expected_outputs:
+      - model_optimization: ONNX or TensorFlow Lite conversion
+      - deployment_target: Edge runtime (ONNX Runtime, TFLite)
+      - compression_techniques: Quantization FP32 → INT8
+      - edge_constraints: Memory and compute limits
+    success_criteria:
+      - Recommends model compression for edge constraints
+      - Latency SLA <30ms achievable with optimization
+      - No cloud dependencies for inference
+      - Lightweight monitoring for edge devices
+    token_budget: 6000
+
+  - id: eval-5
+    name: Batch Inference Pipeline with Data Quality Checks
+    tier: T2
+    inputs:
+      model_type: regression
+      deployment_target: batch
+      scale_requirements:
+        data_volume_gb: 500
+      governance_level: production
+      existing_stack: airflow
+    expected_outputs:
+      - batch_pipeline: Kubernetes CronJob or Airflow DAG
+      - data_validation: TensorFlow Data Validation (TFDV)
+      - output_schema: Validation and storage configuration
+      - monitoring: Batch job success rate and data quality metrics
+    success_criteria:
+      - Integrates with existing Airflow orchestration
+      - Data validation checks before inference
+      - Output schema validation and error handling
+      - Monitoring for batch job failures and data drift
+      - Parallel processing for 500GB dataset
+    token_budget: 6000

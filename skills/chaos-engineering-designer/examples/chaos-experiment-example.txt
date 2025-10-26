@@ -1,0 +1,38 @@
+# Chaos Experiment Example: E-commerce Checkout Service
+
+## Scenario
+Test resilience of checkout service to database connection failures
+
+## Input
+system_architecture: "Checkout API (5 replicas) → PostgreSQL RDS (Multi-AZ)"
+resilience_goals: "99.95% availability, P99 latency <500ms, 0 data loss"
+experiment_scope: "Staging environment, max 2 pods affected"
+existing_monitoring: "Datadog APM, checkout_transaction_duration_p99"
+
+## Output: Experiment Plan (Chaos Mesh NetworkChaos)
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: checkout-db-latency
+  namespace: staging
+spec:
+  action: delay
+  mode: fixed
+  selector:
+    namespaces: [staging]
+    labelSelectors: {app: checkout-service}
+  delay:
+    latency: "500ms"
+    correlation: "100"
+  duration: "3m"
+  target:
+    mode: one
+    selector:
+      namespaces: [staging]
+      labelSelectors: {app: postgres-proxy}
+
+## Expected Outcome
+✓ Checkout retries with exponential backoff
+✓ Circuit breaker opens after 5 consecutive failures
+✓ Graceful degradation: queue transactions for async processing
+✗ Should NOT: lose transactions or return 5xx to users

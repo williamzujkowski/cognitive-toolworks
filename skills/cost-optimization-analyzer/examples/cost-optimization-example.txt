@@ -1,0 +1,27 @@
+# Cost Optimization Example: AWS over-provisioned workload
+
+INPUT:
+cloud_provider: aws, cost_data_source: cost_explorer_api
+optimization_targets: [compute, storage, network]
+budget: $50,000/month, time_range: 90d
+
+OUTPUT (T2 Analysis):
+Total spend: $47,500/month | Waste: $14,250 (30%) | Savings: $12,800/month
+
+QUICK WINS:
+1. Delete 12 unattached EBS volumes → $360/month
+2. Stop 8 non-prod EC2 overnight → $890/month
+3. Purchase 3-year Savings Plan → $1,200/month
+
+RIGHTSIZING (18 instances):
+i-0a1b2c3d: m5.2xlarge → m5.xlarge (18% CPU) = $150/month
+i-1b2c3d4e: r5.4xlarge → r5.2xlarge (22% mem) = $290/month
+
+COMMITMENTS:
+Current RI coverage: 42% → Recommend: $5k/month 3-year SP
+Savings: $1,200/month, break-even: 4.2 months
+
+ACTION PLAN (by ROI):
+1. Delete unused (27 items) → $810/month, LOW effort
+2. Rightsize compute (18) → $2,700/month, MED effort
+3. Purchase SP → $1,200/month, LOW effort

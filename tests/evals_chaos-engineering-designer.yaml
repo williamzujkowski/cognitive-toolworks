@@ -1,0 +1,189 @@
+# Evaluation scenarios for chaos-engineering-designer skill
+# Tests core capabilities across T1, T2, and T3 tiers
+
+scenario_1:
+  name: "T1: Minimal pod termination experiment"
+  tier: "T1"
+  description: "Quick experiment design for simple pod kill test in staging"
+  input:
+    system_architecture: "Payment API (3 replicas, Kubernetes) -> PostgreSQL RDS"
+    resilience_goals: "99.9% availability, P95 latency <200ms"
+    experiment_scope: "Staging environment, payment-api service, max 1 pod"
+    existing_monitoring: "Prometheus with payment_request_duration_seconds metric"
+  expected_output:
+    experiment_name: "payment-api-pod-kill-v1"
+    hypothesis: "P95 latency <200ms AND error rate <0.1% during pod termination"
+    scope: "payment-api in staging"
+    blast_radius: "33% of instances (1 of 3 pods)"
+    duration: "5m"
+    abort_conditions: "steady_state_deviation > 20%"
+  success_criteria:
+    - "Experiment specification contains all required fields"
+    - "Blast radius limited to 1 pod (conservative start)"
+    - "Duration ≤5 minutes for initial experiment"
+    - "Abort condition defined"
+    - "Token usage ≤2000"
+
+scenario_2:
+  name: "T2: Production-ready network latency injection with Chaos Mesh"
+  tier: "T2"
+  description: "Generate Chaos Mesh NetworkChaos configuration with safety controls"
+  input:
+    system_architecture: "Checkout service (5 replicas, K8s) -> Inventory API (external)"
+    resilience_goals: "SLO: 99.95% availability, P99 <500ms, order loss = 0"
+    experiment_scope: "Production, us-east-1a only, max 25% of instances"
+    existing_monitoring: "Datadog APM, Prometheus, PagerDuty alerting configured"
+  expected_output:
+    tool: "Chaos Mesh"
+    config_type: "NetworkChaos"
+    failure_injection:
+      type: "network-delay"
+      target: "checkout-service to inventory-api"
+      parameters:
+        latency: "200ms"
+        jitter: "50ms"
+    blast_radius:
+      scope: "single-az (us-east-1a)"
+      percentage: 20
+      max_instances: 1
+    safety_controls:
+      - "Auto-abort if P99 latency >500ms for 2 minutes"
+      - "Auto-abort if order error rate >0.5%"
+      - "Rollback procedure documented"
+      - "PagerDuty notification on experiment start"
+    monitoring:
+      - "Prometheus queries for steady-state validation"
+      - "Real-time Datadog dashboard"
+  success_criteria:
+    - "Valid Chaos Mesh NetworkChaos YAML generated"
+    - "Blast radius constrained to single AZ and ≤25%"
+    - "Multiple abort conditions defined"
+    - "Integration with existing monitoring (Datadog, Prometheus)"
+    - "Token usage ≤6000"
+    - "Sources cited with access dates"
+
+scenario_3:
+  name: "T2: LitmusChaos pod delete with SLO-aligned thresholds"
+  tier: "T2"
+  description: "Create LitmusChaos experiment with ChaosEngine and probes"
+  input:
+    system_architecture: "User-profile service (10 replicas, StatefulSet) -> MongoDB replica set"
+    resilience_goals: "SLO: 99.99% read availability, P95 <100ms, data consistency guaranteed"
+    experiment_scope: "Production, progressive escalation from 10% to 50%"
+    existing_monitoring: "Prometheus with custom SLO metrics, Grafana dashboards"
+  expected_output:
+    tool: "LitmusChaos"
+    chaos_experiment:
+      name: "pod-delete"
+      parameters:
+        total_chaos_duration: "180"
+        chaos_interval: "30"
+        force: "false"
+    chaos_engine:
+      app_namespace: "production"
+      app_label: "app=user-profile"
+      chaos_service_account: "litmus-admin"
+      monitoring_enabled: true
+    probes:
+      - name: "check-read-availability"
+        type: "promProbe"
+        query: "sum(rate(profile_reads_total{status='success'}[1m]))/sum(rate(profile_reads_total[1m]))"
+        comparator: ">="
+        value: "0.9999"
+      - name: "check-p95-latency"
+        type: "promProbe"
+        query: "histogram_quantile(0.95, rate(profile_read_duration_seconds_bucket[1m]))*1000"
+        comparator: "<="
+        value: "100"
+    progressive_escalation:
+      - iteration: 1
+        blast_radius: 10%
+        instances: 1
+      - iteration: 2
+        blast_radius: 25%
+        instances: 2
+        condition: "iteration_1_success"
+      - iteration: 3
+        blast_radius: 50%
+        instances: 5
+        condition: "iteration_2_success"
+  success_criteria:
+    - "Valid LitmusChaos CRDs (ChaosExperiment, ChaosEngine) generated"
+    - "Probes use SLO-aligned Prometheus queries"
+    - "Progressive escalation path defined (10% -> 25% -> 50%)"
+    - "Monitoring enabled for ChaosResult metrics export"
+    - "Token usage ≤6000"
+
+scenario_4:
+  name: "T1: Abort due to missing monitoring baseline"
+  tier: "T1"
+  description: "Skill should emit TODO when prerequisite monitoring is absent"
+  input:
+    system_architecture: "New microservice (2 replicas, Kubernetes)"
+    resilience_goals: "Target 99.9% availability"
+    experiment_scope: "Staging environment"
+    existing_monitoring: "None - service just deployed"
+  expected_output:
+    status: "ABORTED"
+    reason: "Missing steady-state baseline"
+    todo_list:
+      - "Establish monitoring: Deploy Prometheus ServiceMonitor"
+      - "Collect baseline: Run service for 24-48 hours to establish normal metrics"
+      - "Define steady state: Identify P95/P99 latency and error rate thresholds"
+      - "Return to chaos-engineering-designer after monitoring operational"
+  success_criteria:
+    - "Skill correctly identifies missing prerequisite"
+    - "Emits actionable TODO list"
+    - "Does NOT generate experiment without baseline"
+    - "Abort message explains why (per CLAUDE.md pre-checks)"
+
+scenario_5:
+  name: "T2: Multi-failure cascade experiment (advanced)"
+  tier: "T2"
+  description: "Design experiment combining network partition + instance termination"
+  input:
+    system_architecture: "E-commerce platform: API Gateway -> (Order Service, Inventory Service, Payment Service) -> Shared Cache (Redis)"
+    resilience_goals: "Zero order loss, graceful degradation if 1 service fails, P99 <1s"
+    experiment_scope: "Staging, simulate cascading failure: partition Order->Payment, then kill Inventory pod"
+    existing_monitoring: "Full observability stack (Prometheus, Jaeger tracing, Grafana)"
+  expected_output:
+    experiment_type: "multi-failure-cascade"
+    failure_sequence:
+      - step: 1
+        duration: "PT5M"
+        failure:
+          type: "network-partition"
+          source: "order-service"
+          target: "payment-service"
+        expected_behavior: "Order service uses cached payment validation, queues for async reconciliation"
+      - step: 2
+        duration: "PT5M"
+        failure:
+          type: "pod-kill"
+          target: "inventory-service"
+          instances: 1
+        expected_behavior: "API Gateway routes to healthy inventory pod, no user-facing errors"
+      - step: 3
+        duration: "PT5M"
+        failure: "both-failures-active"
+        expected_behavior: "System maintains critical path (order placement), degrades non-critical (real-time inventory)"
+    steady_state_metrics:
+      - name: "order_success_rate"
+        threshold: 1.0
+        critical: true
+      - name: "p99_checkout_latency_ms"
+        threshold: 1000
+        critical: true
+      - name: "inventory_accuracy_percent"
+        threshold: 95
+        critical: false
+    abort_conditions:
+      - "order_success_rate < 0.99"
+      - "p99_checkout_latency_ms > 2000"
+  success_criteria:
+    - "Multi-step failure sequence defined"
+    - "Expected behavior specified for each step"
+    - "Critical vs non-critical metrics differentiated"
+    - "Cascading failure propagation understood"
+    - "Token usage ≤6000"
+    - "Netflix cascading failure patterns cited"

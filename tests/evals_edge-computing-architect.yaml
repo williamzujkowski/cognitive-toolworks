@@ -1,0 +1,135 @@
+# Evaluation scenarios for edge-computing-architect skill
+# Each scenario tests different edge computing patterns and platforms
+
+skill: edge-computing-architect
+version: 1.0.0
+scenarios:
+  - id: eval-001
+    name: Global API Acceleration with Cloudflare Workers
+    description: Test T1 platform recommendation for global API edge caching
+    inputs:
+      latency_requirements: <100ms
+      deployment_scope: global
+      workload_type: edge_function
+      platform_preference: cloudflare
+      state_requirements: edge_cache
+      connectivity_model: always_connected
+    expected_outputs:
+      platform: cloudflare
+      architecture_includes:
+        - cdn_pop
+        - edge_function
+        - kv_cache
+      caching_strategy_defined: true
+      performance_estimates:
+        latency_reduction_pct_min: 70
+        cache_hit_ratio_pct_min: 85
+    success_criteria:
+      - Platform is Cloudflare Workers with KV storage
+      - Caching hierarchy includes edge PoP layer
+      - Latency reduction estimate ≥70%
+      - Security controls include rate limiting and TLS 1.3
+    tier: T1
+
+  - id: eval-002
+    name: AWS Lambda@Edge CDN Integration
+    description: Test T2 production architecture for CloudFront edge functions
+    inputs:
+      latency_requirements: <200ms
+      deployment_scope: regional
+      workload_type: cdn_acceleration
+      platform_preference: aws
+      state_requirements: stateless
+      connectivity_model: always_connected
+    expected_outputs:
+      platform: aws
+      edge_function_pattern: viewer_request
+      deployment_manifest_type: cloudformation
+      security:
+        encryption: TLS 1.3
+        waf_enabled: true
+      monitoring:
+        metrics_include: [cache_hit_ratio, edge_latency_p95]
+    success_criteria:
+      - Platform is AWS Lambda@Edge with CloudFront
+      - Viewer request/response hooks configured
+      - CloudFormation template generated
+      - WAF rules for OWASP Top 10
+      - Monitoring metrics defined
+    tier: T2
+
+  - id: eval-003
+    name: IoT Edge Gateway with Azure IoT Edge
+    description: Test IoT gateway pattern for device orchestration
+    inputs:
+      latency_requirements: <500ms
+      deployment_scope: single-region
+      workload_type: iot_gateway
+      platform_preference: azure
+      state_requirements: distributed_state
+      connectivity_model: intermittent
+    expected_outputs:
+      platform: azure
+      edge_function_pattern: iot_gateway
+      deployment_manifest_type: arm_template
+      iot_modules:
+        - edgeAgent
+        - edgeHub
+        - custom_processor
+      state_synchronization: event_sourcing
+    success_criteria:
+      - Platform is Azure IoT Edge
+      - edgeAgent and edgeHub configured
+      - Custom module deployment defined
+      - State sync handles intermittent connectivity
+      - ARM template with IoT Hub integration
+    tier: T2
+
+  - id: eval-004
+    name: Multi-CDN Strategy with Failover
+    description: Test T2 multi-CDN architecture for high availability
+    inputs:
+      latency_requirements: <150ms
+      deployment_scope: global
+      workload_type: hybrid
+      platform_preference: multi-cloud
+      state_requirements: edge_cache
+      connectivity_model: always_connected
+    expected_outputs:
+      platform: multi-cdn
+      multi_cdn_config:
+        primary: cloudflare
+        secondary: aws
+        failover_enabled: true
+      dns_routing: geo_latency
+      caching_hierarchy:
+        layers_count_min: 3
+    success_criteria:
+      - Multi-CDN strategy with primary/secondary providers
+      - DNS-based routing with health checks
+      - Consistent caching strategy across CDNs
+      - Failover rules defined
+      - Cost comparison across providers
+    tier: T2
+
+  - id: eval-005
+    name: Edge Function Size Limit Abort
+    description: Test abort condition when workload exceeds edge function limits
+    inputs:
+      latency_requirements: <50ms
+      deployment_scope: global
+      workload_type: edge_function
+      platform_preference: aws
+      state_requirements: stateless
+      connectivity_model: always_connected
+      # Implicit: function size >50MB (Lambda@Edge limit)
+    expected_outputs:
+      abort: true
+      abort_reason: "Workload exceeds Lambda@Edge 50MB limit"
+      recommendation: "Use regional Lambda or container-based deployment"
+    success_criteria:
+      - Skill detects size constraint violation
+      - Provides clear abort reason
+      - Recommends alternative architecture
+      - Does not generate invalid Lambda@Edge manifest
+    tier: T1

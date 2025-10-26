@@ -1,0 +1,203 @@
+# Evaluation scenarios for cost-optimization-analyzer skill
+
+scenarios:
+  - name: aws_over_provisioned_compute
+    description: Test AWS EC2 rightsizing recommendations for over-provisioned instances
+    input:
+      cloud_provider: aws
+      cost_data_source: cost_explorer_api
+      optimization_targets:
+        - compute
+      budget_constraints:
+        monthly_budget: 50000
+        alert_threshold: 0.90
+      time_range: 90d
+      mock_data:
+        instances:
+          - id: i-0a1b2c3d4e5f6g7h8
+            type: m5.2xlarge
+            cpu_utilization_avg: 18.5
+            cpu_utilization_p90: 25.0
+            monthly_cost: 300.00
+    expected_output:
+      contains:
+        - rightsizing_recommendations
+        - resource_id: i-0a1b2c3d4e5f6g7h8
+        - recommended_type: m5.xlarge
+        - monthly_savings
+      validations:
+        - monthly_savings > 0
+        - confidence in ["high", "medium", "low"]
+    pass_criteria:
+      - Identifies over-provisioned instance (CPU <20%)
+      - Recommends smaller instance type in same family
+      - Calculates accurate monthly savings
+      - Includes confidence score
+
+  - name: azure_unused_resources
+    description: Test Azure waste detection for unattached disks and idle VMs
+    input:
+      cloud_provider: azure
+      cost_data_source: azure_cost_management_api
+      optimization_targets:
+        - compute
+        - storage
+      time_range: 30d
+      mock_data:
+        unattached_disks:
+          - id: /subscriptions/xxx/resourceGroups/rg1/providers/Microsoft.Compute/disks/disk1
+            size_gb: 128
+            tier: Premium_LRS
+            idle_days: 45
+            monthly_cost: 25.60
+        stopped_vms:
+          - id: /subscriptions/xxx/resourceGroups/rg1/providers/Microsoft.Compute/virtualMachines/vm1
+            size: Standard_D4s_v3
+            status: stopped
+            days_stopped: 60
+            storage_cost: 45.00
+    expected_output:
+      contains:
+        - waste_inventory
+        - type: unattached_disk
+        - monthly_cost: 25.60
+        - quick_wins
+      validations:
+        - len(waste_inventory) >= 2
+        - sum(item.monthly_cost for item in waste_inventory) > 0
+    pass_criteria:
+      - Detects unattached managed disks
+      - Identifies stopped VMs still incurring storage costs
+      - Calculates total waste amount
+      - Includes in quick wins with "delete" action
+
+  - name: gcp_commitment_optimization
+    description: Test GCP committed use discount recommendations
+    input:
+      cloud_provider: gcp
+      cost_data_source: bigquery_billing_export
+      optimization_targets:
+        - compute
+      time_range: 90d
+      mock_data:
+        compute_usage:
+          - instance_type: n2-standard-8
+            avg_daily_hours: 23.5
+            variance_coefficient: 0.05
+            monthly_on_demand_cost: 4200.00
+    expected_output:
+      contains:
+        - commitment_recommendations
+        - plan_type: committed_use_discount
+        - term: ["1_year", "3_year"]  # One of these values
+        - monthly_savings
+        - break_even_months
+      validations:
+        - monthly_savings > 0
+        - break_even_months < term_months
+        - term in ["1_year", "3_year"]
+    pass_criteria:
+      - Identifies stable workload (low variance, high utilization)
+      - Recommends appropriate CUD term based on usage stability
+      - Calculates accurate savings vs on-demand pricing
+      - Provides break-even analysis
+
+  - name: multi_cloud_cost_anomaly
+    description: Test cost anomaly detection across multiple services
+    input:
+      cloud_provider: aws
+      cost_data_source: cost_explorer_api
+      optimization_targets:
+        - compute
+        - storage
+        - network
+      time_range: 30d
+      mock_data:
+        historical_spend:
+          - date: "2025-09-25"
+            service: ec2
+            cost: 12000.00
+          - date: "2025-10-01"
+            service: ec2
+            cost: 12200.00
+          - date: "2025-10-15"
+            service: ec2
+            cost: 18500.00  # 52% spike
+          - date: "2025-10-20"
+            service: s3
+            cost: 450.00
+          - date: "2025-10-21"
+            service: s3
+            cost: 1250.00  # 178% spike, but <$100 absolute difference
+    expected_output:
+      contains:
+        - anomalies
+        - service: ec2
+        - deviation_percentage
+        - absolute_difference
+      validations:
+        - len(anomalies) >= 1  # EC2 anomaly only (S3 below threshold)
+        - anomalies[0].service == "ec2"
+        - anomalies[0].deviation_percentage > 20
+        - anomalies[0].absolute_difference > 100
+    pass_criteria:
+      - Detects EC2 cost spike >20% and >$100
+      - Does NOT flag S3 spike (below $100 absolute threshold per decision rules)
+      - Attributes anomaly to correct service
+      - Provides baseline and actual values
+
+  - name: finops_maturity_assessment
+    description: Test FinOps maturity scoring with tag compliance and commitment coverage
+    input:
+      cloud_provider: aws
+      cost_data_source: cost_explorer_api
+      optimization_targets:
+        - compute
+        - storage
+      time_range: 90d
+      mock_data:
+        resources:
+          total_count: 150
+          tagged_count: 120
+          required_tags:
+            - team
+            - environment
+            - cost-center
+        commitments:
+          total_eligible_spend: 30000.00
+          covered_spend: 12600.00  # 42% coverage
+          utilization_percentage: 87.5
+        budget:
+          budgeted: 50000.00
+          actual: 47500.00
+    expected_output:
+      contains:
+        - finops_maturity_score
+        - tag_compliance_percentage
+        - commitment_coverage_percentage
+        - budget_variance_percentage
+      validations:
+        - tag_compliance_percentage == 80.0  # 120/150
+        - commitment_coverage_percentage == 42.0  # 12600/30000
+        - budget_variance_percentage < 10  # within 10% variance
+    pass_criteria:
+      - Calculates tag compliance correctly (80%)
+      - Identifies low commitment coverage (42% vs 60% target)
+      - Calculates budget variance (5% under budget)
+      - Provides FinOps maturity recommendations
+
+metadata:
+  skill_slug: cost-optimization-analyzer
+  version: 1.0.0
+  total_scenarios: 5
+  coverage:
+    - aws_rightsizing
+    - azure_waste_detection
+    - gcp_commitments
+    - cost_anomaly_detection
+    - finops_maturity
+  validation_criteria:
+    - All scenarios must pass for skill to be considered functional
+    - Token usage must stay within T2 budget (≤6k tokens) for comprehensive analysis
+    - Cost calculations must be accurate within ±2% of expected values
+    - Safety constraints enforced (no automatic deletions)

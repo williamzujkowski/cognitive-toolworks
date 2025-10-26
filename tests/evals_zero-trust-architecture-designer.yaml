@@ -1,0 +1,115 @@
+---
+skill: zero-trust-architecture-designer
+version: "1.0.0"
+scenarios:
+  - id: zt-eval-001
+    name: "T1 Quick Maturity Assessment - Traditional Environment"
+    description: "Assess a traditional perimeter-based environment against CISA ZTMM"
+    inputs:
+      target_environment: "on-prem"
+      assessment_tier: "T1"
+      ztmm_pillars: ["identity", "devices", "networks", "applications", "data"]
+    expected_outputs:
+      - maturity_assessment exists with all 5 pillars scored
+      - overall_maturity is "Traditional" or "Initial"
+      - critical_gaps array contains at least 2 pillars
+      - quick_wins array contains 3-5 actionable recommendations
+    validation_criteria:
+      - Each pillar has valid maturity level (Traditional|Initial|Advanced|Optimal)
+      - Quick wins reference specific technologies or controls
+      - Token usage ≤ 2000 tokens
+    pass_conditions:
+      - All expected_outputs present
+      - Maturity scores align with "traditional" description (no MFA, flat network, etc.)
+
+  - id: zt-eval-002
+    name: "T2 Architecture Design - Cloud Migration"
+    description: "Design zero-trust architecture for hybrid cloud migration with remote workforce"
+    inputs:
+      target_environment: "hybrid"
+      current_architecture: "Traditional datacenter + AWS cloud, 60% remote workforce"
+      assessment_tier: "T2"
+      ztmm_pillars: ["identity", "networks", "applications"]
+      business_objectives: "Secure remote workforce, migrate SaaS apps to cloud"
+    expected_outputs:
+      - deployment_model is "Hybrid" (combination of EIG + SDP)
+      - components object includes policy_engine, PEPs, IdP, SDP
+      - architecture_diagram_ref points to resources/
+      - policy_examples reference is provided
+    validation_criteria:
+      - Deployment model justification aligns with inputs (remote workforce → SDP)
+      - Components are specific technologies (e.g., "Azure AD", "Zscaler ZPA", not generic)
+      - Architecture includes both cloud (EIG) and remote access (SDP) patterns
+      - Token usage ≤ 6000 tokens
+    pass_conditions:
+      - Deployment model selection rationale is sound
+      - All components are actionable (vendor/product names or open-source projects)
+
+  - id: zt-eval-003
+    name: "T3 Comprehensive Roadmap - Federal Agency"
+    description: "Create phased zero-trust roadmap for federal agency per OMB M-22-09"
+    inputs:
+      target_environment: "hybrid"
+      current_architecture: "Legacy on-prem datacenter, migrating to AWS GovCloud"
+      assessment_tier: "T3"
+      ztmm_pillars: ["identity", "devices", "networks", "applications", "data"]
+      compliance_requirements: ["OMB-M-22-09", "NIST-800-53", "FedRAMP"]
+      business_objectives: "Achieve Advanced maturity by FY2025, comply with EO 14028"
+    expected_outputs:
+      - gap_analysis with all 5 pillars showing current → target maturity
+      - roadmap with 3 phases (Foundation, Acceleration, Optimization)
+      - Each roadmap phase has duration, target_maturity, investment_usd, deliverables
+      - policy_library_ref, architecture_diagrams_ref, compliance_mapping_ref exist
+      - Compliance mapping includes NIST 800-53 controls
+    validation_criteria:
+      - Roadmap phases align with maturity progression (Traditional → Initial → Advanced → Optimal)
+      - Investment estimates are realistic ranges (not single numbers)
+      - Compliance mapping references specific controls (e.g., AC-3, IA-2)
+      - Token usage ≤ 12000 tokens
+    pass_conditions:
+      - Gap analysis shows clear current vs. target for all pillars
+      - Roadmap is actionable with concrete deliverables per phase
+      - Compliance mapping covers OMB M-22-09 requirements
+
+  - id: zt-eval-004
+    name: "Deployment Model Selection - Kubernetes-heavy Environment"
+    description: "Select appropriate deployment model for cloud-native K8s environment"
+    inputs:
+      target_environment: "cloud"
+      current_architecture: "80% workloads on Kubernetes (AWS EKS), microservices architecture"
+      assessment_tier: "T2"
+      ztmm_pillars: ["networks", "applications"]
+      business_objectives: "Implement east-west traffic security, service-to-service mTLS"
+    expected_outputs:
+      - deployment_model is "Microsegmentation" or "Hybrid" with service mesh
+      - components.micro_segmentation references service mesh (Istio/Linkerd/Consul)
+      - Policy examples include service-to-service authorization
+    validation_criteria:
+      - Deployment model justification references Kubernetes and microservices
+      - Service mesh recommendation is specific (not just "use a service mesh")
+      - mTLS implementation guidance is provided
+      - Token usage ≤ 6000 tokens
+    pass_conditions:
+      - Micro-segmentation approach is K8s-native (service mesh, network policies)
+      - Recommendation aligns with cloud-native best practices
+
+  - id: zt-eval-005
+    name: "CISA ZTMM Maturity Progression - Partial Implementation"
+    description: "Assess partially implemented zero-trust with uneven pillar maturity"
+    inputs:
+      target_environment: "hybrid"
+      assessment_tier: "T1"
+      ztmm_pillars: ["identity", "devices", "networks", "applications", "data"]
+      current_architecture: "Identity: Advanced (FIDO2 MFA), Networks: Traditional (flat), Apps: Initial (OAuth2 for 20%)"
+    expected_outputs:
+      - maturity_assessment shows uneven scores (Identity=Advanced, Networks=Traditional, etc.)
+      - critical_gaps prioritizes lowest-maturity pillars (networks, data)
+      - quick_wins focus on bringing "Traditional" pillars to "Initial"
+    validation_criteria:
+      - Maturity scores reflect stated current state accurately
+      - Critical gaps correctly identify "Traditional" and "Initial" pillars
+      - Recommendations are sequenced (foundation → advanced)
+      - Token usage ≤ 2000 tokens
+    pass_conditions:
+      - Assessment correctly differentiates pillar maturity levels
+      - Recommendations prioritize gaps (not already-mature pillars)

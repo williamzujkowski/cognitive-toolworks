@@ -1,0 +1,61 @@
+# Multi-Tier CDN Caching Configuration
+# Reference: Edge Computing 2025 Patterns
+
+caching_hierarchy:
+  # Layer 1: Edge PoP (300+ global locations)
+  edge_pop:
+    cache_types:
+      - static_assets
+      - api_responses_hot
+    ttl:
+      images: 86400  # 1 day
+      css_js: 604800  # 7 days
+      fonts: 31536000  # 1 year
+      api_hot: 60  # 1 minute
+    cache_control: "public, max-age={ttl}, s-maxage={ttl}"
+    stale_while_revalidate: 300  # 5 minutes
+
+  # Layer 2: Regional Edge (10-20 regional hubs)
+  regional_edge:
+    cache_types:
+      - dynamic_content
+      - api_responses_warm
+    ttl:
+      html: 60  # 1 minute
+      api_warm: 300  # 5 minutes
+      json: 120  # 2 minutes
+    cache_key:
+      - url
+      - query_params
+      - accept_language
+      - user_segment
+    vary_headers:
+      - Accept-Encoding
+      - Accept-Language
+
+  # Layer 3: Origin Shield (2-5 strategic locations)
+  origin_shield:
+    purpose: "Collapse cache misses to origin"
+    locations:
+      - us-east
+      - eu-west
+    cache_miss_collapse: true
+    max_stale: 86400  # Serve stale if origin down
+
+  # Layer 4: Origin
+  origin:
+    cache_control_overrides:
+      "/api/public/*": "public, max-age=300"
+      "/api/private/*": "private, no-cache"
+      "/static/*": "public, max-age=31536000, immutable"
+    rate_limiting:
+      cache_miss_protection: 1000  # req/s max to origin
+      burst_allowance: 2000
+
+invalidation:
+  strategies:
+    purge_all: "Emergency only, costly"
+    purge_by_tag: "Preferred, surgical"
+    purge_by_url: "Single resource"
+  max_purge_rate: 1000  # URLs per request
+  propagation_time: 30  # seconds to global

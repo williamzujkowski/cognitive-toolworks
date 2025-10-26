@@ -1,0 +1,153 @@
+# Evaluations for infrastructure-drift-detector skill
+# 5 scenarios covering common drift detection and remediation use cases
+
+evals:
+  - name: T1 - Single stack Terraform drift scan
+    tier: T1
+    description: Quick drift scan for single Terraform workspace with basic remediation guidance
+    inputs:
+      tool: terraform
+      workspace: dev-webapp
+      scope: single-stack
+      remediation_policy: manual-only
+    expected_outputs:
+      - drift_detected: boolean
+      - drifted_resources: number
+      - severity_summary: object
+      - resources: array
+      - recommended_action: string (revert|accept|ignore)
+    success_criteria:
+      - Drift detection completes in <30s
+      - Severity correctly classified (high/medium/low)
+      - Recommended action provided for each drifted resource
+      - Token usage ≤ 2000
+    edge_cases:
+      - No drift detected (clean state)
+      - State file locked (abort condition)
+      - Multiple resources drifted with different severities
+
+  - name: T2 - Multi-stack CloudFormation drift with compliance impact
+    tier: T2
+    description: Comprehensive drift analysis across multiple CloudFormation stacks with compliance mapping
+    inputs:
+      tool: cloudformation
+      scope: all-production-stacks
+      schedule: daily
+      remediation_policy: semi-automated
+      compliance_frameworks:
+        - fedramp-moderate
+        - nist-csf
+    expected_outputs:
+      - drift_detected: boolean
+      - drifted_resources: number
+      - compliance_impact: array of control IDs
+      - remediation_plan: object with steps
+      - trend: object with drift frequency analysis
+    success_criteria:
+      - All production stacks scanned
+      - Compliance controls mapped to drifted resources
+      - Remediation plan generated with approval requirements
+      - Drift trend calculated (increasing/stable/decreasing)
+      - Token usage ≤ 6000
+    edge_cases:
+      - High-severity drift requiring immediate remediation
+      - Drift on shared resources affecting multiple stacks
+      - Compliance violation triggering escalation
+
+  - name: T2 - Pulumi drift with automated remediation
+    tier: T2
+    description: Scheduled drift detection with automated remediation for approved resources
+    inputs:
+      tool: pulumi
+      workspace: prod-api
+      schedule: hourly
+      remediation_policy: fully-automated
+      auto_remediate_resources:
+        - pulumi:pulumi:Stack (tags only)
+      notifications:
+        - slack: "#infrastructure-alerts"
+    expected_outputs:
+      - drift_detected: boolean
+      - remediation_plan: object
+      - audit_log_id: string
+      - notification_sent: boolean
+    success_criteria:
+      - Low-severity drift auto-remediated without approval
+      - High-severity drift requires approval before remediation
+      - State backup created before remediation
+      - Audit log entry created with operator, timestamp, action
+      - Notification sent to Slack channel
+      - Post-remediation drift scan confirms drift resolved
+      - Token usage ≤ 6000
+    edge_cases:
+      - Remediation fails and rollback triggered
+      - Multiple drifts with mixed auto/manual policies
+      - Concurrent drift detection and manual apply operation
+
+  - name: T1 - driftctl scan for unmanaged resources
+    tier: T1
+    description: Scan for infrastructure resources not managed by Terraform (shadow IT detection)
+    inputs:
+      tool: driftctl
+      provider: aws
+      region: us-east-1
+      filter: "Type=='aws_s3_bucket' OR Type=='aws_security_group'"
+      state_file: terraform.tfstate
+    expected_outputs:
+      - unmanaged_resources: array
+      - managed_resources: number
+      - coverage_percentage: number
+      - recommended_action: "import to IaC"
+    success_criteria:
+      - Unmanaged resources identified
+      - Coverage percentage calculated
+      - Import recommendations provided
+      - Token usage ≤ 2000
+    edge_cases:
+      - All resources managed (100% coverage)
+      - Large number of unmanaged resources (>100)
+      - AWS API rate limiting during scan
+
+  - name: T2 - Drift trend analysis and reporting
+    tier: T2
+    description: Analyze drift trends over 30 days and generate compliance dashboard
+    inputs:
+      tool: terraform
+      scope: all-workspaces
+      time_range: 30d
+      reporting: true
+      compliance_frameworks:
+        - nist-csf
+    expected_outputs:
+      - trend: object
+      - most_drifted_resources: array
+      - drift_frequency: string (increasing|stable|decreasing)
+      - compliance_violations: array
+      - dashboard_url: string (optional)
+    success_criteria:
+      - Drift history analyzed over 30-day period
+      - Most drift-prone resources identified
+      - Drift frequency trend calculated
+      - Compliance violations tracked over time
+      - Actionable recommendations for reducing drift
+      - Token usage ≤ 6000
+    edge_cases:
+      - Insufficient historical data (<7 days)
+      - Repeated drift on same resource (possible exemption needed)
+      - Correlation between drift and incidents
+
+metadata:
+  version: 1.0.0
+  last_updated: 2025-10-25T21:30:36-04:00
+  scenarios_count: 5
+  coverage:
+    - Terraform drift detection
+    - CloudFormation drift detection
+    - Pulumi drift detection with auto-remediation
+    - driftctl unmanaged resource detection
+    - Drift trend analysis and reporting
+  tools_tested:
+    - terraform
+    - cloudformation
+    - pulumi
+    - driftctl

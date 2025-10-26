@@ -1,0 +1,29 @@
+{
+  "slug": "zero-trust-architecture-designer",
+  "name": "Zero Trust Architecture Designer",
+  "summary": "Design zero-trust architectures with identity-centric security, micro-segmentation, continuous verification, and CISA ZTMM maturity assessment.",
+  "category": "security",
+  "keywords": [
+    "zero-trust",
+    "zta",
+    "ztmm",
+    "cisa-maturity-model",
+    "nist-800-207",
+    "beyondcorp",
+    "never-trust-always-verify",
+    "identity-centric-security",
+    "micro-segmentation",
+    "continuous-verification",
+    "least-privilege"
+  ],
+  "dependencies": [
+    "security-assessment-framework",
+    "cloud-native-deployment-orchestrator"
+  ],
+  "priority": "P2",
+  "phase": 3,
+  "token_budget": "T3",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/zero-trust-architecture-designer/SKILL.md"
+}

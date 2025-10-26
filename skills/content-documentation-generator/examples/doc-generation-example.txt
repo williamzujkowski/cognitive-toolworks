@@ -1,0 +1,50 @@
+================================================================================
+EXAMPLE: Technical Documentation Generation
+================================================================================
+
+INPUT:
+------
+content_type: "technical-doc"
+source: "How to configure database connection pooling in production environments"
+output_format: "markdown"
+style_guide: "write-the-docs"
+
+OUTPUT:
+-------
+---
+title: "Configure Database Connection Pooling"
+description: "Set up and optimize connection pools for production database access"
+keywords: [database, connection-pool, performance, production]
+generated_at: "2025-10-25T21:30:36-04:00"
+style_guide: "write-the-docs"
+---
+
+# Configure Database Connection Pooling
+
+Optimize database performance with connection pooling.
+
+## Prerequisites
+- Database server accessible (PostgreSQL 12+ or MySQL 8+)
+- Application framework with pooling support
+- Admin credentials for connection testing
+
+## Steps
+1. Install connection pool library (`pg-pool` or `mysql-pool`)
+2. Configure pool size: `max_connections = (CPU cores × 2) + disk count`
+3. Set idle timeout: 30 seconds for web apps, 10 minutes for batch jobs
+4. Enable connection validation on borrow
+
+## Example Configuration
+```javascript
+const pool = new Pool({
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000
+});
+```
+
+## Troubleshooting
+- "Connection pool exhausted" → Increase max_connections or reduce query time
+- High connection churn → Increase idleTimeoutMillis
+
+Accessibility Score: 95 (Excellent)

@@ -1,0 +1,32 @@
+# SRE SLO/SLI Calculator Example: E-commerce API
+
+## Input
+Service: E-commerce product API
+Type: api
+User Journey: Product search, cart operations, checkout
+Target Availability: 99.9%
+Monitoring: Prometheus
+
+## Output
+
+### SLI: API Availability
+Measurement: (successful requests) / (total requests)
+Good events: HTTP 2xx, 3xx responses
+Total events: All HTTP requests
+Data source: http_requests_total{job="api"}
+
+### SLO Target
+99.9% availability over 30-day rolling window
+Allows 43.2 minutes downtime per month
+
+### Error Budget
+Total: 43.2 minutes/30 days
+Burn rates:
+- Critical (1h): 14.4x normal → page on-call
+- Warning (6h): 6x normal → alert team
+- Info (3d): 1x normal → create ticket
+
+### Prometheus Query
+sum(rate(http_requests_total{status=~"2..|3.."}[5m]))
+/
+sum(rate(http_requests_total[5m]))

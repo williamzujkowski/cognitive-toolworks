@@ -1,0 +1,102 @@
+---
+skill: "content-documentation-generator"
+version: "1.0.0"
+scenarios:
+  - id: "eval-001"
+    name: "Technical documentation generation"
+    description: "Generate standard technical documentation from a brief"
+    inputs:
+      content_type: "technical-doc"
+      source: "How to configure SSL certificates for production web servers"
+      output_format: "markdown"
+      style_guide: "write-the-docs"
+    expected_outputs:
+      - documentation_present: true
+      - has_frontmatter: true
+      - has_sections: ["Prerequisites", "Steps", "Troubleshooting"]
+      - accessibility_score: ">= 90"
+      - format: "markdown"
+    success_criteria:
+      - "Documentation includes all required sections"
+      - "Accessibility score meets threshold"
+      - "Frontmatter contains title, description, keywords"
+      - "Uses active voice and clear language"
+
+  - id: "eval-002"
+    name: "API documentation from OpenAPI spec"
+    description: "Generate API documentation from a valid OpenAPI 3.0 specification"
+    inputs:
+      content_type: "api-doc"
+      source: "minimal-openapi-spec.yaml"  # Assumes test fixture exists
+      output_format: "markdown"
+      style_guide: "google"
+    expected_outputs:
+      - documentation_present: true
+      - has_sections: ["Authentication", "Endpoints", "Error Handling"]
+      - has_code_examples: true
+      - accessibility_score: ">= 85"
+    success_criteria:
+      - "All endpoints from spec are documented"
+      - "Request/response schemas are included"
+      - "Code examples are present"
+      - "HTTP methods are clearly identified"
+
+  - id: "eval-003"
+    name: "User guide generation"
+    description: "Generate a task-based user guide"
+    inputs:
+      content_type: "user-guide"
+      source: "Guide users through setting up two-factor authentication"
+      output_format: "mdx"
+      style_guide: "microsoft"
+    expected_outputs:
+      - documentation_present: true
+      - has_sections: ["Introduction", "Prerequisites"]
+      - accessibility_score: ">= 90"
+      - format: "mdx"
+    success_criteria:
+      - "Task-oriented structure present"
+      - "Step-by-step instructions clear"
+      - "Headings in logical hierarchy"
+      - "Links use descriptive text"
+
+  - id: "eval-004"
+    name: "Accessibility validation"
+    description: "Ensure generated documentation meets WCAG 2.2 Level AA"
+    inputs:
+      content_type: "technical-doc"
+      source: "Database migration best practices"
+      output_format: "markdown"
+      style_guide: "write-the-docs"
+    expected_outputs:
+      - heading_hierarchy_valid: true
+      - no_generic_links: true  # No "click here" links
+      - accessibility_score: ">= 90"
+    success_criteria:
+      - "Headings don't skip levels (H1→H2→H3)"
+      - "All links have descriptive text"
+      - "No accessibility issues flagged"
+      - "Color is not sole means of conveying info"
+
+  - id: "eval-005"
+    name: "Invalid input handling"
+    description: "Gracefully handle invalid or missing inputs"
+    inputs:
+      content_type: "api-doc"
+      source: "nonexistent-file.yaml"
+      output_format: "markdown"
+      style_guide: "write-the-docs"
+    expected_outputs:
+      - error_message: "Source file not accessible"
+      - graceful_failure: true
+    success_criteria:
+      - "Returns clear error message"
+      - "Does not crash or timeout"
+      - "Suggests corrective action"
+      - "No partial or corrupt output generated"
+
+metadata:
+  author: "cognitive-toolworks"
+  created_at: "2025-10-25T21:30:36-04:00"
+  test_framework: "pytest"
+  coverage_target: "T1 and T2 tiers"

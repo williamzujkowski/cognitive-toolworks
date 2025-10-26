@@ -1,0 +1,29 @@
+{
+  "slug": "cost-optimization-analyzer",
+  "name": "Cloud Cost Optimization Analyzer",
+  "summary": "Analyze and optimize cloud costs across AWS, Azure, GCP with rightsizing, reserved instances, waste detection, and FinOps best practices.",
+  "category": "cloud-platform",
+  "keywords": [
+    "cloud cost optimization",
+    "finops",
+    "rightsizing",
+    "reserved instances",
+    "savings plans",
+    "cost anomaly detection",
+    "waste detection",
+    "TCO optimization",
+    "budget management",
+    "aws",
+    "azure",
+    "gcp"
+  ],
+  "dependencies": [
+    "aws-multi-service-architect"
+  ],
+  "priority": "P2",
+  "phase": 3,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/cost-optimization-analyzer/SKILL.md"
+}

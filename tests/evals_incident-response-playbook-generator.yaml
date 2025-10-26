@@ -1,0 +1,132 @@
+---
+skill: incident-response-playbook-generator
+version: "1.0.0"
+test_suite: Incident Response Playbook Generator Evaluations
+scenarios:
+  - id: eval-001
+    name: "Security Data Breach - HIPAA Compliance"
+    description: "Generate playbook for P0 data breach with HIPAA compliance requirements"
+    inputs:
+      incident_type: data-breach
+      severity_level: P0
+      compliance_requirements:
+        - HIPAA
+        - SOC2
+      tier: T1
+    expected_outputs:
+      - playbook contains all 6 NIST SP 800-61 phases
+      - escalation matrix includes CISO and Legal contacts
+      - escalation threshold for P0 is 15 minutes or less
+      - post-mortem template includes timeline and root cause analysis
+      - HIPAA 60-day breach notification requirement documented
+      - SOC2 CC7.3 communication documentation requirement present
+    success_criteria:
+      - token_usage <= 2000
+      - playbook_phases_count == 6
+      - escalation_contacts includes ["CISO", "Legal"]
+      - compliance_mappings includes ["HIPAA", "SOC2"]
+
+  - id: eval-002
+    name: "Production Outage - Database Failure"
+    description: "Generate detailed runbook for P0 database outage with service context"
+    inputs:
+      incident_type: outage
+      severity_level: P0
+      service_context:
+        service_name: user-authentication-api
+        team_owner: platform-team
+        dependencies:
+          - PostgreSQL primary database
+          - Redis cache
+          - Kafka message queue
+      tier: T2
+    expected_outputs:
+      - playbook with NIST SP 800-61 phases
+      - runbook with service-specific failure scenarios
+      - rollback procedure for recent deployments
+      - health checks for database, cache, queue dependencies
+      - dependency startup order documented
+      - monitoring queries for error rate, latency, connection pool
+    success_criteria:
+      - token_usage <= 6000
+      - runbook_failure_scenarios_count >= 3
+      - rollback_procedure is not null
+      - health_checks_count >= 3
+      - dependency_startup_order defined
+
+  - id: eval-003
+    name: "Ransomware Attack - Disaster Recovery"
+    description: "Generate playbook for P0 ransomware incident requiring DR invocation"
+    inputs:
+      incident_type: ransomware
+      severity_level: P0
+      compliance_requirements:
+        - NIST
+        - PCI-DSS
+      tier: T2
+    expected_outputs:
+      - playbook emphasizes forensic evidence preservation
+      - containment phase includes system isolation and credential revocation
+      - eradication phase includes malware removal and system rebuild
+      - disaster recovery site failover procedure
+      - PCI-DSS incident reporting to acquiring bank documented
+      - communication plan includes regulatory notifications
+    success_criteria:
+      - token_usage <= 6000
+      - containment_steps includes "isolate" and "preserve evidence"
+      - eradication_steps includes "remove malware" or "rebuild systems"
+      - compliance_mappings includes ["NIST", "PCI-DSS"]
+      - communication_plan includes external stakeholders
+
+  - id: eval-004
+    name: "DDoS Attack - Service Degradation"
+    description: "Generate playbook for P1 DDoS attack causing partial service degradation"
+    inputs:
+      incident_type: ddos
+      severity_level: P1
+      tier: T1
+    expected_outputs:
+      - playbook with containment steps for traffic mitigation
+      - escalation threshold for P1 is 30 minutes
+      - runbook includes rate limiting and upstream provider coordination
+      - communication plan with status page update template
+      - post-mortem template for lessons learned
+    success_criteria:
+      - token_usage <= 2000
+      - containment_steps includes "rate limiting" or "traffic shaping"
+      - escalation_threshold_minutes == 30
+      - communication_plan includes status page updates
+
+  - id: eval-005
+    name: "Service Degradation - Partial Outage"
+    description: "Generate playbook for P2 service degradation with minimal customer impact"
+    inputs:
+      incident_type: service-degradation
+      severity_level: P2
+      service_context:
+        service_name: recommendation-engine
+        team_owner: ml-team
+        dependencies:
+          - feature-store-api
+          - model-serving-cluster
+      tier: T2
+    expected_outputs:
+      - playbook with P2 escalation threshold of 2 hours
+      - runbook with service-specific diagnostics
+      - rollback procedure for ML model deployment
+      - monitoring queries for model latency and accuracy
+      - communication plan with internal stakeholders only (no customer impact)
+    success_criteria:
+      - token_usage <= 6000
+      - escalation_threshold_minutes == 120
+      - runbook includes model-specific diagnostics
+      - communication_plan_external is null or empty
+
+validation_rules:
+  - all playbooks must include 6 NIST SP 800-61 phases
+  - escalation matrix must define contact methods and time thresholds
+  - post-mortem template must include timeline, root cause, action items
+  - T1 tier must stay within 2000 token budget
+  - T2 tier must stay within 6000 token budget
+  - compliance requirements must be mapped to specific playbook steps
+  - security incidents must reference security-assessment-framework dependency

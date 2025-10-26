@@ -1,0 +1,45 @@
+{
+  "slug": "multicloud-strategy-advisor",
+  "name": "Multi-Cloud Strategy Advisor",
+  "summary": "Design multi-cloud and hybrid cloud strategies with vendor selection, integration patterns, TCO analysis, and lock-in mitigation.",
+  "category": "cloud-platform",
+  "keywords": [
+    "multi-cloud",
+    "hybrid-cloud",
+    "vendor-selection",
+    "cloud-strategy",
+    "TCO",
+    "vendor-lock-in",
+    "AWS",
+    "Azure",
+    "GCP",
+    "cloud-agnostic",
+    "cost-optimization",
+    "integration-patterns"
+  ],
+  "dependencies": [
+    "aws-multi-service-architect",
+    "cloud-native-deployment-orchestrator"
+  ],
+  "priority": "P3",
+  "phase": 3,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/multicloud-strategy-advisor/SKILL.md",
+  "trigger_conditions": [
+    "Multi-cloud strategy design",
+    "Vendor lock-in mitigation",
+    "Hybrid cloud architecture",
+    "Cloud cost arbitrage",
+    "TCO analysis across clouds"
+  ],
+  "outputs": [
+    "Vendor comparison matrix with scoring",
+    "Multi-cloud architecture diagram",
+    "TCO analysis with 3/5/7 year projections",
+    "Integration pattern recommendations",
+    "Phased migration roadmap"
+  ],
+  "last_updated": "2025-10-25T21:30:36-04:00"
+}

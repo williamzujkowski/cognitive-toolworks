@@ -1,0 +1,183 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Multi-Cloud Vendor Comparison Matrix",
+  "description": "Template for scoring cloud vendors across service categories (0-10 scale)",
+  "version": "1.0.0",
+  "access_date": "2025-10-25T21:30:36-04:00",
+  "categories": [
+    {
+      "name": "Compute",
+      "weight": 0.25,
+      "criteria": [
+        "Instance type variety",
+        "Reserved instance discounts",
+        "Spot/preemptible pricing",
+        "Autoscaling capabilities",
+        "GPU availability"
+      ],
+      "vendors": {
+        "AWS": {
+          "score": 9.0,
+          "notes": "Broadest instance family (600+ types), up to 72% RI discount, Spot up to 90% off"
+        },
+        "Azure": {
+          "score": 8.5,
+          "notes": "400+ VM sizes, up to 72% RI discount, Azure Spot up to 90% off"
+        },
+        "GCP": {
+          "score": 8.0,
+          "notes": "100+ machine types, up to 57% committed use discount, preemptible up to 80% off"
+        }
+      }
+    },
+    {
+      "name": "Storage",
+      "weight": 0.20,
+      "criteria": [
+        "Durability (9's)",
+        "Storage tiers/classes",
+        "Lifecycle policies",
+        "Egress costs",
+        "Cross-region replication"
+      ],
+      "vendors": {
+        "AWS": {
+          "score": 9.0,
+          "notes": "S3: 11 9's durability, 8 storage classes, $0.09/GB egress (first 10TB)"
+        },
+        "Azure": {
+          "score": 8.5,
+          "notes": "Blob Storage: 11 9's, 4 access tiers, $0.087/GB egress"
+        },
+        "GCP": {
+          "score": 8.5,
+          "notes": "Cloud Storage: 11 9's, 4 storage classes, $0.085/GB egress (first 10TB)"
+        }
+      }
+    },
+    {
+      "name": "Networking",
+      "weight": 0.15,
+      "criteria": [
+        "Global backbone quality",
+        "Peering options",
+        "CDN integration",
+        "Bandwidth costs",
+        "Private connectivity"
+      ],
+      "vendors": {
+        "AWS": {
+          "score": 9.0,
+          "notes": "30 regions, CloudFront CDN, Direct Connect (1-100Gbps), $0.02/GB inter-region"
+        },
+        "Azure": {
+          "score": 8.5,
+          "notes": "60+ regions, Azure CDN, ExpressRoute (50Mbps-100Gbps), $0.02/GB inter-region"
+        },
+        "GCP": {
+          "score": 9.0,
+          "notes": "Premium tier global backbone, Cloud CDN, Interconnect (10-100Gbps), $0.01/GB inter-region"
+        }
+      }
+    },
+    {
+      "name": "Serverless",
+      "weight": 0.15,
+      "criteria": [
+        "Cold start latency",
+        "Concurrency limits",
+        "Runtime support",
+        "Pricing model",
+        "Event sources"
+      ],
+      "vendors": {
+        "AWS": {
+          "score": 9.0,
+          "notes": "Lambda: 100-300ms cold start, 1000 concurrent default, 12 runtimes, $0.20/1M requests"
+        },
+        "Azure": {
+          "score": 8.0,
+          "notes": "Functions: 200-500ms cold start, 200 concurrent default, 8 runtimes, $0.20/1M executions"
+        },
+        "GCP": {
+          "score": 8.5,
+          "notes": "Cloud Functions: 100-400ms cold start, 3000 concurrent, 8 runtimes, $0.40/1M invocations"
+        }
+      }
+    },
+    {
+      "name": "Kubernetes",
+      "weight": 0.15,
+      "criteria": [
+        "Control plane cost",
+        "Version lag behind upstream",
+        "Autoscaling features",
+        "GPU support",
+        "Multi-cluster management"
+      ],
+      "vendors": {
+        "AWS": {
+          "score": 7.5,
+          "notes": "EKS: $0.10/hr control plane, 1-2 releases behind, Karpenter autoscaling"
+        },
+        "Azure": {
+          "score": 8.5,
+          "notes": "AKS: free control plane, 1 release behind, KEDA autoscaling, Azure Arc multi-cluster"
+        },
+        "GCP": {
+          "score": 9.0,
+          "notes": "GKE: free control plane (standard), 0-1 releases behind, GKE Autopilot, Anthos multi-cluster"
+        }
+      }
+    },
+    {
+      "name": "Hybrid Cloud",
+      "weight": 0.10,
+      "criteria": [
+        "Hardware ownership model",
+        "Management overhead",
+        "Multi-cloud support",
+        "On-prem services available",
+        "Migration tooling"
+      ],
+      "vendors": {
+        "AWS": {
+          "score": 7.0,
+          "notes": "Outposts: AWS-owned hardware, limited multi-cloud, 60+ services, DMS migration"
+        },
+        "Azure": {
+          "score": 9.0,
+          "notes": "Arc: customer hardware, multi-cloud (AWS/GCP), any service via Arc, Azure Migrate"
+        },
+        "GCP": {
+          "score": 8.5,
+          "notes": "Anthos: customer hardware, multi-cloud (AWS/Azure), GKE services, Migrate for Anthos"
+        }
+      }
+    }
+  ],
+  "scoring_guide": {
+    "9-10": "Industry leading, clear differentiation",
+    "7-8": "Strong offering, competitive parity",
+    "5-6": "Adequate but gaps exist",
+    "0-4": "Weak or missing capability"
+  },
+  "total_score_calculation": "Weighted sum: Σ(category_weight × vendor_score)",
+  "sources": [
+    {
+      "title": "AWS Pricing Calculator",
+      "url": "https://calculator.aws",
+      "access_date": "2025-10-25T21:30:36-04:00"
+    },
+    {
+      "title": "Azure Pricing Calculator",
+      "url": "https://azure.microsoft.com/pricing/calculator",
+      "access_date": "2025-10-25T21:30:36-04:00"
+    },
+    {
+      "title": "GCP Pricing Calculator",
+      "url": "https://cloud.google.com/products/calculator",
+      "access_date": "2025-10-25T21:30:36-04:00"
+    }
+  ]
+}

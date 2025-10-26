@@ -64,6 +64,26 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/aws-multi-service-architect/SKILL.md"
   },
   {
+    "slug": "chaos-engineering-designer",
+    "name": "Chaos Engineering Experiment Designer",
+    "summary": "Design chaos engineering experiments to test system resilience with controlled failure injection, hypothesis formulation, and blast radius control.",
+    "keywords": [
+      "chaos engineering",
+      "resilience testing",
+      "failure injection",
+      "steady state hypothesis",
+      "blast radius",
+      "chaos mesh",
+      "litmuschaos",
+      "chaos monkey",
+      "SRE",
+      "distributed systems"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/chaos-engineering-designer/SKILL.md"
+  },
+  {
     "slug": "cloud-native-deployment-orchestrator",
     "name": "Cloud-Native Deployment Orchestrator",
     "summary": "Design and validate Kubernetes, container, serverless, and service mesh deployments with platform-specific optimizations for AWS, Azure, and GCP.",
@@ -124,6 +144,41 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/compliance-automation-engine/SKILL.md"
+  },
+  {
+    "slug": "content-documentation-generator",
+    "name": "Content & Documentation Generator",
+    "summary": "Generate technical documentation, API docs, and content with accessibility and SEO optimization.",
+    "keywords": [
+      "documentation",
+      "technical-writing",
+      "api-docs",
+      "markdown",
+      "accessibility",
+      "content-generation"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/content-documentation-generator/SKILL.md"
+  },
+  {
+    "slug": "cost-optimization-analyzer",
+    "name": "Cloud Cost Optimization Analyzer",
+    "summary": "Analyze and optimize cloud costs across AWS, Azure, GCP with rightsizing, reserved instances, waste detection, and FinOps best practices.",
+    "keywords": [
+      "cloud cost optimization",
+      "finops",
+      "rightsizing",
+      "reserved instances",
+      "savings plans",
+      "cost anomaly detection",
+      "waste detection",
+      "TCO optimization",
+      "budget management"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/cost-optimization-analyzer/SKILL.md"
   },
   {
     "slug": "data-engineering-pipeline-designer",
@@ -187,6 +242,26 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/devops-pipeline-architect/SKILL.md"
   },
   {
+    "slug": "edge-computing-architect",
+    "name": "Edge Computing Architecture Designer",
+    "summary": "Design edge computing solutions with CDN integration, edge functions, IoT device management, and latency-optimized deployment patterns.",
+    "keywords": [
+      "edge-computing",
+      "cdn",
+      "cloudflare-workers",
+      "lambda-edge",
+      "azure-functions",
+      "iot-edge",
+      "content-delivery",
+      "latency-optimization",
+      "edge-functions",
+      "distributed-cache"
+    ],
+    "owner": "william",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/edge-computing-architect/SKILL.md"
+  },
+  {
     "slug": "fedramp-poam-qc",
     "name": "FedRAMP POAM Quality Check",
     "summary": "Validates FedRAMP Plan of Action and Milestones (POAM) files for structural integrity, naming conventions, deduplication, and cross-sheet consistency",
@@ -227,6 +302,46 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/frontend-framework-advisor/SKILL.md"
   },
   {
+    "slug": "incident-response-playbook-generator",
+    "name": "Incident Response Playbook Generator",
+    "summary": "Generate incident response playbooks for security incidents, outages, and disaster recovery with NIST SP 800-61 compliance and escalation paths.",
+    "keywords": [
+      "incident-response",
+      "disaster-recovery",
+      "playbook",
+      "runbook",
+      "nist-800-61",
+      "security-incident",
+      "outage",
+      "escalation",
+      "post-mortem",
+      "on-call"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/incident-response-playbook-generator/SKILL.md"
+  },
+  {
+    "slug": "infrastructure-drift-detector",
+    "name": "Infrastructure Drift Detection and Remediation",
+    "summary": "Detect and remediate infrastructure drift between IaC definitions and live state with continuous monitoring and automated remediation.",
+    "keywords": [
+      "infrastructure drift",
+      "terraform drift",
+      "cloudformation drift",
+      "pulumi drift",
+      "drift detection",
+      "drift remediation",
+      "IaC reconciliation",
+      "state management",
+      "compliance monitoring",
+      "policy-as-code"
+    ],
+    "owner": "william@cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/infrastructure-drift-detector/SKILL.md"
+  },
+  {
     "slug": "microservices-pattern-architect",
     "name": "Microservices Pattern Architect",
     "summary": "Apply microservices patterns (Saga, CQRS, Event Sourcing, Circuit Breaker, API Gateway, Service Discovery) with implementation guidance and templates.",
@@ -248,6 +363,44 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/microservices-pattern-architect/SKILL.md"
+  },
+  {
+    "slug": "mlops-lifecycle-manager",
+    "name": "MLOps Lifecycle Manager",
+    "summary": "Manage ML model lifecycle from development to deployment with experiment tracking, versioning, monitoring, and automated retraining workflows.",
+    "keywords": [
+      "mlops",
+      "machine-learning",
+      "model-deployment",
+      "experiment-tracking",
+      "model-monitoring",
+      "feature-engineering",
+      "model-versioning",
+      "ml-pipeline"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/mlops-lifecycle-manager/SKILL.md"
+  },
+  {
+    "slug": "multicloud-strategy-advisor",
+    "name": "Multi-Cloud Strategy Advisor",
+    "summary": "Design multi-cloud and hybrid cloud strategies with vendor selection, integration patterns, TCO analysis, and lock-in mitigation.",
+    "keywords": [
+      "multi-cloud",
+      "hybrid-cloud",
+      "vendor-selection",
+      "cloud-strategy",
+      "TCO",
+      "vendor-lock-in",
+      "AWS",
+      "Azure",
+      "GCP",
+      "cloud-agnostic"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/multicloud-strategy-advisor/SKILL.md"
   },
   {
     "slug": "oscal-ssp-validate",
@@ -303,6 +456,47 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/skill-creation/SKILL.md"
   },
   {
+    "slug": "sre-slo-calculator",
+    "name": "SRE SLO/SLI Calculator",
+    "summary": "Define and calculate SLIs, SLOs, SLAs, and error budgets with monitoring integration for site reliability engineering.",
+    "keywords": [
+      "sre",
+      "slo",
+      "sli",
+      "sla",
+      "error-budget",
+      "reliability",
+      "monitoring",
+      "prometheus",
+      "observability",
+      "availability"
+    ],
+    "owner": "william@cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/sre-slo-calculator/SKILL.md"
+  },
+  {
+    "slug": "supply-chain-security-validator",
+    "name": "Software Supply Chain Security Validator",
+    "summary": "Validate software supply chain security with SBOM generation, dependency scanning, provenance verification, and SLSA attestation.",
+    "keywords": [
+      "supply-chain-security",
+      "sbom",
+      "spdx",
+      "cyclonedx",
+      "slsa",
+      "provenance",
+      "sigstore",
+      "cosign",
+      "vulnerability-scanning",
+      "dependency-analysis",
+      "eo-14028"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/supply-chain-security-validator/SKILL.md"
+  },
+  {
     "slug": "testing-strategy-composer",
     "name": "Testing Strategy Composer",
     "summary": "Compose comprehensive testing strategies spanning unit, integration, e2e, and performance tests with optimal coverage.",
@@ -320,5 +514,48 @@
     "owner": "william@cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/testing-strategy-composer/SKILL.md"
+  },
+  {
+    "slug": "ux-design-system-validator",
+    "name": "UX Design System Validator",
+    "summary": "Validate design systems for accessibility (WCAG), responsive design, and component consistency with design token analysis.",
+    "keywords": [
+      "accessibility",
+      "WCAG",
+      "design-systems",
+      "responsive-design",
+      "design-tokens",
+      "component-library",
+      "a11y",
+      "UX"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/ux-design-system-validator/SKILL.md"
+  },
+  {
+    "slug": "zero-trust-architecture-designer",
+    "name": "Zero Trust Architecture Designer",
+    "summary": "Design zero-trust architectures with identity-centric security, micro-segmentation, continuous verification, and CISA ZTMM maturity assessment.",
+    "keywords": [
+      "zero-trust",
+      "zero-trust-architecture",
+      "zta",
+      "ztmm",
+      "cisa-maturity-model",
+      "nist-800-207",
+      "beyondcorp",
+      "never-trust-always-verify",
+      "identity-centric-security",
+      "micro-segmentation",
+      "continuous-verification",
+      "least-privilege",
+      "policy-engine",
+      "policy-decision-point",
+      "policy-enforcement-point"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/zero-trust-architecture-designer/SKILL.md"
   }
 ]

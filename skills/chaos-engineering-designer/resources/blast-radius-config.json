@@ -1,0 +1,162 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Blast Radius Configuration Schema",
+  "description": "Safety boundaries for chaos engineering experiments to minimize production impact",
+  "type": "object",
+  "properties": {
+    "maturity_levels": {
+      "description": "Progressive blast radius expansion based on chaos engineering maturity",
+      "type": "object",
+      "properties": {
+        "initial": {
+          "description": "First experiments, new to chaos engineering",
+          "type": "object",
+          "properties": {
+            "environment": "non-production",
+            "percentage": 1,
+            "max_instances": 1,
+            "duration_max": "PT5M",
+            "scope": "single-service-leaf-node",
+            "approval_required": true
+          }
+        },
+        "developing": {
+          "description": "Some experience, established monitoring",
+          "type": "object",
+          "properties": {
+            "environment": "staging-or-canary-production",
+            "percentage": 5,
+            "max_instances": 3,
+            "duration_max": "PT15M",
+            "scope": "single-service-any-tier",
+            "approval_required": true
+          }
+        },
+        "mature": {
+          "description": "Proven resilience, automated experiments",
+          "type": "object",
+          "properties": {
+            "environment": "production",
+            "percentage": 25,
+            "max_instances": 10,
+            "duration_max": "PT30M",
+            "scope": "multi-service-same-domain",
+            "approval_required": false
+          }
+        },
+        "advanced": {
+          "description": "Continuous chaos, GameDay automation",
+          "type": "object",
+          "properties": {
+            "environment": "production",
+            "percentage": 50,
+            "max_instances": "unlimited",
+            "duration_max": "PT2H",
+            "scope": "cross-domain-multi-region",
+            "approval_required": false
+          }
+        }
+      }
+    },
+    "geographic_boundaries": {
+      "description": "Examples of geographic blast radius scoping",
+      "type": "object",
+      "properties": {
+        "single_az": {
+          "description": "Most conservative, single availability zone",
+          "example": ["us-east-1a"]
+        },
+        "multi_az_single_region": {
+          "description": "Test AZ failover within region",
+          "example": ["us-east-1a", "us-east-1b"]
+        },
+        "multi_region": {
+          "description": "Test regional failover",
+          "example": ["us-east-1", "us-west-2"]
+        },
+        "global": {
+          "description": "Advanced experiments affecting all regions",
+          "example": ["all-regions"]
+        }
+      }
+    },
+    "service_tier_boundaries": {
+      "description": "Service architecture tier-based scoping",
+      "type": "object",
+      "properties": {
+        "leaf_services": {
+          "description": "Start here: minimal blast radius",
+          "examples": ["image-resizer", "email-sender", "pdf-generator"],
+          "risk": "low"
+        },
+        "mid_tier_services": {
+          "description": "After leaf service validation",
+          "examples": ["user-profile-api", "product-catalog", "inventory-service"],
+          "risk": "medium"
+        },
+        "core_platform": {
+          "description": "Critical path services, advanced maturity only",
+          "examples": ["authentication", "payment-gateway", "order-processing"],
+          "risk": "high"
+        },
+        "data_layer": {
+          "description": "Databases, caches - extreme caution",
+          "examples": ["postgres-primary", "redis-cluster", "elasticsearch"],
+          "risk": "critical"
+        }
+      }
+    },
+    "time_boundaries": {
+      "description": "Temporal constraints to minimize user impact",
+      "type": "object",
+      "properties": {
+        "maintenance_window": {
+          "description": "Pre-scheduled low-traffic periods",
+          "example": "02:00-06:00 UTC Sunday"
+        },
+        "off_peak_hours": {
+          "description": "Outside business hours for target regions",
+          "example": "20:00-08:00 local time"
+        },
+        "peak_hours_canary": {
+          "description": "Advanced: small blast radius during peak",
+          "example": "09:00-17:00 local time, max 1% traffic"
+        }
+      }
+    },
+    "abort_thresholds": {
+      "description": "Automatic experiment termination conditions",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "metric": "string",
+          "operator": "enum[gt|lt|gte|lte]",
+          "value": "number",
+          "window": "string (duration)"
+        }
+      },
+      "examples": [
+        {
+          "metric": "error_rate_percent",
+          "operator": "gt",
+          "value": 1.0,
+          "window": "PT1M"
+        },
+        {
+          "metric": "p99_latency_ms",
+          "operator": "gt",
+          "value": 1000,
+          "window": "PT2M"
+        },
+        {
+          "metric": "active_users",
+          "operator": "lt",
+          "value": 0.85,
+          "window": "PT5M",
+          "description": "Abort if active users drop >15%"
+        }
+      ]
+    }
+  }
+}

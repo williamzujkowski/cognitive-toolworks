@@ -1,0 +1,68 @@
+{
+  "compliance_mapping": {
+    "version": "1.0.0",
+    "frameworks": {
+      "nist-csf": {
+        "controls": {
+          "PR.IP-3": {
+            "description": "Configuration change control processes are in place",
+            "drift_indicators": [
+              "security_group_rules_modified",
+              "iam_policy_changed",
+              "network_acl_modified"
+            ],
+            "severity_threshold": "medium"
+          },
+          "DE.CM-7": {
+            "description": "Monitoring for unauthorized mobile code",
+            "drift_indicators": [
+              "lambda_function_code_changed",
+              "ec2_user_data_modified"
+            ],
+            "severity_threshold": "high"
+          }
+        }
+      },
+      "fedramp-moderate": {
+        "controls": {
+          "CM-3": {
+            "description": "Configuration Change Control",
+            "drift_indicators": [
+              "any_infrastructure_drift"
+            ],
+            "severity_threshold": "low",
+            "remediation_sla": "24h"
+          },
+          "CM-6": {
+            "description": "Configuration Settings",
+            "drift_indicators": [
+              "encryption_disabled",
+              "logging_disabled",
+              "backup_disabled"
+            ],
+            "severity_threshold": "high",
+            "remediation_sla": "4h"
+          }
+        }
+      }
+    },
+    "resource_type_mapping": {
+      "aws_security_group": {
+        "controls": ["PR.IP-3", "CM-3", "CM-6"],
+        "high_risk_attributes": ["ingress", "egress"]
+      },
+      "aws_iam_role": {
+        "controls": ["PR.IP-3", "CM-3"],
+        "high_risk_attributes": ["assume_role_policy", "inline_policy"]
+      },
+      "aws_kms_key": {
+        "controls": ["CM-6"],
+        "high_risk_attributes": ["key_policy", "deletion_window_in_days"]
+      },
+      "aws_s3_bucket": {
+        "controls": ["CM-6"],
+        "high_risk_attributes": ["versioning", "encryption", "public_access_block"]
+      }
+    }
+  }
+}

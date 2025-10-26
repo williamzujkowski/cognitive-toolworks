@@ -1,0 +1,29 @@
+# Example: Production Database Outage Playbook (P0)
+
+## Incident: PostgreSQL Primary Database Failure
+
+### NIST Phase: Detection & Analysis
+- Monitor alert: "PostgreSQL primary unreachable" (15:42 UTC)
+- Validate: Check replica status, query logs, CPU/memory metrics
+- Scope: Read traffic serving from replicas, writes failing
+
+### NIST Phase: Containment
+- Short-term: Promote read replica to primary (pgpool/patroni)
+- Verify: Run write test query, check replication lag
+- Duration: 5-10 minutes
+
+### NIST Phase: Recovery
+- Restore original primary from backup or rebuild
+- Re-establish replication: primary → replicas
+- Health check: Connection pooling, query performance
+- Duration: 30-60 minutes
+
+### Escalation Matrix
+- 0-15 min: Page on-call DBA (PagerDuty)
+- 15-30 min: Escalate to Database Team Lead
+- 30-60 min: Notify VP Engineering, initiate customer comms
+
+### Communication
+- Internal: #incidents Slack channel (real-time updates)
+- External: Status page update "Database performance degraded"
+- Cadence: Updates every 15 minutes until resolved

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "iotHubName": {
+      "type": "string",
+      "metadata": {
+        "description": "IoT Hub name for edge device connection"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Devices/IotHubs/deployments",
+      "apiVersion": "2021-07-02",
+      "name": "[concat(parameters('iotHubName'), '/edge-deployment')]",
+      "properties": {
+        "content": {
+          "modulesContent": {
+            "$edgeAgent": {
+              "properties.desired": {
+                "schemaVersion": "1.1",
+                "runtime": {
+                  "type": "docker",
+                  "settings": {
+                    "minDockerVersion": "v1.25"
+                  }
+                },
+                "systemModules": {
+                  "edgeAgent": {
+                    "type": "docker",
+                    "settings": {
+                      "image": "mcr.microsoft.com/azureiotedge-agent:1.4",
+                      "createOptions": ""
+                    }
+                  },
+                  "edgeHub": {
+                    "type": "docker",
+                    "status": "running",
+                    "restartPolicy": "always",
+                    "settings": {
+                      "image": "mcr.microsoft.com/azureiotedge-hub:1.4",
+                      "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"443/tcp\":[{\"HostPort\":\"443\"}],\"5671/tcp\":[{\"HostPort\":\"5671\"}],\"8883/tcp\":[{\"HostPort\":\"8883\"}]}}}"
+                    }
+                  }
+                },
+                "modules": {
+                  "dataProcessor": {
+                    "version": "1.0",
+                    "type": "docker",
+                    "status": "running",
+                    "restartPolicy": "always",
+                    "settings": {
+                      "image": "your-acr.azurecr.io/data-processor:latest",
+                      "createOptions": "{\"HostConfig\":{\"Binds\":[\"/data:/app/data\"]}}"
+                    }
+                  }
+                }
+              }
+            },
+            "$edgeHub": {
+              "properties.desired": {
+                "schemaVersion": "1.2",
+                "routes": {
+                  "dataToCloud": "FROM /messages/modules/dataProcessor/outputs/* INTO $upstream",
+                  "localProcessing": "FROM /messages/* INTO BrokeredEndpoint(\"/modules/dataProcessor/inputs/input1\")"
+                },
+                "storeAndForwardConfiguration": {
+                  "timeToLiveSecs": 7200
+                }
+              }
+            }
+          }
+        },
+        "targetCondition": "tags.environment='production'",
+        "priority": 10
+      }
+    }
+  ]
+}
