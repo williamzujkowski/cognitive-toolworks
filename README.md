@@ -1,6 +1,6 @@
 # cognitive-toolworks
 
-64 production-ready Skills and 14 orchestrator Agents for Claude CLI. No fluff.
+61 production-ready Skills and 14 orchestrator Agents for Claude CLI. No fluff.
 
 ## What This Is
 
@@ -86,11 +86,11 @@ Use the core-agent-authoring skill to build a security audit orchestrator for mu
 
 ## What's Inside
 
-**64 skills across 3-tier taxonomy (see CLAUDE.md §2A):**
+**61 skills across 3-tier taxonomy (see CLAUDE.md §2A):**
 
 - **Tier 1 - Core/Foundation** (4): `core-skill-authoring`, `core-agent-authoring`, `core-codex-delegator`, `core-gemini-delegator`
-- **Tier 2 - Domain Skills** (42): Security (8), Testing (5), Cloud (5), DevOps (5), Compliance (2), plus Frontend, Data, Observability, FinOps, Resilience, Documentation, Quality domains
-- **Tier 3 - Specialized** (18): Kubernetes (3), API (2), Database (2), Compliance frameworks (2), plus technology-specific skills
+- **Tier 2 - Domain Skills** (39): Security (8), Testing (5), Cloud (5), DevOps (5), Compliance (2), Frontend (2), Data (1), Observability (2), FinOps (1), Resilience (1), Documentation (1), Quality (1), Integration (1), Tooling (1), plus Architecture, API, Container, Database, MLOps, Microservices, Mobile, Secrets
+- **Tier 3 - Specialized** (18): Kubernetes (3), API (3), Database (2), Compliance (2), Mobile (1), Rust (1), Go (1), Python (1), Terraform (1), SLO (1), E2E Testing (1), Secrets (1)
 
 **Naming convention (domain-first):**
 - Security: `security-appsec-validator`, `security-cloud-analyzer`, `security-iam-reviewer`
@@ -233,8 +233,8 @@ Personal project - cognitive-toolworks
 
 ---
 
-**Last Updated**: 2025-10-26T15:30:00-04:00
+**Last Updated**: 2025-10-26T16:00:00-04:00
 **CLAUDE.md Version**: 1.4.0 (added §2A naming convention taxonomy)
-**Skills**: 64 (3-tier taxonomy: core → domain → specialized)
+**Skills**: 61 (3-tier taxonomy: core → domain → specialized)
 **Agents**: 14 orchestrators
-**Status**: Production
+**Status**: Production (cleaned, no deprecated skills)
