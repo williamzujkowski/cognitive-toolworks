@@ -2,6 +2,18 @@
 name: "DevOps Pipeline Architect"
 slug: devops-pipeline-architect
 description: "Design CI/CD pipelines, IaC templates, and observability stacks with platform-specific integrations and best practices."
+deprecated: true
+deprecated_date: 2025-10-26
+deprecation_reason: "Refactored into 4 focused skills + 1 orchestrator agent following CLAUDE.md ≤2 step principle"
+replacement:
+  orchestrator: "agents/devops-pipeline-orchestrator"
+  skills:
+    - "skills/cicd-pipeline-generator"
+    - "skills/iac-template-generator"
+    - "skills/observability-stack-configurator"
+    - "skills/deployment-strategy-designer"
+  migration_guide: "agents/devops-pipeline-orchestrator/MIGRATION.md"
+  removal_date: 2026-01-26
 capabilities:
   - design_cicd_pipelines
   - generate_platform_configs
@@ -63,6 +75,19 @@ links:
   - https://developer.hashicorp.com/terraform/docs
   - https://opentelemetry.io/docs/
 ---
+
+> **DEPRECATED**: This skill has been refactored into 4 focused skills and 1 orchestrator agent.
+>
+> **Use instead**:
+> - For complete pipeline: `agents/devops-pipeline-orchestrator`
+> - For CI/CD only: `skills/cicd-pipeline-generator`
+> - For IaC only: `skills/iac-template-generator`
+> - For observability only: `skills/observability-stack-configurator`
+> - For deployment strategy only: `skills/deployment-strategy-designer`
+>
+> **Migration guide**: See `agents/devops-pipeline-orchestrator/MIGRATION.md`
+>
+> **Removal date**: 2026-01-26 (3 months from deprecation)
 
 ## Purpose & When-To-Use
 

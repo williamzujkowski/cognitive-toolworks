@@ -1,1 +1,60 @@
-[]
+[
+  {
+    "slug": "agent-creator",
+    "name": "Agent Creator",
+    "description": "Orchestrates research, design, and generation of specialized Claude Code agents following CLAUDE.md standards and AGENT.md format.",
+    "keywords": ["agent-design", "orchestration", "system-prompt", "workflow", "mcp", "agent-authoring"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob", "WebFetch"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/agent-creator/AGENT.md"
+  },
+  {
+    "slug": "compliance-orchestrator",
+    "name": "Compliance Orchestrator",
+    "description": "Orchestrates multi-framework compliance workflows including ATO preparation, OSCAL generation, evidence validation, and continuous monitoring.",
+    "keywords": ["compliance", "automation", "fedramp", "oscal", "ato", "audit", "governance", "nist", "hipaa", "gdpr"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob", "Task"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/compliance-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "devops-pipeline-orchestrator",
+    "name": "DevOps Pipeline Orchestrator",
+    "description": "Orchestrates end-to-end DevOps pipeline design by coordinating CI/CD generation, IaC templates, observability, and deployment strategies.",
+    "keywords": ["devops", "orchestration", "cicd", "infrastructure", "observability", "deployment"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "william@cognitive-toolworks",
+    "entry": "agents/devops-pipeline-orchestrator/AGENT.md",
+    "replaces": "skills/devops-pipeline-architect"
+  },
+  {
+    "slug": "security-auditor",
+    "name": "Security Auditor",
+    "description": "Orchestrates comprehensive security assessments across 8 security domains with threat modeling and compliance mapping.",
+    "keywords": ["security-orchestration", "security-assessment", "threat-modeling", "compliance", "multi-domain-security", "appsec", "cloudsec", "container-security", "zero-trust"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/security-auditor/AGENT.md",
+    "replaces": "skills/security-assessment-framework"
+  },
+  {
+    "slug": "cloud-native-orchestrator",
+    "name": "Cloud-Native Deployment Orchestrator",
+    "description": "Orchestrates end-to-end cloud-native deployments by coordinating container optimization, Kubernetes manifests, Helm charts, service mesh, serverless, and cloud platform integration.",
+    "keywords": ["cloud-native", "kubernetes", "serverless", "deployment-orchestration", "multi-cloud", "containers", "helm", "service-mesh"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/cloud-native-orchestrator/AGENT.md",
+    "replaces": "skills/cloud-native-deployment-orchestrator"
+  }
+]

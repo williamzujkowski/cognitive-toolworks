@@ -41,6 +41,20 @@ version: "1.0.0"
 owner: "cognitive-toolworks"
 license: "MIT"
 security: "Public; no secrets or PII; safe for open repositories"
+deprecated: true
+deprecated_date: "2025-10-26"
+deprecation_reason: "Split into 8 focused skills + 1 orchestrator agent for better modularity"
+replacement_agent: "security-auditor"
+replacement_skills:
+  - "appsec-validator"
+  - "cloudsec-posture-analyzer"
+  - "container-security-checker"
+  - "cryptosec-validator"
+  - "iam-security-reviewer"
+  - "networksec-architecture-validator"
+  - "ossec-hardening-checker"
+  - "zerotrust-maturity-assessor"
+migration_guide: "/agents/security-auditor/MIGRATION.md"
 links:
   - https://owasp.org/www-project-top-ten/
   - https://owasp.org/API-Security/
@@ -51,6 +65,26 @@ links:
   - https://cloud.google.com/architecture/framework/security
   - https://aws.amazon.com/architecture/security-identity-compliance/
 ---
+
+> **⚠️ DEPRECATED as of 2025-10-26**
+>
+> This monolithic skill has been split into 8 focused skills + 1 orchestrator agent for better modularity and adherence to CLAUDE.md ≤2 step principle.
+>
+> **For multi-domain assessments, use:** `/agents/security-auditor/AGENT.md`
+>
+> **For single-domain assessments, use individual skills:**
+> - `/skills/appsec-validator/SKILL.md`
+> - `/skills/cloudsec-posture-analyzer/SKILL.md`
+> - `/skills/container-security-checker/SKILL.md`
+> - `/skills/cryptosec-validator/SKILL.md`
+> - `/skills/iam-security-reviewer/SKILL.md`
+> - `/skills/networksec-architecture-validator/SKILL.md`
+> - `/skills/ossec-hardening-checker/SKILL.md`
+> - `/skills/zerotrust-maturity-assessor/SKILL.md`
+>
+> **Migration guide:** `/agents/security-auditor/MIGRATION.md`
+>
+> **Archive date:** 2026-01-26 (90-day deprecation period)
 
 ## Purpose & When-To-Use
 

@@ -1,0 +1,62 @@
+# Example: FedRAMP Moderate ATO Preparation
+
+## User Request
+"Prepare FedRAMP Moderate ATO package for our cloud SaaS platform hosted on AWS GovCloud"
+
+## Agent Invocation
+orchestrator use compliance-orchestrator \
+  --framework fedramp-moderate \
+  --control-baseline moderate \
+  --evidence-path /compliance/fedramp-moderate/evidence \
+  --system-context @/compliance/system_context.json \
+  --validation-mode comprehensive
+
+## Workflow Execution
+
+Step 1 (Discovery & Requirements):
+- Framework: fedramp-moderate (325 controls from NIST 800-53 Rev 5)
+- Control baseline: Moderate (AC, AT, AU, CA, CM, CP, IA, IR, MA, MP, PE, PL, PS, RA, SA, SC, SI, SR families)
+- Evidence path: /compliance/fedramp-moderate/evidence (accessible ✓)
+- System context: Cloud SaaS Platform (CSP-001) on AWS GovCloud VPC
+- Inherited controls: 160 from AWS GovCloud FedRAMP High authorization
+- Assessment tier: T3 (comprehensive - full artifact suite)
+
+Step 2 (Assessment & Analysis):
+- Evidence scan: 847 files mapped to controls
+- Control mapping: 310/325 controls have evidence (95.4% coverage)
+- Gaps identified: 15 controls lacking sufficient evidence
+  - Critical (3): AC-2(1), AU-6(1), IR-4(1)
+  - High (5): CM-3(2), IA-5(1), SC-8(1), SI-4(2), RA-5(5)
+  - Medium (7): Various documentation and procedural gaps
+- Evidence freshness: 12 files >90 days old (flagged for refresh)
+- Control status distribution:
+  - Implemented: 310 controls
+  - Partially implemented: 10 controls
+  - Planned: 3 controls
+  - Not applicable: 2 controls (physical controls - cloud inherited)
+
+Step 3 (Synthesis & Generation):
+- compliance_report.json: 95.4% coverage, ready-with-findings status
+- oscal_ssp.json: 245KB System Security Plan (325 controls, AWS inheritance documented)
+- oscal_sap.json: 180KB Security Assessment Plan (NIST 800-53A procedures)
+- oscal_sar.json: Assessment results (findings categorized by severity)
+- oscal_poam.json: 8 open items (3 critical gaps, 5 high-priority remediations)
+- remediation_plan.md: 4-6 week timeline for critical gaps, responsible parties assigned
+- dashboard_schema.json: 15 metrics, real-time alerting for AC/IA/SC families
+
+Step 4 (Validation & Finalization):
+- OSCAL SSP validation: ✓ Passes OSCAL 1.1.2 schema
+- Profile alignment: ✓ FedRAMP Moderate baseline correctly applied
+- Cross-references: ✓ Components linked, roles defined, evidence mapped
+- Safety scan: ✓ No secrets, PII, or fabricated data detected
+- Audit trail: ✓ NOW_ET timestamps (2025-10-26T01:33:55-04:00)
+- ATO readiness: 95% - Address 3 critical gaps for submission
+
+## Outputs Delivered
+/output/compliance_report.json
+/output/oscal_ssp.json
+/output/oscal_sap.json
+/output/oscal_sar.json
+/output/oscal_poam.json
+/output/remediation_plan.md
+/output/dashboard_schema.json
