@@ -24,7 +24,7 @@ outputs:
     type: "json"
 keywords: ["authoring", "generator", "skills.md", "progressive-disclosure"]
 version: "1.0.0"
-owner: "cloud.gov OCS"
+owner: "cognitive-toolworks"
 license: "Apache-2.0"
 security:
   pii: "none"
@@ -95,7 +95,7 @@ INDEX_ENTRY:
     "name": "OSCAL SSP Validator for FedRAMP Moderate",
     "summary": "Validates OSCAL SSP against FedRAMP Moderate baseline requirements.",
     "keywords": ["oscal", "ssp", "fedramp", "validation"],
-    "owner": "cloud.gov OCS",
+    "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "skills/oscal-ssp-validate/SKILL.md"
   }
