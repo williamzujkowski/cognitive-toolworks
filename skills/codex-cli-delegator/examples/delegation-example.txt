@@ -1,0 +1,24 @@
+DELEGATION DECISION TREE EXAMPLE
+=================================
+
+Scenario: "Create a Python CLI tool for managing todos"
+
+Step 1: Task Analysis
+  task_type: generation, existing_files: [], complexity: simple
+
+Step 2: Scoring
+  New file creation? YES → Codex +1
+  Boilerplate/template? YES → Codex +2
+  Total: Codex=3, Claude=0
+
+Step 3: Decision (Codex ≥3, Claude ≤1)
+  delegation_decision: codex
+  execution_mode: non-interactive
+
+Step 4: Command
+  codex exec --prompt "Create Python CLI for todos with add, list, complete, delete using Click"
+
+Step 5: Quality Checks
+  [lint, test, security_scan, review]
+
+Output: DELEGATE TO CODEX
