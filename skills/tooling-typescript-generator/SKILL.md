@@ -458,43 +458,34 @@ links:
 
 ## Examples
 
-**Example 1: React Application with Vite**
+**Example: React Application with Vite**
 
-```
-INPUT: {
-  project_type: "react",
-  package_manager: "pnpm",
-  typescript_version: "5.5",
-  project_name: "dashboard-app"
-}
-
+```yaml
+INPUT: {project_type: "react", package_manager: "pnpm", typescript_version: "5.5"}
 OUTPUT:
 structure:
-  - src/
-    - App.tsx
-    - main.tsx
-    - vite-env.d.ts
+  - src/{App.tsx, main.tsx, vite-env.d.ts}
   - public/
-  - index.html
-  - vite.config.ts
-  - tsconfig.json
-
+  - index.html, vite.config.ts, tsconfig.json
 vite.config.ts:
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-
-export default defineConfig({
-  plugins: [react()]
-});
-
+  import { defineConfig } from 'vite';
+  import react from '@vitejs/plugin-react';
+  export default defineConfig({ plugins: [react()] });
+tsconfig.json:
+  {
+    "compilerOptions": {
+      "target": "ES2020", "module": "ESNext",
+      "lib": ["ES2020", "DOM"],
+      "jsx": "react-jsx", "strict": true,
+      "moduleResolution": "bundler"
+    }
+  }
 commands:
   install: "pnpm install"
   dev: "pnpm vite"
   build: "pnpm vite build"
   test: "pnpm vitest"
 ```
-
-_(Full output truncated for ≤30 line limit)_
 
 ---
 

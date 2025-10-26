@@ -1,0 +1,89 @@
+# Evaluation scenarios for database-schema-designer skill
+
+scenarios:
+  - name: simple-inventory-schema
+    description: Design a basic inventory management schema
+    input:
+      business_requirements: |
+        We need to track products, suppliers, and warehouse locations.
+        Each product has a SKU, name, price, and quantity.
+        Suppliers provide products (many-to-many).
+        Products are stored in warehouse locations.
+      database_type: postgres
+      scale_requirements: ~10K products, ~100 suppliers, ~50 warehouse locations
+    expected_tier: T1
+    success_criteria:
+      - ERD includes Product, Supplier, WarehouseLocation, ProductSupplier entities
+      - Junction table for many-to-many relationship
+      - Primary and foreign keys defined
+      - Basic indexes on foreign keys
+
+  - name: user-audit-schema-with-migration
+    description: Add audit logging to existing user system
+    input:
+      existing_schema: |
+        CREATE TABLE users (
+          user_id SERIAL PRIMARY KEY,
+          username VARCHAR(50),
+          email VARCHAR(255)
+        );
+      business_requirements: |
+        Add audit trail for all user changes (who, when, what changed).
+        Track login attempts and sessions.
+      database_type: postgres
+      scale_requirements: 100K users, 1M audit records per month
+    expected_tier: T2
+    success_criteria:
+      - Migration plan from existing schema
+      - Audit table with user_id FK, change_timestamp, old_value, new_value
+      - Session tracking table
+      - Rollback scripts provided
+      - Indexes on timestamp for time-based queries
+
+  - name: denormalization-decision
+    description: Evaluate denormalization for read-heavy system
+    input:
+      business_requirements: |
+        Analytics dashboard showing user activity metrics.
+        Queries join users, posts, comments (3 tables).
+        99% reads, 1% writes. Need <50ms response time.
+      database_type: postgres
+      scale_requirements: 1M users, 10M posts, 50M comments
+    expected_tier: T2
+    success_criteria:
+      - Denormalization recommendation with justification
+      - Materialized view or summary table design
+      - Refresh strategy documented
+      - Read:write ratio justification provided
+
+  - name: partitioning-strategy-large-scale
+    description: Design partitioned schema for time-series data
+    input:
+      business_requirements: |
+        Store IoT sensor readings: device_id, timestamp, value.
+        Retain 90 days, archive older data.
+        1M devices, 1 reading/minute/device = 1.4B records/day.
+      database_type: postgres
+      scale_requirements: Multi-TB dataset, high write throughput
+    expected_tier: T3
+    success_criteria:
+      - Range partitioning by timestamp (daily or weekly)
+      - Partition management strategy (create, drop, archive)
+      - Index design for partition pruning
+      - Archive table and purge procedures
+
+  - name: nosql-document-schema
+    description: Design MongoDB document schema
+    input:
+      business_requirements: |
+        E-commerce product catalog with variable attributes.
+        Products have categories, tags, and dynamic specs (size, color, etc.).
+        Support faceted search.
+      database_type: mongodb
+      scale_requirements: 100K products, 1K categories
+    expected_tier: T1
+    success_criteria:
+      - Embedded document design for product specs
+      - Array fields for tags and categories
+      - Index strategy for faceted search
+      - Reference vs embedding decision documented

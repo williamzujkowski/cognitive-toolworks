@@ -382,6 +382,26 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/database-optimization-analyzer/SKILL.md"
   },
   {
+    "slug": "database-schema-designer",
+    "name": "Database Schema Designer",
+    "summary": "Design normalized database schemas with ERDs, migration plans, and indexing strategies for relational and document databases",
+    "keywords": [
+      "database",
+      "schema",
+      "ERD",
+      "normalization",
+      "migration",
+      "SQL",
+      "DDL",
+      "indexes",
+      "constraints",
+      "data-modeling"
+    ],
+    "owner": "cloud.gov OCS",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/database-schema-designer/SKILL.md"
+  },
+  {
     "slug": "devops-cicd-generator",
     "name": "CI/CD Pipeline Generator",
     "summary": "Generate platform-specific CI/CD pipeline configurations for GitHub Actions, GitLab CI, Jenkins, and Azure DevOps with build, test, and deploy stages.",

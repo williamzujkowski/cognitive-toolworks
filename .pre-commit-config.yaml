@@ -71,7 +71,7 @@ repos:
       - id: debug-statements
       - id: name-tests-test
         args: [--pytest-test-first]
-        files: ^tests/
+        files: ^tests/.*\.py$
 
   # Markdown linting
   - repo: https://github.com/igorshubovych/markdownlint-cli

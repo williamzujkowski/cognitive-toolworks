@@ -308,45 +308,34 @@ links:
 
 ## Examples
 
-**Example 1: Spring Boot Microservice with Maven**
+**Example: Spring Boot Microservice with Maven**
 
-```
-INPUT: {
-  project_type: "spring-boot",
-  build_tool: "maven",
-  java_version: "21",
-  project_name: "user-service"
-}
-
+```yaml
+INPUT: {project_type: "spring-boot", build_tool: "maven", java_version: "21"}
 OUTPUT:
 structure:
-  - src/main/java/com/example/userservice/
-    - UserServiceApplication.java
-    - controller/UserController.java
-    - service/UserService.java
-    - repository/UserRepository.java
-  - src/main/resources/
-    - application.yml
-  - src/test/java/com/example/userservice/
-    - UserServiceApplicationTests.java
+  - src/main/java/com/example/service/ServiceApplication.java
+  - src/main/java/com/example/service/controller/
+  - src/main/java/com/example/service/service/
+  - src/main/resources/application.yml
+  - src/test/java/com/example/service/
   - pom.xml
   - Dockerfile
-
-pom.xml excerpt:
-<parent>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-parent</artifactId>
-  <version>3.2.0</version>
-</parent>
-
+pom.xml:
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.2.0</version>
+  </parent>
+  <dependencies>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId></dependency>
+  </dependencies>
 commands:
   build: "mvn clean install"
-  test: "mvn test"
-  package: "mvn package"
   run: "mvn spring-boot:run"
+  test: "mvn test"
 ```
-
-_(Full output truncated for ≤30 line limit)_
 
 ---
 
