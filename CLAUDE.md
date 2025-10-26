@@ -2,9 +2,9 @@
 
 ```
 STATUS: AUTHORITATIVE
-VERSION: 1.3.0
-LAST_AUDIT: 2025-10-26T02:15:00-04:00
-NEXT_REVIEW: 2026-01-24T02:15:00-05:00
+VERSION: 1.4.0
+LAST_AUDIT: 2025-10-26T15:30:00-04:00
+NEXT_REVIEW: 2026-01-24T15:30:00-05:00
 SCOPE: Personal/public Skills library (Anthropic Skills standard)
 ```
 
@@ -175,6 +175,111 @@ Rules:
 * **One agent per folder** with a single `AGENT.md`.
 * Always include a **`.gitkeep`** in otherwise-empty directories.
 * Prefer **editing** existing skills/agents over creating new ones.
+
+---
+
+## 2A) Naming Convention Standards (3-Tier Taxonomy)
+
+**Slug Format: `{domain}-{scope}-{action}` (domain-first)**
+
+All skills and agents must follow a **domain-first naming convention** for discoverability, hierarchy, and intelligent routing.
+
+**Tier 1: Core/Foundation Skills**
+
+Skills that are meta-capabilities or cross-cutting infrastructure.
+
+* **Prefix**: `core-*`
+* **When to use**: Skill/agent authoring, LLM delegation, repository tooling
+* **Examples**: `core-skill-authoring`, `core-agent-authoring`, `core-codex-delegator`, `core-gemini-delegator`
+
+**Tier 2: Domain Skills**
+
+Skills that apply to high-level domain activities.
+
+* **Format**: `{domain}-{scope}-{action}`
+* **Domains**: `security`, `testing`, `cloud`, `devops`, `compliance`, `frontend`, `data`, `observability`, `finops`, `resilience`, `documentation`, `quality`, `integration`, `tooling`
+* **Examples**:
+  * Security: `security-appsec-validator`, `security-cloud-analyzer`, `security-iam-reviewer`
+  * Testing: `testing-unit-generator`, `testing-integration-designer`, `testing-load-designer`
+  * Cloud: `cloud-aws-architect`, `cloud-multicloud-advisor`, `cloud-edge-architect`
+  * DevOps: `devops-cicd-generator`, `devops-iac-generator`, `devops-drift-detector`
+
+**Tier 3: Specialized/Technology-Specific Skills**
+
+Skills requiring deep expertise in specific technologies.
+
+* **Format**: `{technology}-{scope}-{action}` or `{domain}-{technology}-{action}`
+* **When to use**: Kubernetes, database, API patterns, specific compliance frameworks
+* **Examples**:
+  * Kubernetes: `kubernetes-helm-builder`, `kubernetes-servicemesh-configurator`
+  * Compliance: `compliance-fedramp-validator`, `compliance-oscal-validator`
+  * API: `api-graphql-designer`
+  * Database: `database-migration-generator`
+
+**18 Standardized Action Suffixes (in precedence order)**
+
+Use these suffixes consistently. Prefer higher-precedence suffixes when ambiguous:
+
+1. `orchestrator` — multi-skill coordinator (agents only)
+2. `architect` — high-level design and structure
+3. `designer` — detailed design and patterns
+4. `composer` — combines multiple components
+5. `builder` — constructs artifacts from specifications
+6. `generator` — produces code/config from inputs
+7. `validator` — checks correctness against rules
+8. `analyzer` — evaluates and provides insights
+9. `checker` — verifies specific conditions
+10. `assessor` — measures maturity/compliance level
+11. `calculator` — computes metrics/values
+12. `optimizer` — improves performance/cost
+13. `detector` — identifies issues/drift
+14. `reviewer` — evaluates quality/security
+15. `configurator` — sets up tools/systems
+16. `integrator` — connects platforms/services
+17. `advisor` — provides strategic guidance
+18. `delegator` — routes work to external systems
+
+**Agent Naming Convention**
+
+* **Format**: `{domain}-orchestrator` (always ends in `-orchestrator`)
+* **Exception**: Core agents like `agent-creator` may use different patterns
+* **Examples**: `cloud-aws-orchestrator`, `security-auditor`, `devops-pipeline-orchestrator`
+
+**Naming Decision Matrix**
+
+| If skill... | Use tier | Format | Example |
+|-------------|----------|--------|---------|
+| Creates/manages skills/agents | Tier 1 | `core-{action}` | `core-skill-authoring` |
+| Delegates to external LLMs | Tier 1 | `core-{system}-delegator` | `core-codex-delegator` |
+| Applies to broad domain | Tier 2 | `{domain}-{scope}-{action}` | `security-appsec-validator` |
+| Technology-specific | Tier 3 | `{tech}-{scope}-{action}` | `kubernetes-helm-builder` |
+| Compliance framework | Tier 3 | `compliance-{framework}-{action}` | `compliance-fedramp-validator` |
+
+**Routing Strategy**
+
+The naming convention enables intelligent skill selection:
+
+1. **Domain matching**: Extract domain from user request → filter skills by domain prefix
+2. **Scope narrowing**: Identify specific technology (e.g., Kubernetes) → prefer Tier 3 specialized skills
+3. **Action selection**: Match user intent to action suffix (e.g., "validate" → `*-validator` skills)
+4. **Fallback**: If no specialized skill exists, route to domain-level skill or orchestrator agent
+
+**Discoverability Rules**
+
+* All security skills start with `security-*` → easily grep/filter
+* All testing skills start with `testing-*` → quick test tooling discovery
+* All Kubernetes skills contain `kubernetes-` → technology-specific grouping
+* All orchestrators end with `-orchestrator` → instant agent identification
+
+**Renaming Checklist** (when standardizing existing skills)
+
+* [ ] Update skill slug in SKILL.md front-matter
+* [ ] Rename directory: `skills/{old-slug}/ → skills/{new-slug}/`
+* [ ] Update `index/skills-index.json` entry
+* [ ] Update all cross-references in other SKILL.md/AGENT.md files
+* [ ] Rename test file: `tests/evals_{old-slug}.yaml → tests/evals_{new-slug}.yaml`
+* [ ] Run `python tooling/validate_skill.py` to verify
+* [ ] Update any README or documentation referencing the old slug
 
 ---
 

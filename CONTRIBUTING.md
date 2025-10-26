@@ -5,8 +5,9 @@ Thank you for contributing to this Skills repository. This guide ensures consist
 ## Before You Start
 
 1. Read **CLAUDE.md** - the authoritative ruleset
-2. Review existing skills in `/skills/` for examples
-3. Check `/index/skills-index.json` to avoid duplicate slugs
+2. Review **CLAUDE.md §2A** - naming convention (domain-first taxonomy)
+3. Review existing skills in `/skills/` for examples
+4. Check `/index/skills-index.json` to avoid duplicate slugs
 
 ## Contribution Process
 
@@ -14,8 +15,12 @@ Thank you for contributing to this Skills repository. This guide ensures consist
 
 **For New Skills:**
 
-- Use the skill-creation template from CLAUDE.md section 9A
-- Follow the exact section order from CLAUDE.md section 3
+- Follow naming convention (CLAUDE.md §2A): `{domain}-{scope}-{action}`
+  * Tier 1 (Core): `core-*` prefix
+  * Tier 2 (Domain): `security-*`, `testing-*`, `cloud-*`, `devops-*`
+  * Tier 3 (Specialized): `kubernetes-*`, `compliance-*`, technology-specific
+- Use standardized action suffixes (see CLAUDE.md §2A): `*-validator`, `*-generator`, `*-designer`, etc.
+- Follow the exact section order from CLAUDE.md §3
 - Keep the skill focused on one capability
 - Token budgets: T1 ≤2k, T2 ≤6k, T3 ≤12k
 
@@ -146,4 +151,5 @@ By contributing, you agree that your contributions will be licensed under Apache
 ---
 
 **Maintained by**: cognitive-toolworks
-**Last Updated**: 2025-10-25
+**Last Updated**: 2025-10-26T15:30:00-04:00
+**CLAUDE.md Version**: 1.4.0
