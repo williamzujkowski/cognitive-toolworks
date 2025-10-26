@@ -1,0 +1,29 @@
+{
+  "slug": "compliance-automation-engine",
+  "name": "Compliance Automation Engine",
+  "summary": "Automate compliance checks for NIST, FedRAMP, FISMA, GDPR, HIPAA, and fintech regulations with OSCAL artifact generation and evidence validation.",
+  "category": "compliance",
+  "keywords": [
+    "compliance",
+    "automation",
+    "nist",
+    "fedramp",
+    "fisma",
+    "oscal",
+    "gdpr",
+    "hipaa",
+    "controls",
+    "ato",
+    "security",
+    "governance"
+  ],
+  "dependencies": [
+    "security-assessment-framework"
+  ],
+  "priority": "P0",
+  "phase": 1,
+  "token_budget": "T3",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/compliance-automation-engine/SKILL.md"
+}

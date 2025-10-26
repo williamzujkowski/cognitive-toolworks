@@ -1,0 +1,235 @@
+# Evaluation Scenarios for DevOps Pipeline Architect Skill
+# Version: 1.0.0
+# Last Updated: 2025-10-25T21:30:36-04:00
+
+metadata:
+  skill_slug: devops-pipeline-architect
+  skill_version: 1.0.0
+  total_scenarios: 5
+  tier_coverage:
+    t1: 2
+    t2: 3
+
+scenarios:
+  - id: eval-001
+    name: "Basic Node.js GitHub Actions Pipeline"
+    tier: T1
+    description: "Generate basic CI/CD pipeline for Node.js app with testing and deployment to single environment"
+    inputs:
+      platform: "github-actions"
+      tech_stack:
+        - "nodejs"
+        - "docker"
+      requirements:
+        testing:
+          - "unit"
+        security_gates:
+          - "sca"
+        deployment_strategy: "rolling"
+      infrastructure:
+        cloud_provider: "aws"
+        environments:
+          - "production"
+    expected_outputs:
+      - pipeline_config file: ".github/workflows/ci-cd.yml"
+      - contains stages: ["build", "test", "security", "deploy"]
+      - includes Node.js version setup
+      - includes npm caching
+      - includes Snyk or Dependabot for SCA
+      - deployment to single environment
+    success_criteria:
+      - "Pipeline YAML is syntactically valid"
+      - "Token count ≤ 2000"
+      - "Contains health check or smoke test"
+      - "No hardcoded secrets"
+    estimated_runtime: "< 30 seconds"
+
+  - id: eval-002
+    name: "Python GitLab CI with Multi-Environment Deployment"
+    tier: T1
+    description: "Generate GitLab CI pipeline for Python app with pytest and deployment to staging"
+    inputs:
+      platform: "gitlab-ci"
+      tech_stack:
+        - "python"
+        - "docker"
+      requirements:
+        testing:
+          - "unit"
+          - "integration"
+        security_gates:
+          - "sast"
+        deployment_strategy: "rolling"
+      infrastructure:
+        cloud_provider: "gcp"
+        environments:
+          - "staging"
+    expected_outputs:
+      - pipeline_config file: ".gitlab-ci.yml"
+      - stages: ["build", "test", "security", "deploy"]
+      - includes Python version and pip caching
+      - includes SAST scanning (Semgrep or GitLab SAST)
+      - deployment to staging with GCP integration
+    success_criteria:
+      - "Pipeline YAML is valid GitLab CI syntax"
+      - "Token count ≤ 2000"
+      - "Includes code coverage reporting"
+      - "Security scanning is blocking"
+    estimated_runtime: "< 30 seconds"
+
+  - id: eval-003
+    name: "Multi-Environment Pipeline with IaC and Blue-Green Deployment"
+    tier: T2
+    description: "Complex pipeline with Terraform IaC, blue-green deployment, and comprehensive observability"
+    inputs:
+      platform: "github-actions"
+      tech_stack:
+        - "nodejs"
+        - "docker"
+        - "kubernetes"
+      requirements:
+        testing:
+          - "unit"
+          - "integration"
+          - "e2e"
+        security_gates:
+          - "sast"
+          - "sca"
+          - "secret-scan"
+          - "container-scan"
+        deployment_strategy: "blue-green"
+      infrastructure:
+        cloud_provider: "aws"
+        iac_tool: "terraform"
+        environments:
+          - "staging"
+          - "production"
+    expected_outputs:
+      - pipeline_config: GitHub Actions workflow with environment-specific jobs
+      - iac_templates: Terraform modules for EKS, VPC, networking
+      - observability_config: Prometheus metrics, CloudWatch logs, OpenTelemetry tracing
+      - deployment_strategy: Blue-green implementation with traffic switching
+      - security: All 4 scan types integrated
+    success_criteria:
+      - "Token count ≤ 6000"
+      - "Terraform modules pass 'terraform validate'"
+      - "Blue-green deployment includes rollback procedure"
+      - "Observability covers RED metrics (Rate, Errors, Duration)"
+      - "Manual approval gate for production"
+      - "Pipeline includes environment promotion flow"
+    estimated_runtime: "< 90 seconds"
+
+  - id: eval-004
+    name: "Jenkins Declarative Pipeline with Canary Deployment"
+    tier: T2
+    description: "Jenkins pipeline with canary deployment strategy and progressive traffic shifting"
+    inputs:
+      platform: "jenkins"
+      tech_stack:
+        - "java"
+        - "maven"
+        - "docker"
+        - "kubernetes"
+      requirements:
+        testing:
+          - "unit"
+          - "integration"
+          - "performance"
+        security_gates:
+          - "sast"
+          - "sca"
+          - "dast"
+        deployment_strategy: "canary"
+      infrastructure:
+        cloud_provider: "aws"
+        iac_tool: "terraform"
+        environments:
+          - "staging"
+          - "production"
+    expected_outputs:
+      - pipeline_config: Jenkinsfile (declarative syntax)
+      - iac_templates: Terraform for EKS cluster with Istio/service mesh
+      - deployment_strategy: Canary with traffic percentages (5% → 25% → 50% → 100%)
+      - observability: Metrics-based promotion criteria
+      - testing: Performance tests run on canary deployment
+    success_criteria:
+      - "Token count ≤ 6000"
+      - "Jenkinsfile uses declarative pipeline syntax"
+      - "Canary deployment has automatic rollback on error rate threshold"
+      - "Performance tests validate canary before promotion"
+      - "Service mesh configuration included for traffic splitting"
+      - "DAST testing against staging environment"
+    estimated_runtime: "< 90 seconds"
+
+  - id: eval-005
+    name: "Multi-Platform IaC with Observability Stack"
+    tier: T2
+    description: "Generate IaC templates for multi-cloud with comprehensive observability (Prometheus, Grafana, OpenTelemetry)"
+    inputs:
+      platform: "github-actions"
+      tech_stack:
+        - "python"
+        - "docker"
+        - "kubernetes"
+      requirements:
+        testing:
+          - "unit"
+          - "integration"
+        security_gates:
+          - "sast"
+          - "sca"
+          - "container-scan"
+        deployment_strategy: "rolling"
+      infrastructure:
+        cloud_provider: "multi"
+        iac_tool: "terraform"
+        environments:
+          - "staging"
+          - "production"
+    expected_outputs:
+      - pipeline_config: GitHub Actions with IaC integration
+      - iac_templates: Cloud-agnostic Kubernetes manifests + provider-specific networking
+      - observability_config:
+          - Prometheus scrape configs
+          - Grafana dashboards (JSON)
+          - OpenTelemetry collector config
+          - Alert rules for critical metrics
+      - deployment_strategy: Rolling update with health checks
+    success_criteria:
+      - "Token count ≤ 6000"
+      - "Observability stack includes metrics, logs, and traces"
+      - "Prometheus alert rules defined (high error rate, high latency, low availability)"
+      - "OpenTelemetry auto-instrumentation configured"
+      - "Grafana dashboards include RED and USE metrics"
+      - "IaC templates are cloud-agnostic (use K8s primitives)"
+      - "Log aggregation configured (Loki or CloudWatch)"
+    estimated_runtime: "< 90 seconds"
+
+quality_gates:
+  - name: "No hardcoded secrets"
+    description: "All outputs must reference secrets via variables/environment, never hardcode"
+    severity: critical
+  - name: "Token budget compliance"
+    description: "T1 scenarios ≤ 2k tokens, T2 scenarios ≤ 6k tokens"
+    severity: critical
+  - name: "Security scanning is blocking"
+    description: "Pipeline must fail on critical vulnerabilities"
+    severity: high
+  - name: "Deployment includes rollback procedure"
+    description: "All deployment strategies must document rollback steps"
+    severity: high
+  - name: "Observability baseline"
+    description: "T2 outputs must include at minimum: error rate, latency, throughput metrics"
+    severity: medium
+
+test_execution:
+  run_command: "python3 tooling/run_evals.py devops-pipeline-architect"
+  timeout_seconds: 300
+  retry_policy:
+    max_retries: 2
+    retry_on: ["timeout", "rate_limit"]
+  validation:
+    - "Parse YAML/Groovy syntax"
+    - "Check token counts"
+    - "Verify secret patterns (fail if hardcoded secrets found)"
+    - "Validate required sections present in outputs"

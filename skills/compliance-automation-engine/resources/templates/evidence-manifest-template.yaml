@@ -1,0 +1,47 @@
+# Evidence Manifest Template
+# Maps evidence artifacts to compliance controls
+
+metadata:
+  system_id: "SYS-001"
+  system_name: "Example System"
+  framework: "fedramp-moderate"
+  generated_date: "2025-10-25T21:30:36-04:00"
+
+evidence_mappings:
+  - control_id: "AC-2"
+    control_title: "Account Management"
+    evidence:
+      - type: "policy"
+        file: "policies/IAM-Policy-v2.1.pdf"
+        description: "Identity and Access Management Policy"
+        date: "2025-09-15"
+
+      - type: "procedure"
+        file: "procedures/Account-Provisioning-SOP.pdf"
+        description: "Standard Operating Procedure for Account Lifecycle"
+        date: "2025-09-20"
+
+      - type: "configuration"
+        file: "configs/okta-config-export.json"
+        description: "Okta IdP configuration showing automated provisioning"
+        date: "2025-10-20"
+
+      - type: "test"
+        file: "test-results/AC-2-automated-test-2025-10.json"
+        description: "Automated test of account provisioning workflow"
+        date: "2025-10-18"
+
+  - control_id: "AU-6"
+    control_title: "Audit Review, Analysis, and Reporting"
+    evidence:
+      - type: "policy"
+        file: "policies/Audit-Logging-Policy-v1.3.pdf"
+        description: "Security Audit and Logging Policy"
+        date: "2025-08-10"
+
+      - type: "configuration"
+        file: "configs/splunk-correlation-rules.json"
+        description: "SIEM correlation rules for security event analysis"
+        date: "2025-10-15"
+
+# Add additional control mappings as needed
