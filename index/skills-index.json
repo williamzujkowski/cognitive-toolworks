@@ -1,5 +1,21 @@
 [
   {
+    "slug": "agent-creation",
+    "name": "Create Specialized Agent for Claude Code CLI",
+    "summary": "Generate comprehensive AGENT.md specs with system prompts, workflows, and tool restrictions following Claude Code CLI standards.",
+    "keywords": [
+      "agent-authoring",
+      "claude-code",
+      "system-prompt",
+      "workflow",
+      "orchestration",
+      "mcp"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/agent-creation/SKILL.md"
+  },
+  {
     "slug": "api-design-validator",
     "name": "API Design Validator",
     "summary": "Design and validate REST and GraphQL APIs with OpenAPI/GraphQL schema generation, security hardening, and OWASP API Security compliance.",
@@ -485,7 +501,7 @@
       "skills.md",
       "progressive-disclosure"
     ],
-    "owner": "cloud.gov OCS",
+    "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/skill-creation/SKILL.md"
   },
