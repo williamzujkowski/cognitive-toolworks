@@ -1,0 +1,29 @@
+# Multi-Cloud Cost Optimization: AWS + GCP + Azure
+
+INPUT: [aws: $125k/mo, gcp: $80k/mo, azure: $40k/mo], scope: all, range: 90d
+
+OUTPUT: Total $245k/mo | Waste: $68k (28%) | Savings: $52k/mo
+
+CROSS-CLOUD WASTE:
+- Unused VPN (AWS DirectConnect + Azure ExpressRoute): $1.8k/mo
+- Duplicate backups (S3 + Cloud Storage 50TB each): $2.3k/mo
+- Under-utilized AWS RI (68% utilization): $4.2k/mo
+
+WORKLOAD PLACEMENT:
+analytics: AWS Redshift $12k → GCP BigQuery $6.8k = $5.2k/mo savings
+ml-training: Azure ML $8.5k → GCP Vertex AI $5.1k = $3.4k/mo savings
+storage: AWS S3 $4.2k → GCP Cloud Storage $2.9k = $1.3k/mo savings
+
+COMMITMENT REBALANCING:
+Current: AWS 51%, GCP 18%, Azure 35% (28% blended discount)
+Target: AWS 40%, GCP 45%, Azure 15% (42% blended discount)
+Savings: $8.4k/month
+
+EGRESS: 150TB/mo AWS→GCP at $0.10/GB = $15k/mo (6% total)
+Fix: Consolidate analytics in GCP → reduce transfer 80% → save $12k/mo
+
+ACTION PLAN:
+1. Delete unused VPN (6 items) → $1.8k/mo, LOW effort
+2. Consolidate backups → $2.3k/mo, LOW effort
+3. Rebalance commitments → $8.4k/mo, MED effort
+4. Migrate analytics to GCP → $5.2k/mo, HIGH, ROI 1.13x

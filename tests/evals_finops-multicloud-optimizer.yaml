@@ -1,0 +1,115 @@
+scenarios:
+  - name: cross-cloud-waste-detection
+    description: "Detect unused cross-cloud resources and duplicate data"
+    input:
+      cloud_accounts:
+        - provider: aws
+          monthly_spend: 85000
+          unused_resources: ["3 Direct Connect links", "12 unattached EBS volumes"]
+        - provider: gcp
+          monthly_spend: 45000
+          unused_resources: ["2 Cloud Interconnect links"]
+        - provider: azure
+          monthly_spend: 30000
+          unused_resources: ["5 ExpressRoute circuits"]
+      optimization_scope: all
+      time_range: 90d
+    expected_findings:
+      - unused_cross_cloud_vpn: "$3,600/month"
+      - duplicate_backup_storage: "$1,800/month"
+      - orphaned_load_balancers: "$450/month"
+    token_tier: T1
+
+  - name: workload-placement-analytics-to-gcp
+    description: "Analytics workload cheaper on GCP BigQuery than AWS Redshift"
+    input:
+      cloud_accounts:
+        - provider: aws
+          workloads:
+            - id: "analytics-cluster"
+              type: "data-warehouse"
+              current_service: "Redshift dc2.8xlarge cluster"
+              monthly_cost: 14500
+              data_volume_tb: 200
+        - provider: gcp
+          monthly_spend: 25000
+      optimization_scope: compute
+      business_constraints:
+        migration_flexibility: high
+        compliance: none
+      time_range: 90d
+    expected_recommendation: "gcp"
+    expected_service: "BigQuery"
+    expected_monthly_savings: ">$6,000"
+    expected_rationale: "BigQuery serverless pricing more cost-effective for analytics workloads"
+    token_tier: T2
+
+  - name: commitment-rebalancing-multi-cloud
+    description: "Over-committed on AWS, under-committed on GCP"
+    input:
+      cloud_accounts:
+        - provider: aws
+          monthly_spend: 150000
+          commitment_coverage: 65%
+          commitment_utilization: 72%
+        - provider: gcp
+          monthly_spend: 100000
+          commitment_coverage: 15%
+          on_demand_percentage: 85%
+        - provider: azure
+          monthly_spend: 50000
+          commitment_coverage: 40%
+      optimization_scope: all
+      time_range: 180d
+    expected_rebalancing:
+      aws: "reduce RI commitment by 15%"
+      gcp: "increase CUD commitment to 50%+ coverage"
+      azure: "maintain current 40% coverage"
+    expected_blended_discount_improvement: "28% → 40%+"
+    expected_monthly_savings: "$12,000+"
+    token_tier: T2
+
+  - name: egress-cost-optimization
+    description: "High cross-cloud data transfer costs"
+    input:
+      cloud_accounts:
+        - provider: aws
+          monthly_spend: 80000
+          egress_to_gcp: "120TB/month"
+          egress_cost: 12000
+        - provider: gcp
+          monthly_spend: 60000
+      optimization_scope: data-transfer
+      time_range: 90d
+    expected_findings:
+      egress_percentage: "15% of AWS spend"
+      cross_cloud_transfer: "120TB/month at $0.10/GB"
+    expected_recommendation: "Consolidate workloads in single cloud or use direct peering"
+    expected_savings: ">$9,000/month from 80% egress reduction"
+    token_tier: T2
+
+  - name: insufficient-data-error
+    description: "Error case: Less than 30 days of billing data"
+    input:
+      cloud_accounts:
+        - provider: aws
+          monthly_spend: 50000
+          data_availability: "14 days"
+        - provider: gcp
+          monthly_spend: 30000
+          data_availability: "14 days"
+      optimization_scope: all
+      time_range: 30d
+    expected_error: "Insufficient cost data (<30 days); cannot perform reliable trend analysis"
+    token_tier: T1
+
+  - name: single-cloud-deployment-warning
+    description: "Warning case: Only one cloud provider (should use finops-cost-analyzer instead)"
+    input:
+      cloud_accounts:
+        - provider: aws
+          monthly_spend: 100000
+      optimization_scope: all
+      time_range: 90d
+    expected_warning: "Single cloud detected; use finops-cost-analyzer skill for better single-cloud optimization"
+    token_tier: T1
