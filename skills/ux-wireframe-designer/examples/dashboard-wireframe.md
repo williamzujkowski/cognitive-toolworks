@@ -1,38 +1,29 @@
-# Analytics Dashboard Wireframe (T2 Example)
+# Analytics Dashboard Wireframe
 
-## User Story
-As a business analyst, I want to view key metrics and charts on a dashboard so that I can monitor business performance at a glance.
+**User Story**: Business analyst wants to view key metrics and charts to monitor performance at a glance.
 
-## Screen: Main Dashboard
-
-### Desktop Layout (1280px+)
+## Desktop Layout (1280px+)
 ```
 +------------------------------------------------------------------+
 | [Logo] Analytics Dashboard              [Profile ▼] [Settings]  |
 +------------------------------------------------------------------+
 | Sidebar (240px)      | Main Content Area (1040px)                |
-|                      |                                           |
 | • Overview           | +-------+ +-------+ +-------+ +-------+  |
 | • Reports            | | Users | | Sales | |Growth | |Churn  |  |
 | • Analytics          | | 1,234 | |$52K   | | +12% | | -2%   |  |
 | • Settings           | +-------+ +-------+ +-------+ +-------+  |
-|                      |                                           |
 | [+ New Report]       | Revenue Trend (Last 30 Days)             |
 |                      | +-----------------------------------+    |
-|                      | |                              📈  |    |
-|                      | |  [Line Chart Placeholder]        |    |
+|                      | |  [Line Chart: Revenue over time] |    |
 |                      | +-----------------------------------+    |
-|                      |                                           |
 |                      | Recent Activity                          |
-|                      | +-----------------------------------+    |
-|                      | | • User signup: john@example.com   |    |
-|                      | | • Payment received: $299          |    |
-|                      | | • Report generated: Q4 Summary    |    |
-|                      | +-----------------------------------+    |
+|                      | • User signup: john@example.com          |
+|                      | • Payment received: $299                 |
+|                      | • Report generated: Q4 Summary           |
 +------------------------------------------------------------------+
 ```
 
-### Mobile Layout (375px)
+## Mobile Layout (375px)
 ```
 +---------------------+
 | ☰  Dashboard   [👤] |
@@ -41,41 +32,22 @@ As a business analyst, I want to view key metrics and charts on a dashboard so t
 | | Users | | Sales | |
 | | 1,234 | |$52K   | |
 | +-------+ +-------+ |
-| +-------+ +-------+ |
-| |Growth | |Churn  | |
-| | +12% | | -2%   | |
-| +-------+ +-------+ |
-|                     |
-| Revenue (30d)       |
+| Revenue (30d) 📈    |
 | +-----------------+ |
-| |   [Chart]      | |
+| |  [Line Chart]  | |
 | +-----------------+ |
-|                     |
 | Recent Activity     |
 | • User signup       |
-| • Payment $299      |
 +---------------------+
 ```
 
-## Component Specifications
+## Component Specs
 
-### Metric Card
-- **States**: default, loading (skeleton), error
-- **Interaction**: Click to drill down to detailed view
-- **Accessibility**: aria-label="Total users: 1234"
+**Metric Cards**: States (default, loading, error), click to drill down, aria-label with values
+**Sidebar**: Collapsed (mobile), expanded (desktop), keyboard navigation (arrows + Enter)
+**Chart Widget**: Skeleton loading, error retry button, hover tooltips with data points
 
-### Sidebar Navigation
-- **States**: collapsed (mobile), expanded (desktop)
-- **Keyboard**: Arrow keys navigate, Enter selects
-- **Responsive**: Hamburger menu on mobile (<768px)
-
-### Chart Widget
-- **Loading**: Show skeleton placeholder (200ms delay before showing)
-- **Error**: Display "Unable to load data" with retry button
-- **Interaction**: Hover shows data point tooltip
-
-## Accessibility Notes
-- ✅ Color contrast: 4.7:1 (text), 3.2:1 (UI elements)
-- ✅ Keyboard navigation: Tab order follows visual layout
-- ✅ Screen reader: All charts have data table alternative
-- ✅ Focus indicators: 2px blue outline on all interactive elements
+## Accessibility
+- Color contrast: 4.7:1 (text), 3.2:1 (UI)
+- Keyboard: Tab order follows layout, 2px blue focus outline
+- Screen reader: Charts have data table alternative
