@@ -2,7 +2,7 @@
 
 ```
 STATUS: AUTHORITATIVE
-VERSION: 1.2.0
+VERSION: 1.3.0
 LAST_AUDIT: 2025-10-26T02:15:00-04:00
 NEXT_REVIEW: 2026-01-24T02:15:00-05:00
 SCOPE: Personal/public Skills library (Anthropic Skills standard)
@@ -208,6 +208,88 @@ Rules:
 **Progressive disclosure**
 
 * Keep metadata tiny. Put heavy details under Procedure/Resources and load only when needed.
+
+---
+
+## 3A) What a Good Agent Looks Like (Orchestrator Pattern)
+
+**Definition**
+
+An **Agent** is a multi-step orchestrator that coordinates 2+ **Skills** through a command-driven workflow. Agents operate in separate context (system prompt), while Skills are invoked inline by the model.
+
+**When to Use Agent vs Skill (Decision Framework)**
+
+| Characteristic | Skill | Agent |
+|----------------|-------|-------|
+| Steps | ≤2 | 4 (orchestration) |
+| Invocation | Model (natural language) | User (command) |
+| Context | Shares main | Separate |
+| Token budget | T1/T2/T3 (≤12k) | System prompt ≤1500 |
+| Purpose | Single capability | Multi-skill coordination |
+
+**Decision Rules:**
+
+* **Use a Skill** when the task is self-contained, has ≤2 steps, and fits T1/T2/T3 token tiers.
+* **Use an Agent** when the task requires orchestrating multiple skills, maintaining workflow state, or executing a standard 4-step pattern.
+
+**Required AGENT.md Structure (8 sections)**
+
+1. `## Agent Metadata` — name, slug, description (≤160), version, owner, license
+2. `## Purpose & Trigger` — when to invoke this agent (command pattern)
+3. `## System Prompt` — **≤1500 tokens**, role definition, decision authority, constraints
+4. `## Workflow` — standard 4-step pattern (see below)
+5. `## Skill Integration` — which skills to call, reference by slug only, invocation pattern
+6. `## Examples` — **≤30 lines** per example, 1–2 representative interactions
+7. `## Quality Gates` — system prompt token budget, workflow determinism, safety
+8. `## Resources` — links only, no embedded content
+
+**System Prompt Requirements**
+
+* **≤1500 tokens** (measured via `tiktoken` cl100k_base)
+* Define role, decision authority, and constraints
+* Include abort conditions and error handling
+* Specify output format and success criteria
+
+**4-Step Workflow Pattern (Standard)**
+
+All agents must implement this structure:
+
+1. **Plan** — Parse user request, identify required skills, validate inputs
+2. **Execute** — Invoke skills in sequence, handle intermediate results
+3. **Validate** — Check outputs against quality gates, verify success criteria
+4. **Report** — Return structured results, log decisions, handle errors
+
+**Skill Integration**
+
+* Reference skills by **slug only** (e.g., `oscal-ssp-validate`, not inline code)
+* Use skill routing: load `/index/skills-index.json` to resolve slug → path
+* Pass skill inputs/outputs explicitly (no implicit context sharing)
+* Handle skill failures gracefully (retry logic, fallbacks)
+
+**Examples Requirements**
+
+* **≤30 lines** per interaction example
+* Show complete workflow: user command → plan → execute → validate → report
+* Include both success and failure scenarios
+* Longer examples in `examples/` directory
+
+**Required Directory Structure**
+
+```
+/agents/<agent-slug>/
+  AGENT.md                # agent specification
+  examples/               # 1–2 interaction examples (≤30 lines each)
+  workflows/              # optional multi-step procedure definitions
+  CHANGELOG.md            # version history
+```
+
+**Quality Gates**
+
+* System prompt ≤1500 tokens (strict)
+* All skill references resolvable via index
+* 4-step workflow present and deterministic
+* Examples execute successfully (or marked as pseudo-code)
+* No secrets or PII in agent definition or examples
 
 ---
 
