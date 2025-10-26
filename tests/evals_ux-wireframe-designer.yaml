@@ -1,0 +1,88 @@
+# Evaluation scenarios for ux-wireframe-designer skill
+
+scenarios:
+  - name: simple-login-flow
+    description: Design a basic login screen with forgot password flow
+    input:
+      user_stories: |
+        - As a user, I want to log in with email/password
+        - As a user, I want to reset my password if I forget it
+      target_platform: web
+      fidelity_level: low
+    expected_tier: T1
+    success_criteria:
+      - User flow diagram with 3-4 screens (login, forgot password, reset confirmation)
+      - Wireframe for login screen with email/password fields
+      - Error state handling (invalid credentials)
+      - Success and error paths clearly marked
+
+  - name: responsive-ecommerce-product-page
+    description: Design responsive product detail page for e-commerce
+    input:
+      user_stories: |
+        - As a shopper, I want to view product details, images, and reviews
+        - As a shopper, I want to add items to cart and adjust quantity
+        - As a shopper, I want to see related products
+      target_platform: web
+      fidelity_level: medium
+    expected_tier: T2
+    success_criteria:
+      - Responsive layouts for mobile, tablet, desktop (3 breakpoints)
+      - Component specs for image gallery, add-to-cart button, quantity selector
+      - Accessibility notes for image alt text, ARIA labels
+      - Loading and empty states documented
+
+  - name: mobile-onboarding-flow
+    description: Design multi-step onboarding for mobile app
+    input:
+      user_stories: |
+        - As a new user, I want to complete profile setup in 3-4 steps
+        - As a new user, I want to skip optional steps
+        - As a new user, I want to see my progress through onboarding
+      target_platform: mobile-ios
+      fidelity_level: medium
+    expected_tier: T2
+    success_criteria:
+      - User flow with 4-5 onboarding screens
+      - Progress indicator component (steps 1/4, 2/4, etc.)
+      - Skip button behavior documented
+      - Gesture support (swipe to next screen) specified
+      - iOS HIG compliance notes
+
+  - name: dashboard-with-complex-interactions
+    description: Design analytics dashboard with filtering and drill-down
+    input:
+      user_stories: |
+        - As an analyst, I want to view multiple charts and metrics
+        - As an analyst, I want to filter data by date range and category
+        - As an analyst, I want to drill down from summary to detailed view
+        - As an analyst, I want to export data as CSV
+      target_platform: web
+      fidelity_level: medium
+      design_system: Material Design 3
+    expected_tier: T3
+    success_criteria:
+      - Complex user flow with 8+ screens/states
+      - Component specifications for chart widgets, filters, modals
+      - Interaction specs for drill-down, hover states, tooltips
+      - Design system component mapping (Material Design 3)
+      - Loading states for async data fetch
+      - Accessibility: keyboard navigation, screen reader support
+
+  - name: accessibility-focused-form
+    description: Design WCAG AA compliant multi-step form
+    input:
+      user_stories: |
+        - As a user, I want to complete a job application form
+        - As a user with disabilities, I want full keyboard and screen reader support
+      target_platform: web
+      fidelity_level: medium
+    expected_tier: T2
+    success_criteria:
+      - Multi-step form wireframe (3-4 steps)
+      - All form fields with ARIA labels
+      - Error validation with inline messages (color + icon + text)
+      - Keyboard navigation order documented
+      - Color contrast ratios specified (4.5:1 minimum)
+      - Focus indicators on all interactive elements
+      - Skip links and landmark regions

@@ -1235,5 +1235,25 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/tooling-typescript-generator/SKILL.md"
+  },
+  {
+    "slug": "ux-wireframe-designer",
+    "name": "UX Wireframe Designer",
+    "summary": "Design user experience wireframes, user flows, and interactive mockups for web and mobile applications using industry-standard notation",
+    "keywords": [
+      "UX",
+      "wireframe",
+      "mockup",
+      "user-flow",
+      "design",
+      "prototype",
+      "accessibility",
+      "responsive",
+      "WCAG",
+      "interaction-design"
+    ],
+    "owner": "cloud.gov OCS",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/ux-wireframe-designer/SKILL.md"
   }
 ]
