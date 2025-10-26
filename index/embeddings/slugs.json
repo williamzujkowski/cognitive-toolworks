@@ -28,7 +28,6 @@
   "finops-cost-analyzer",
   "frontend-designsystem-validator",
   "frontend-framework-advisor",
-  "go-project-scaffolder",
   "integration-messagequeue-designer",
   "kubernetes-helm-builder",
   "kubernetes-manifest-generator",

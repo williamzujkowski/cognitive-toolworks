@@ -553,26 +553,6 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/frontend-framework-advisor/SKILL.md"
   },
   {
-    "slug": "go-project-scaffolder",
-    "name": "Go Project Scaffolder",
-    "summary": "Generate Go project structure with modules, testing (testify), mocking (gomock), linting (golangci-lint), and build tooling (Makefiles, goreleaser).",
-    "keywords": [
-      "golang",
-      "project-scaffolding",
-      "testify",
-      "gomock",
-      "golangci-lint",
-      "goreleaser",
-      "makefile",
-      "grpc",
-      "wire",
-      "opentelemetry"
-    ],
-    "owner": "william@cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/go-project-scaffolder/SKILL.md"
-  },
-  {
     "slug": "integration-messagequeue-designer",
     "name": "Message Queue Pattern Designer",
     "summary": "Design message queue patterns for RabbitMQ, Kafka, SQS, Azure Service Bus with dead-letter queues, idempotency, ordering guarantees, and backpressure",

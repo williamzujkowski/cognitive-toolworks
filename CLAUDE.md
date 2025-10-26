@@ -2,9 +2,9 @@
 
 ```
 STATUS: AUTHORITATIVE
-VERSION: 1.4.0
-LAST_AUDIT: 2025-10-26T15:30:00-04:00
-NEXT_REVIEW: 2026-01-24T15:30:00-05:00
+VERSION: 1.5.0
+LAST_AUDIT: 2025-10-26T16:00:00-04:00
+NEXT_REVIEW: 2026-01-24T16:00:00-05:00
 SCOPE: Personal/public Skills library (Anthropic Skills standard)
 ```
 
@@ -280,6 +280,360 @@ The naming convention enables intelligent skill selection:
 * [ ] Rename test file: `tests/evals_{old-slug}.yaml → tests/evals_{new-slug}.yaml`
 * [ ] Run `python tooling/validate_skill.py` to verify
 * [ ] Update any README or documentation referencing the old slug
+
+---
+
+## 2B) Code Quality & TDD Standards (enforced)
+
+**Philosophy: Quality is Non-Negotiable**
+
+All code in this repository — whether Python validation scripts, skill examples, or agent workflows — must meet production-grade standards. No exceptions.
+
+### TDD (Test-Driven Development)
+
+**Hard Rules:**
+
+1. **Tests first.** Write the test before the implementation.
+2. **Red → Green → Refactor.** Prove the test fails, make it pass, clean up the code.
+3. **100% coverage for tooling scripts.** Every validation script, build tool, and CI helper must have tests.
+4. **3-5 test scenarios minimum** for every skill/agent (in `tests/evals_*.yaml`).
+
+**Test Organization:**
+
+```
+/tests/
+  unit/                    # Fast, isolated tests (pytest, jest, etc.)
+    test_validate_skill.py
+    test_build_index.py
+  integration/             # Multi-component tests
+    test_skill_workflow.py
+  evals_<slug>.yaml        # Skill/agent evaluation scenarios
+```
+
+**Test Quality Gates:**
+
+* **Coverage**: ≥80% for tooling scripts (measured by pytest-cov, coverage.py)
+* **Speed**: Unit tests complete in <5s total
+* **Isolation**: No network calls, no file I/O without mocks
+* **Determinism**: Tests pass reliably, no flaky tests tolerated
+
+### Linting & Formatting
+
+**Python (for validation scripts, build tools):**
+
+* **Formatter**: `black` (line length: 100)
+* **Linter**: `ruff` (replaces flake8, pylint, isort)
+* **Type checker**: `mypy --strict`
+* **Import sorter**: Built into `ruff`
+
+**Configuration** (`pyproject.toml`):
+
+```toml
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "N", "W", "UP", "S", "B", "C4", "DTZ", "T10", "EM", "ISC", "ICN", "PIE", "PYI", "Q", "RSE", "RET", "SIM", "TID", "ARG", "PLE", "PLW", "RUF"]
+ignore = ["E501"]  # Black handles line length
+
+[tool.mypy]
+strict = true
+warn_unused_configs = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+```
+
+**JavaScript/TypeScript (for skill examples):**
+
+* **Formatter**: `prettier`
+* **Linter**: `eslint` with TypeScript plugin
+* **Type checker**: `tsc --noEmit` (strict mode)
+
+**Configuration** (`.eslintrc.json`):
+
+```json
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/strict",
+    "prettier"
+  ],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/explicit-function-return-type": "warn",
+    "@typescript-eslint/no-explicit-any": "error"
+  }
+}
+```
+
+**Shell Scripts:**
+
+* **Linter**: `shellcheck`
+* **Formatter**: `shfmt -i 2 -ci`
+
+### Security Scanning
+
+**Python Dependencies:**
+
+```bash
+# Run on every PR
+pip-audit --strict
+safety check --json
+```
+
+**JavaScript/TypeScript Dependencies:**
+
+```bash
+npm audit --audit-level=moderate
+# OR
+pnpm audit --prod
+```
+
+**Secret Detection:**
+
+```bash
+# Pre-commit hook
+gitleaks detect --no-git --verbose
+```
+
+**Code Scanning:**
+
+* **Python**: `bandit -r tooling/ -ll`  # Only high/medium severity
+* **JavaScript**: ESLint security plugins automatically enabled
+
+**Container Images** (if applicable):
+
+```bash
+docker scout cves <image>
+trivy image --severity HIGH,CRITICAL <image>
+```
+
+### Dependency Management
+
+**Latest Stable Versions:**
+
+* Pin **major versions** in production dependencies
+* Allow **minor/patch updates** via lockfiles
+* Review updates **monthly** via Dependabot or Renovate
+
+**Python** (`pyproject.toml`):
+
+```toml
+[project]
+dependencies = [
+  "pyyaml>=6.0,<7.0",      # Allow minor updates
+  "pydantic>=2.0,<3.0",    # Pin major version
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "black>=24.0",
+  "ruff>=0.3",
+  "mypy>=1.9",
+]
+```
+
+**JavaScript** (`package.json`):
+
+```json
+{
+  "dependencies": {
+    "react": "^18.3.0",        // Caret allows minor updates
+    "typescript": "~5.5.0"     // Tilde allows patch updates
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.0"
+  }
+}
+```
+
+**Lockfile Discipline:**
+
+* **Python**: Commit `uv.lock` or `poetry.lock`
+* **JavaScript**: Commit `pnpm-lock.yaml` or `package-lock.json`
+* **Never** commit `node_modules/` or `__pycache__/`
+* **Always** run `pip install` or `npm ci` (not `npm install`) in CI
+
+### Pre-Commit Hooks
+
+**Configuration** (`.pre-commit-config.yaml`):
+
+```yaml
+repos:
+  - repo: https://github.com/psf/black
+    rev: 24.3.0
+    hooks:
+      - id: black
+        language_version: python3.11
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.4
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.9.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-pyyaml]
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.10.0
+    hooks:
+      - id: shellcheck
+```
+
+**Install**:
+
+```bash
+pip install pre-commit
+pre-commit install
+pre-commit run --all-files  # Verify setup
+```
+
+### CI/CD Quality Gates
+
+**GitHub Actions Workflow** (`.github/workflows/quality.yaml`):
+
+```yaml
+name: Code Quality
+
+on: [push, pull_request]
+
+jobs:
+  python-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install uv
+          uv pip install -e .[dev]
+
+      - name: Lint
+        run: ruff check tooling/ tests/
+
+      - name: Type check
+        run: mypy tooling/ tests/
+
+      - name: Format check
+        run: black --check tooling/ tests/
+
+      - name: Test
+        run: pytest --cov=tooling --cov-report=xml --cov-fail-under=80
+
+      - name: Security scan
+        run: |
+          pip-audit --strict
+          bandit -r tooling/ -ll
+
+  typescript-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm eslint
+
+      - name: Type check
+        run: pnpm tsc --noEmit
+
+      - name: Test
+        run: pnpm test --coverage
+
+      - name: Security scan
+        run: pnpm audit --prod
+```
+
+### Code Review Checklist (Beyond Auto-Checks)
+
+Before merging **any** PR:
+
+* [ ] Tests exist and pass (both unit and evals)
+* [ ] Coverage ≥80% for new tooling code
+* [ ] No linting errors (ruff, eslint)
+* [ ] Type checking passes (mypy --strict, tsc --noEmit)
+* [ ] Security scan clean (pip-audit, npm audit, gitleaks)
+* [ ] Dependencies are latest stable versions
+* [ ] Lockfiles committed (uv.lock, pnpm-lock.yaml)
+* [ ] Code follows Smart Brevity style (no preamble/postamble)
+* [ ] Examples are ≤30 lines
+* [ ] All claims have sources with access dates
+* [ ] No secrets or PII in code/config/comments
+
+### Enforcement Priorities
+
+**P0 (Block merge):**
+* Linting errors
+* Type checking failures
+* Test failures
+* Security vulnerabilities (HIGH/CRITICAL)
+* Secrets detected
+
+**P1 (Must fix before next release):**
+* Coverage <80%
+* Medium security vulnerabilities
+* Outdated dependencies (>3 months old)
+
+**P2 (Technical debt, track but don't block):**
+* Code complexity warnings
+* Low security vulnerabilities
+* Minor documentation gaps
+
+### Tools Installation
+
+**Quick setup** (run once per development environment):
+
+```bash
+# Python tooling
+pip install uv
+uv pip install black ruff mypy pytest pytest-cov pip-audit bandit pre-commit
+
+# JavaScript tooling (if working with TS/JS examples)
+npm install -g pnpm
+pnpm add -D eslint prettier typescript @typescript-eslint/parser
+
+# Security scanning
+pip install gitleaks
+
+# Pre-commit hooks
+pre-commit install
+```
+
+**Verify setup**:
+
+```bash
+black --version     # Should be ≥24.0
+ruff --version      # Should be ≥0.3
+mypy --version      # Should be ≥1.9
+pytest --version    # Should be ≥8.0
+```
 
 ---
 
