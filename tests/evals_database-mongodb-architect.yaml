@@ -1,0 +1,149 @@
+scenarios:
+  - name: content-management-system
+    description: "Content management platform with articles, comments, and full-text search"
+    input:
+      workload_type: oltp+content
+      data_volume: "200GB (1M articles, 5M comments, 500K users)"
+      queries_per_second: 2000
+      availability_sla: 99.9%
+      deployment_environment: mongodb-atlas-8.0
+      access_patterns:
+        - "Find articles by tag (frequent)"
+        - "Full-text search on article content (moderate)"
+        - "Fetch article with recent comments (frequent)"
+        - "User login by email (frequent)"
+    expected_recommendations:
+      schema: "Hybrid: embed recent 5 comments in articles, reference full comments collection"
+      indexes:
+        - "Compound ESR on articles(status, published_at, views) for listings"
+        - "Multikey on articles(tags) for tag-based search"
+        - "Text index on articles(content) for full-text search"
+        - "Compound on comments(article_id, created_at) for comment pagination"
+        - "Unique index on users(email) for login"
+      aggregation: "Use $lookup to join articles with users for author details"
+      replica_set: "1 primary + 2 secondaries, readPreference: primaryPreferred"
+      tuning: "wiredTiger.cacheSizeGB: 16 (50% of 32GB RAM), maxPoolSize: 100"
+    token_tier: T2
+
+  - name: real-time-analytics-iot
+    description: "IoT platform with time-series sensor data and aggregations"
+    input:
+      workload_type: time-series
+      data_volume: "2TB (5B sensor readings)"
+      inserts_per_second: 50000
+      queries_per_second: 500
+      retention_policy: "keep last 1 year, drop older data"
+      deployment_environment: self-hosted-mongodb-8.0
+      access_patterns:
+        - "INSERT sensor readings continuously"
+        - "Query by device_id + time range (frequent)"
+        - "Hourly/daily aggregations (moderate)"
+    expected_recommendations:
+      schema: "sensor_readings: {device_id, timestamp, value, metadata}"
+      indexes:
+        - "Compound on sensor_readings(device_id, timestamp) for device queries"
+        - "Single field on sensor_readings(timestamp) for time-range queries"
+      sharding: "Ranged sharding by timestamp (monthly chunks), zone sharding for retention"
+      aggregation: "Use $match early with timestamp filter, enable allowDiskUse for large aggregations"
+      tuning: "Increase wiredTiger.cacheSizeGB to 62.5% RAM for read-heavy analytics"
+    token_tier: T2
+
+  - name: social-network-user-profiles
+    description: "Social network with user profiles, posts, and many-to-many friendships"
+    input:
+      workload_type: oltp
+      data_volume: "500GB (10M users, 500M posts, 100M friendships)"
+      queries_per_second: 10000
+      deployment_environment: mongodb-atlas-8.0
+      access_patterns:
+        - "Fetch user profile with recent 10 posts (frequent)"
+        - "Find mutual friends (moderate)"
+        - "Search posts by hashtag (frequent)"
+    expected_recommendations:
+      schema: "Users: embed recent 10 posts array, reference posts collection for full history. Friendships: separate collection (many-to-many)."
+      indexes:
+        - "Hashed index on users(_id) for sharding"
+        - "Multikey on posts(hashtags) for hashtag search"
+        - "Compound on posts(user_id, created_at) for user timeline"
+        - "Compound on friendships(user_id, friend_id) for friendship queries"
+      sharding: "Hashed sharding on users(_id) to avoid hotspots"
+      replica_set: "1 primary + 4 secondaries (high availability)"
+    token_tier: T2
+
+  - name: e-commerce-product-catalog
+    description: "E-commerce with flexible product attributes and inventory tracking"
+    input:
+      workload_type: oltp
+      data_volume: "100GB (5M products, 10M inventory records)"
+      queries_per_second: 5000
+      deployment_environment: mongodb-atlas-8.0
+      access_patterns:
+        - "Search products by category and attributes (frequent)"
+        - "Check inventory availability (frequent)"
+        - "Update inventory quantities (frequent writes)"
+    expected_recommendations:
+      schema: "Products: flexible schema with nested attributes object. Inventory: separate collection (frequent updates)."
+      indexes:
+        - "Wildcard index on products(attributes.$**) for flexible attribute search"
+        - "Compound on products(category, price) for category browsing"
+        - "Compound on inventory(product_id, warehouse_id) for stock checks"
+      covered_queries: "Create covering index on inventory(product_id, warehouse_id, quantity) to avoid document access"
+      write_concern: "w: majority for inventory updates (durability)"
+    token_tier: T2
+
+  - name: slow-query-performance-troubleshooting
+    description: "Existing MongoDB with slow queries needing optimization"
+    input:
+      workload_type: oltp
+      mongodb_version: 8.0
+      existing_problems:
+        - "Article search by tag takes 5s (should be <100ms)"
+        - "User login query scans entire collection (2.5s)"
+        - "Aggregation pipeline with $lookup causes timeout"
+      deployment_environment: mongodb-atlas-8.0
+    expected_diagnosis:
+      - problem: "Missing multikey index on articles(tags)"
+        solution: "db.articles.createIndex({tags: 1})"
+        expected_speedup: "5000ms → 50ms (100x faster)"
+      - problem: "Missing unique index on users(email)"
+        solution: "db.users.createIndex({email: 1}, {unique: true})"
+        expected_speedup: "2500ms → 10ms (250x faster)"
+      - problem: "$lookup without index on foreign key"
+        solution: "Create index on joined collection foreign key field"
+        expected_speedup: "timeout → 2s (completion)"
+    token_tier: T1
+
+  - name: mongodb-7-to-8-migration-planning
+    description: "Plan migration from MongoDB 7.0 to MongoDB 8.0"
+    input:
+      workload_type: oltp+analytics
+      current_version: 7.0
+      target_version: 8.0
+      data_volume: "1TB"
+      downtime_tolerance: "< 30 minutes"
+      deployment_environment: self-hosted
+    expected_migration_plan:
+      benefits:
+        - "36% faster reads (vectored I/O)"
+        - "56% faster bulk inserts"
+        - "Embedded sharding config servers (reduce infrastructure)"
+        - "Move collections across shards without shard key"
+      migration_strategy: "Rolling upgrade (zero downtime)"
+      steps:
+        - "Add MongoDB 8.0 members to replica set as secondaries"
+        - "Wait for secondaries to sync (monitor lag)"
+        - "Test queries on MongoDB 8.0 secondaries"
+        - "Stepdown primary (rs.stepDown()) → elect MongoDB 8.0 member"
+        - "Upgrade remaining members one at a time"
+        - "Set feature compatibility: db.adminCommand({setFeatureCompatibilityVersion: '8.0'})"
+        - "Monitor for 24h, rollback if issues"
+      risks: "Incompatible drivers, deprecated features removed"
+    token_tier: T2
+
+  - name: insufficient-data-error
+    description: "Error case: missing critical schema and access patterns"
+    input:
+      workload_type: oltp
+      deployment_environment: mongodb-atlas-8.0
+    expected_error: "Insufficient data: missing data model (entities, relationships), access patterns, and data volume estimates. Cannot design schema without requirements."
+    token_tier: T1
