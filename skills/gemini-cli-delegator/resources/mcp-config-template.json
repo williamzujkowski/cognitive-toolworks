@@ -1,0 +1,34 @@
+{
+  "mcpServers": {
+    "gemini-mcp-tool": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "gemini-mcp-tool"
+      ],
+      "env": {
+        "GEMINI_API_KEY": "YOUR_GEMINI_API_KEY_HERE"
+      },
+      "metadata": {
+        "description": "Gemini CLI integration for large context analysis and codebase review",
+        "version": "1.0.0",
+        "capabilities": [
+          "ask-gemini",
+          "sandbox-test"
+        ],
+        "notes": [
+          "Replace YOUR_GEMINI_API_KEY_HERE with actual Gemini API key",
+          "Ensure Google Gemini CLI is installed: npm install -g @google/generative-ai",
+          "Verify gemini-mcp-tool version: npx gemini-mcp-tool --version"
+        ]
+      }
+    }
+  },
+  "configuration_notes": {
+    "file_location_macos": "~/Library/Application Support/Claude/claude_desktop_config.json",
+    "file_location_windows": "%APPDATA%/Claude/claude_desktop_config.json",
+    "file_location_linux": "~/.config/Claude/claude_desktop_config.json",
+    "reload_required": "Restart Claude Desktop after modifying this configuration",
+    "security_warning": "Never commit API keys to version control. Use environment variables or secure secret management."
+  }
+}
