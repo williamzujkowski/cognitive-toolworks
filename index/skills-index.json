@@ -921,6 +921,29 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/observability-stack-configurator/SKILL.md"
   },
   {
+    "slug": "observability-unified-dashboard",
+    "name": "Observability Unified Dashboard",
+    "summary": "Design unified observability dashboards with golden signals (latency, traffic, errors, saturation), OpenTelemetry correlation, SLO tracking, and Grafana 11 auto-correlations.",
+    "keywords": [
+      "observability",
+      "golden signals",
+      "OpenTelemetry",
+      "Grafana",
+      "SLO",
+      "SLI",
+      "unified dashboard",
+      "metrics",
+      "logs",
+      "traces",
+      "correlation",
+      "alerting",
+      "SRE"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/observability-unified-dashboard/SKILL.md"
+  },
+  {
     "slug": "quality-standards-analyzer",
     "name": "Polyglot Coding Standards Analyzer",
     "summary": "Evaluate code quality across 8+ languages using language-agnostic principles and language-specific best practices.",

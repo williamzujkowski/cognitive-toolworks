@@ -1,0 +1,30 @@
+# E-commerce Platform Unified Observability Dashboard
+
+INPUT: services: [api-gateway, order-service, payment-service], env: production, slo_targets: {api-gateway: 99.95% avail + p95<200ms}, telemetry: Prometheus+Loki+Tempo
+
+OUTPUT (T2 Dashboard):
+
+GOLDEN SIGNALS (3 Services):
+api-gateway: Latency p95=150ms ✅, Traffic=1200 req/s, Errors=0.5% ✅, CPU=45% ✅
+order-service: Latency p95=480ms ✅, Traffic=300 req/s, Errors=2.1% ⚠️, CPU=78% ⚠️
+payment-service: Latency p95=95ms ✅, Traffic=180 req/s, Errors=0.2% ✅, CPU=32% ✅
+
+SLO COMPLIANCE (from observability-slo-calculator):
+api-gateway: 99.98% ✅ (6% budget left, 0.8× burn), order-service: 99.85% ⚠️ (85% consumed, 7.2× burn, 4 days to exhaust)
+payment-service: 99.99% ✅ (1% consumed, 0.1× burn), Overall: 99.94% platform compliance
+
+CORRELATIONS (Grafana 11):
+1. Prometheus alert "High Errors" → Loki logs filtered by service.name + time range
+2. Loki log entry → Tempo trace lookup via trace_id field
+3. Tempo slow span → Prometheus metrics for that endpoint's latency distribution
+
+ALERTS (5 Rules):
+1. CRITICAL: order-service error rate >5% for 5m → PagerDuty (currently firing ⚠️)
+2. WARNING: order-service burn rate 14.4× (error budget exhausted in 2 days) → Slack
+3. WARNING: api-gateway latency p95 >400ms for 10m → Slack
+4. INFO: payment-service CPU >70% for 15m → Email
+5. INFO: Any service SLO trending toward breach in 7 days → Email
+
+OTEL PIPELINE: OTLP grpc/http receivers → batch(10s, 1024) + resource processors → Prometheus + Loki + Tempo exporters
+
+DASHBOARD: 1 overview panel (service status table) + 3 service rows (4 golden signals + 1 SLO panel each) = 16 panels
