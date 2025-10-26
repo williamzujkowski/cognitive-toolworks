@@ -36,7 +36,7 @@ replaces: devops-pipeline-architect
 
 **Do NOT use when:**
 
-- Only need single component (use individual skills: cicd-pipeline-generator, iac-template-generator, etc.)
+- Only need single component (use individual skills: devops-cicd-generator, devops-iac-generator, etc.)
 - Requirements unclear or inputs incomplete
 - Simple pipeline update (use individual skills directly)
 
@@ -53,10 +53,10 @@ replaces: devops-pipeline-architect
    - `cloud_provider` identified (aws, azure, gcp, multi-cloud)
    - `requirements` comprehensive (testing, security, observability, deployment strategy)
 3. **Skill availability**: Verify required skills exist in `/skills/` directory:
-   - `cicd-pipeline-generator`
-   - `iac-template-generator`
+   - `devops-cicd-generator`
+   - `devops-iac-generator`
    - `observability-stack-configurator`
-   - `deployment-strategy-designer`
+   - `devops-deployment-designer`
 4. **Source freshness**: All skill references current; no deprecated dependencies
 
 **Abort conditions:**
@@ -90,10 +90,10 @@ You are a DevOps Pipeline Orchestrator agent specializing in coordinating multip
 
 **Workflow:**
 
-1. **Step 1 - CI/CD Pipeline**: Invoke `cicd-pipeline-generator` skill
-2. **Step 2 - Infrastructure**: Invoke `iac-template-generator` skill
+1. **Step 1 - CI/CD Pipeline**: Invoke `devops-cicd-generator` skill
+2. **Step 2 - Infrastructure**: Invoke `devops-iac-generator` skill
 3. **Step 3 - Observability**: Invoke `observability-stack-configurator` skill
-4. **Step 4 - Deployment**: Invoke `deployment-strategy-designer` skill
+4. **Step 4 - Deployment**: Invoke `devops-deployment-designer` skill
 
 **Integration points:**
 
@@ -160,12 +160,12 @@ Consolidated package containing:
 ```json
 {
   "cicd_pipeline": {
-    "skill": "cicd-pipeline-generator",
+    "skill": "devops-cicd-generator",
     "tier": "string (T1|T2|T3)",
     "outputs": "object (from skill)"
   },
   "infrastructure": {
-    "skill": "iac-template-generator",
+    "skill": "devops-iac-generator",
     "tier": "string (T1|T2|T3)",
     "outputs": "object (from skill)"
   },
@@ -175,7 +175,7 @@ Consolidated package containing:
     "outputs": "object (from skill)"
   },
   "deployment": {
-    "skill": "deployment-strategy-designer",
+    "skill": "devops-deployment-designer",
     "tier": "string (T1|T2|T3)",
     "outputs": "object (from skill)"
   },
@@ -229,12 +229,12 @@ Consolidated package containing:
 
 **Workflow execution:**
 
-1. **CI/CD** (cicd-pipeline-generator, T2):
+1. **CI/CD** (devops-cicd-generator, T2):
    - GitHub Actions workflow with multi-environment stages
    - Security scanning integrated
    - Artifact publishing to ECR
 
-2. **Infrastructure** (iac-template-generator, T2):
+2. **Infrastructure** (devops-iac-generator, T2):
    - Terraform modules for VPC, EKS cluster, RDS
    - Multi-environment workspaces (dev, staging, prod)
    - Remote state in S3
@@ -244,7 +244,7 @@ Consolidated package containing:
    - OpenTelemetry instrumentation
    - CloudWatch Logs integration
 
-4. **Deployment** (deployment-strategy-designer, T2):
+4. **Deployment** (devops-deployment-designer, T2):
    - Canary deployment for EKS
    - Progressive traffic shifting (5% → 25% → 50% → 100%)
    - Automated rollback on error rate threshold
@@ -289,10 +289,10 @@ Consolidated package containing:
 
 **Referenced Skills** (in `/skills/`):
 
-- `cicd-pipeline-generator`: Generate CI/CD pipeline configurations
-- `iac-template-generator`: Generate Infrastructure as Code templates
+- `devops-cicd-generator`: Generate CI/CD pipeline configurations
+- `devops-iac-generator`: Generate Infrastructure as Code templates
 - `observability-stack-configurator`: Configure monitoring, logging, tracing
-- `deployment-strategy-designer`: Design deployment strategies and rollback procedures
+- `devops-deployment-designer`: Design deployment strategies and rollback procedures
 
 **Best Practices** (accessed 2025-10-26T01:33:56-04:00):
 

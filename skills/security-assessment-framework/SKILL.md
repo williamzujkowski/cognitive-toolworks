@@ -46,14 +46,14 @@ deprecated_date: "2025-10-26"
 deprecation_reason: "Split into 8 focused skills + 1 orchestrator agent for better modularity"
 replacement_agent: "security-auditor"
 replacement_skills:
-  - "appsec-validator"
-  - "cloudsec-posture-analyzer"
-  - "container-security-checker"
-  - "cryptosec-validator"
-  - "iam-security-reviewer"
-  - "networksec-architecture-validator"
-  - "ossec-hardening-checker"
-  - "zerotrust-maturity-assessor"
+  - "security-appsec-validator"
+  - "security-cloud-analyzer"
+  - "security-container-validator"
+  - "security-crypto-validator"
+  - "security-iam-reviewer"
+  - "security-network-validator"
+  - "security-os-validator"
+  - "security-zerotrust-assessor"
 migration_guide: "/agents/security-auditor/MIGRATION.md"
 links:
   - https://owasp.org/www-project-top-ten/
@@ -73,14 +73,14 @@ links:
 > **For multi-domain assessments, use:** `/agents/security-auditor/AGENT.md`
 >
 > **For single-domain assessments, use individual skills:**
-> - `/skills/appsec-validator/SKILL.md`
-> - `/skills/cloudsec-posture-analyzer/SKILL.md`
-> - `/skills/container-security-checker/SKILL.md`
-> - `/skills/cryptosec-validator/SKILL.md`
-> - `/skills/iam-security-reviewer/SKILL.md`
-> - `/skills/networksec-architecture-validator/SKILL.md`
-> - `/skills/ossec-hardening-checker/SKILL.md`
-> - `/skills/zerotrust-maturity-assessor/SKILL.md`
+> - `/skills/security-security-appsec-validator/SKILL.md`
+> - `/skills/security-cloud-analyzer/SKILL.md`
+> - `/skills/security-container-validator/SKILL.md`
+> - `/skills/security-crypto-validator/SKILL.md`
+> - `/skills/security-iam-reviewer/SKILL.md`
+> - `/skills/security-network-validator/SKILL.md`
+> - `/skills/security-os-validator/SKILL.md`
+> - `/skills/security-zerotrust-assessor/SKILL.md`
 >
 > **Migration guide:** `/agents/security-auditor/MIGRATION.md`
 >

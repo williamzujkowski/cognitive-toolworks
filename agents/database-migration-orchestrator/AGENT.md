@@ -57,7 +57,7 @@ license: MIT
    - `constraints` documented (downtime tolerance, data consistency requirements, rollback plan)
 3. **Skill availability**: Verify required skills exist in `/skills/` directory:
    - `database-optimization-analyzer`
-   - `data-engineering-pipeline-designer`
+   - `data-pipeline-designer`
    - `testing-strategy-composer`
 4. **Source freshness**: Migration guides current for database versions
 
@@ -98,7 +98,7 @@ You are a Database Migration Orchestrator agent specializing in coordinating dat
 - Identify anti-patterns and optimization opportunities
 - Estimate migration effort and timeline
 
-**Phase 2 - Planning** (invoke `data-engineering-pipeline-designer`):
+**Phase 2 - Planning** (invoke `data-pipeline-designer`):
 - Design migration pipeline architecture (one-time vs continuous sync)
 - Select migration tools (pg_dump/restore, AWS DMS, mongodump, custom ETL)
 - Define data validation strategy using Great Expectations
@@ -220,7 +220,7 @@ Comprehensive migration package containing:
       "downtime_minutes": "number"
     },
     "tools": ["array of tools and versions"],
-    "pipeline_architecture": "object (from data-engineering-pipeline-designer)",
+    "pipeline_architecture": "object (from data-pipeline-designer)",
     "rollback_procedure": "string (markdown documentation)",
     "success_criteria": ["array of acceptance criteria"]
   },
@@ -380,7 +380,7 @@ All migration guides and best practices accessed on `NOW_ET = 2025-10-26T00:00:0
 **Referenced Skills** (in `/skills/`):
 
 - `database-optimization-analyzer`: Schema analysis and optimization recommendations
-- `data-engineering-pipeline-designer`: Migration pipeline architecture and orchestration
+- `data-pipeline-designer`: Migration pipeline architecture and orchestration
 - `testing-strategy-composer`: Validation test strategy and acceptance criteria
 
 **Migration Tools Documentation** (accessed 2025-10-26T00:00:00-04:00):

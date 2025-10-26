@@ -54,8 +54,8 @@ links:
 
 **Not for:**
 - Complete production orchestration (use cloud-native-orchestrator agent)
-- Helm chart templating with complex logic (use helm-chart-builder skill)
-- Service mesh configuration (use service-mesh-configurator skill)
+- Helm chart templating with complex logic (use kubernetes-helm-builder skill)
+- Service mesh configuration (use kubernetes-servicemesh-configurator skill)
 - Multi-cloud deployment strategies (use cloud-native-orchestrator agent)
 
 ---

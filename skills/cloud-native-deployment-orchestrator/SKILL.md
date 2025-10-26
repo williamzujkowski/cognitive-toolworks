@@ -5,7 +5,7 @@ description: "Design and validate Kubernetes, container, serverless, and service
 deprecated: true
 deprecated_date: "2025-10-26"
 replacement: "agents/cloud-native-orchestrator"
-replacement_note: "Split into 6 focused skills (container-image-optimizer, kubernetes-manifest-generator, helm-chart-builder, service-mesh-configurator, serverless-deployment-designer, cloud-platform-integrator) orchestrated by cloud-native-orchestrator agent. Use skills directly for simple deployments or agent for complex orchestration."
+replacement_note: "Split into 6 focused skills (container-image-optimizer, kubernetes-manifest-generator, kubernetes-helm-builder, kubernetes-servicemesh-configurator, cloud-serverless-designer, cloud-kubernetes-integrator) orchestrated by cloud-native-orchestrator agent. Use skills directly for simple deployments or agent for complex orchestration."
 sunset_date: "2026-01-26"
 capabilities:
   - Kubernetes manifest generation and validation with best practices

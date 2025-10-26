@@ -8,10 +8,10 @@ deprecation_reason: "Refactored into 4 focused skills + 1 orchestrator agent fol
 replacement:
   orchestrator: "agents/devops-pipeline-orchestrator"
   skills:
-    - "skills/cicd-pipeline-generator"
-    - "skills/iac-template-generator"
+    - "skills/devops-cicd-generator"
+    - "skills/devops-iac-generator"
     - "skills/observability-stack-configurator"
-    - "skills/deployment-strategy-designer"
+    - "skills/devops-deployment-designer"
   migration_guide: "agents/devops-pipeline-orchestrator/MIGRATION.md"
   removal_date: 2026-01-26
 capabilities:
@@ -80,10 +80,10 @@ links:
 >
 > **Use instead**:
 > - For complete pipeline: `agents/devops-pipeline-orchestrator`
-> - For CI/CD only: `skills/cicd-pipeline-generator`
-> - For IaC only: `skills/iac-template-generator`
+> - For CI/CD only: `skills/devops-cicd-generator`
+> - For IaC only: `skills/devops-iac-generator`
 > - For observability only: `skills/observability-stack-configurator`
-> - For deployment strategy only: `skills/deployment-strategy-designer`
+> - For deployment strategy only: `skills/devops-deployment-designer`
 >
 > **Migration guide**: See `agents/devops-pipeline-orchestrator/MIGRATION.md`
 >

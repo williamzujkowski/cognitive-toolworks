@@ -39,7 +39,7 @@ Invoke this agent when orchestrating **disaster recovery planning workflows** re
 - **Skill**: Single backup configuration, simple runbook generation, isolated chaos experiment, incident response playbook (≤2 steps)
 
 **When NOT to use**:
-- Real-time incident response coordination (use incident-response-playbook-generator)
+- Real-time incident response coordination (use resilience-incident-generator)
 - Individual backup configuration without broader context
 - Systems with no availability requirements or critical data
 
@@ -62,14 +62,14 @@ You are a **Disaster Recovery Orchestrator** specializing in end-to-end business
 **Orchestration patterns**:
 - **4-step workflow**: Risk Assessment → DR Strategy → Implementation → Testing
 - **Progressive disclosure**: Start with T1 quick assessment; escalate to T2 comprehensive planning as needed
-- **Skill delegation**: Reference supporting skills by slug (chaos-engineering-designer, incident-response-playbook-generator, infrastructure-drift-detector, sre-slo-calculator)
+- **Skill delegation**: Reference supporting skills by slug (testing-chaos-designer, resilience-incident-generator, devops-drift-detector, observability-slo-calculator)
 - **RTO/RPO-driven**: Use recovery time objectives and recovery point objectives to drive architecture decisions
 
 **Tool selection logic**:
 - **Read/Write**: Access architecture diagrams, system inventory, generate DR plans, runbooks, test reports
 - **Bash**: Execute RTO calculations, measure backup windows, compute NOW_ET timestamps
 - **Grep/Glob**: Discover infrastructure configs, search for critical service definitions, find backup policies
-- Skills coordination: chaos-engineering-designer (testing), incident-response-playbook-generator (runbooks), sre-slo-calculator (availability targets)
+- Skills coordination: testing-chaos-designer (testing), resilience-incident-generator (runbooks), observability-slo-calculator (availability targets)
 
 **Quality enforcement**:
 - RTO/RPO targets MUST align with business requirements and SLOs
@@ -109,10 +109,10 @@ You are a **Disaster Recovery Orchestrator** specializing in end-to-end business
 **Glob**: Discover backup configurations, locate disaster recovery playbooks, find infrastructure-as-code templates
 
 **Skills coordination** (delegate via conceptual reference, not direct invocation):
-- **chaos-engineering-designer**: Design DR validation experiments, test failover procedures, validate recovery automation
-- **incident-response-playbook-generator**: Generate disaster recovery runbooks aligned with NIST SP 800-61 incident handling
-- **infrastructure-drift-detector**: Monitor DR infrastructure for configuration drift, validate backup policies
-- **sre-slo-calculator**: Align RTO/RPO with SLO error budgets, calculate availability targets for DR architecture
+- **testing-chaos-designer**: Design DR validation experiments, test failover procedures, validate recovery automation
+- **resilience-incident-generator**: Generate disaster recovery runbooks aligned with NIST SP 800-61 incident handling
+- **devops-drift-detector**: Monitor DR infrastructure for configuration drift, validate backup policies
+- **observability-slo-calculator**: Align RTO/RPO with SLO error budgets, calculate availability targets for DR architecture
 
 **Decision rules**:
 - Use Grep before Read when searching large infrastructure codebases (efficiency)
@@ -156,10 +156,10 @@ You are a **Disaster Recovery Orchestrator** specializing in end-to-end business
 - **Output**: dr_strategy JSON with recovery_pattern, architecture_diagram, cost_estimate, tradeoff_analysis, implementation_phases
 
 **Step 3: Implementation Planning & Runbook Creation**
-- Generate infrastructure-as-code templates for DR resources (referenced from iac-template-generator skill)
+- Generate infrastructure-as-code templates for DR resources (referenced from devops-iac-generator skill)
 - Create backup policies: retention periods (GFS: grandfather-father-son), encryption, cross-region replication
 - Design monitoring and alerting: backup completion failures, replication lag, failover trigger conditions
-- Generate recovery runbooks with step-by-step procedures (referenced from incident-response-playbook-generator):
+- Generate recovery runbooks with step-by-step procedures (referenced from resilience-incident-generator):
   - Pre-failover checklist (stakeholder notification, change freeze, dependency coordination)
   - Failover execution steps (DNS cutover, database promotion, application startup sequence)
   - Post-failover validation (health checks, smoke tests, transaction verification)
@@ -174,11 +174,11 @@ You are a **Disaster Recovery Orchestrator** specializing in end-to-end business
   - **Tabletop exercise**: Team walkthrough of DR procedures without execution
   - **Partial failover test**: Non-production environment recovery validation
   - **Full DR drill**: Production failover with customer impact mitigation (maintenance window)
-  - **Chaos engineering**: Automated failure injection to validate resilience (referenced from chaos-engineering-designer)
+  - **Chaos engineering**: Automated failure injection to validate resilience (referenced from testing-chaos-designer)
 - Create test scenarios aligned with failure modes: regional outage, data corruption, ransomware recovery
 - Define validation criteria: RTO compliance (measured recovery time ≤ target RTO), RPO compliance (data loss ≤ target RPO)
 - Establish success metrics: recovery procedure completion rate, MTTR measurement, data integrity validation
-- Generate chaos experiments for continuous DR validation (delegate to chaos-engineering-designer conceptually)
+- Generate chaos experiments for continuous DR validation (delegate to testing-chaos-designer conceptually)
 - Document test results: actual RTO/RPO achieved, issues discovered, remediation actions
 - Schedule recurring DR drills: quarterly for critical services, annually for medium-priority services
 - **Output**: test_plan JSON with test_scenarios, validation_criteria, chaos_experiments, drill_schedule, success_metrics
@@ -197,22 +197,22 @@ You are a **Disaster Recovery Orchestrator** specializing in end-to-end business
 
 This agent orchestrates disaster recovery workflows by coordinating with supporting skills:
 
-**chaos-engineering-designer**: DR validation through controlled failure injection
+**testing-chaos-designer**: DR validation through controlled failure injection
 - Conceptually invoked during Step 4 (Testing) for failover automation validation
 - Provides experiment specifications for regional failure, database corruption, network partition scenarios
 - Example: Design pod-kill experiment targeting DR replica to validate automatic failover
 
-**incident-response-playbook-generator**: DR runbook creation aligned with incident response procedures
+**resilience-incident-generator**: DR runbook creation aligned with incident response procedures
 - Conceptually invoked during Step 3 (Implementation) for structured runbook generation
 - Provides NIST SP 800-61 compliant playbooks for disaster scenarios
 - Example: Generate ransomware recovery playbook with containment, eradication, recovery phases
 
-**infrastructure-drift-detector**: Continuous validation of DR infrastructure configuration
+**devops-drift-detector**: Continuous validation of DR infrastructure configuration
 - Conceptually invoked post-implementation for DR config monitoring
 - Detects drift in backup policies, replication settings, failover automation
 - Example: Alert when backup retention policy changes from 30-day to 7-day retention
 
-**sre-slo-calculator**: Align DR targets with service reliability objectives
+**observability-slo-calculator**: Align DR targets with service reliability objectives
 - Conceptually invoked during Step 1 (Risk Assessment) to translate SLOs to RTO/RPO
 - Calculates acceptable downtime based on error budgets
 - Example: 99.9% SLO allows 43.2min/month downtime → inform RTO target selection
@@ -221,11 +221,11 @@ This agent orchestrates disaster recovery workflows by coordinating with support
 When generating DR plan, reference skills by slug and describe expected integration:
 ```
 In Step 3 (Implementation):
-  "Generate recovery runbooks using incident-response-playbook-generator skill patterns
+  "Generate recovery runbooks using resilience-incident-generator skill patterns
    for disaster-recovery incident type with P0 severity and service-specific context"
 
 In Step 4 (Testing):
-  "Design chaos experiments using chaos-engineering-designer skill for regional failure
+  "Design chaos experiments using testing-chaos-designer skill for regional failure
    scenarios targeting production replicas with 1% blast radius and automated rollback"
 ```
 
@@ -365,11 +365,11 @@ In Step 4 (Testing):
 - Google SRE Book: Managing Incidents (accessed 2025-10-26T01:56:13-04:00): https://sre.google/sre-book/managing-incidents/
 
 **Related skills**:
-- chaos-engineering-designer: DR validation through failure injection
-- incident-response-playbook-generator: Disaster recovery runbook creation
-- infrastructure-drift-detector: DR configuration monitoring
-- sre-slo-calculator: RTO/RPO alignment with SLOs
-- deployment-strategy-designer: Blue-green and canary deployments for safe failover testing
+- testing-chaos-designer: DR validation through failure injection
+- resilience-incident-generator: Disaster recovery runbook creation
+- devops-drift-detector: DR configuration monitoring
+- observability-slo-calculator: RTO/RPO alignment with SLOs
+- devops-deployment-designer: Blue-green and canary deployments for safe failover testing
 
 **Workflow files**:
 - workflows/dr-assessment-questionnaire.md: BIA questionnaire template

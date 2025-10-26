@@ -42,7 +42,7 @@ system_prompt_budget: "≤1500 tokens"
 - Multi-stage incident response requiring skill composition and workflow orchestration
 
 **Not for:**
-- Simple playbook generation (use incident-response-playbook-generator skill directly)
+- Simple playbook generation (use resilience-incident-generator skill directly)
 - Real-time incident command (use incident management platforms like PagerDuty/Opsgenie)
 - Automated incident detection (use SIEM/monitoring systems)
 - Legal incident disclosure (consult legal counsel)
@@ -69,7 +69,7 @@ CORE WORKFLOW (4 stages):
    - Route to appropriate skill composition
 
 2. TRIAGE & PLAYBOOK ACTIVATION (T2: ≤6k tokens)
-   - Invoke incident-response-playbook-generator skill (T1 for fast template, T2 for service-specific)
+   - Invoke resilience-incident-generator skill (T1 for fast template, T2 for service-specific)
    - If security incident: coordinate with security-assessment-framework for threat context
    - If infrastructure: coordinate with monitoring/observability skills for logs/metrics
    - Activate escalation matrix and notify stakeholders per playbook
@@ -82,7 +82,7 @@ CORE WORKFLOW (4 stages):
    - Update stakeholders per communication plan (status page, internal comms, regulatory)
 
 4. POST-MORTEM & LESSONS LEARNED
-   - Generate post-mortem using incident-response-playbook-generator post_mortem_template
+   - Generate post-mortem using resilience-incident-generator post_mortem_template
    - Analyze root cause (5 Whys, Fishbone diagram)
    - Compute metrics: MTTD, MTTR, customer impact, blast radius
    - Create action items with owners and due dates
@@ -96,7 +96,7 @@ DECISION RULES:
 
 OUTPUT REQUIREMENTS:
 - Incident timeline (JSON/YAML) with timestamps, events, actors
-- Generated playbook (from incident-response-playbook-generator)
+- Generated playbook (from resilience-incident-generator)
 - Forensic/security artifacts (if security incident)
 - Post-mortem report with root cause and action items
 - Compliance documentation (if applicable)
@@ -124,7 +124,7 @@ SAFETY:
 - Auto-escalation based on severity and duration thresholds
 
 **Skill coordination:**
-- **Primary:** incident-response-playbook-generator (playbook/runbook generation)
+- **Primary:** resilience-incident-generator (playbook/runbook generation)
 - **Security incidents:** security-assessment-framework (threat modeling, IOC analysis)
 - **Infrastructure incidents:** observability-stack-generator (logs, metrics, traces)
 - **Compliance:** compliance-orchestrator (HIPAA, PCI-DSS, SOC2 reporting)
@@ -191,7 +191,7 @@ SAFETY:
 - service_context (optional, for T2 playbook generation)
 
 **Actions:**
-1. **Invoke incident-response-playbook-generator skill:**
+1. **Invoke resilience-incident-generator skill:**
    - Input: {incident_type, severity_level, compliance_requirements, tier: T1 or T2}
    - Output: playbook, escalation_matrix, post_mortem_template
    - For P0/P1: Use T2 tier (detailed playbook with service context)
@@ -314,9 +314,9 @@ SAFETY:
 ## Decision Rules
 
 **Incident type routing:**
-- `security | data-breach | ransomware` → Invoke security-assessment-framework + incident-response-playbook-generator
-- `outage | service-degradation` → Invoke observability-stack-generator + incident-response-playbook-generator
-- `disaster-recovery` → Invoke incident-response-playbook-generator (T2 tier) + validate RTO/RPO
+- `security | data-breach | ransomware` → Invoke security-assessment-framework + resilience-incident-generator
+- `outage | service-degradation` → Invoke observability-stack-generator + resilience-incident-generator
+- `disaster-recovery` → Invoke resilience-incident-generator (T2 tier) + validate RTO/RPO
 - `ddos` → Invoke security-assessment-framework (network threat analysis) + upstream provider coordination
 
 **Playbook tier selection:**
@@ -361,7 +361,7 @@ incident_signal:
 orchestration_result:
   incident_id: string                          # UUID or tracking ID
   classification: {type, severity, compliance}
-  playbook: object                             # From incident-response-playbook-generator
+  playbook: object                             # From resilience-incident-generator
   incident_timeline: array[{timestamp, event, actor, action, outcome}]
   post_mortem: {summary, root_cause, impact, action_items}
   compliance_reports: array[{framework, report, deadline}]
@@ -388,7 +388,7 @@ incident_signal:
 
 # Orchestration steps:
 # Step 1: Classification → type: data-breach, severity: P0, compliance: HIPAA+SOC2
-# Step 2: Playbook activation → incident-response-playbook-generator (T2 tier)
+# Step 2: Playbook activation → resilience-incident-generator (T2 tier)
 #         Security assessment → security-assessment-framework (threat model + IOCs)
 # Step 3: NIST phases → Containment (isolate DB), Eradication (revoke creds), Recovery (validate)
 # Step 4: Post-mortem → Root cause: exposed DB credentials, HIPAA breach notification
@@ -397,7 +397,7 @@ incident_signal:
 orchestration_result:
   incident_id: "INC-2025-1026-001"
   classification: {type: data-breach, severity: P0, compliance: [HIPAA, SOC2]}
-  playbook: {...}  # From incident-response-playbook-generator
+  playbook: {...}  # From resilience-incident-generator
   incident_timeline:
     - {timestamp: "2025-10-26T01:45:00-04:00", event: detection, actor: SIEM, action: alert-fired}
     - {timestamp: "2025-10-26T01:50:00-04:00", event: containment, actor: security-team, action: isolated-database}
@@ -432,7 +432,7 @@ orchestration_result:
 - All timestamps in ISO-8601 format (America/New_York timezone)
 - Incident timeline immutable (append-only event log)
 - Citations to NIST SP 800-61 with access dates
-- Playbook provenance (generated by incident-response-playbook-generator skill v1.0.0)
+- Playbook provenance (generated by resilience-incident-generator skill v1.0.0)
 
 **Determinism:**
 - Same incident_signal + context → Same classification and skill routing
@@ -460,7 +460,7 @@ orchestration_result:
 - Google SRE Book: Managing Incidents (accessed 2025-10-26T01:56:01-04:00): https://sre.google/sre-book/managing-incidents/
 
 **Coordinated skills:**
-- incident-response-playbook-generator (primary): `/skills/incident-response-playbook-generator/SKILL.md`
+- resilience-incident-generator (primary): `/skills/resilience-incident-generator/SKILL.md`
 - security-assessment-framework (security incidents): `/skills/security-assessment-framework/SKILL.md`
 - observability-stack-generator (infrastructure incidents): `/skills/observability-stack-generator/SKILL.md`
 - compliance-orchestrator (compliance reporting): `/agents/compliance-orchestrator/AGENT.md`
