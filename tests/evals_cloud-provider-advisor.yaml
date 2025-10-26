@@ -1,0 +1,94 @@
+scenarios:
+  - name: startup-web-app-cost-priority
+    description: "Startup web app prioritizing cost and developer experience"
+    input:
+      workload_type: web-app
+      priorities: [cost, developer-experience, scalability]
+      constraints:
+        region: us-east
+        compliance: none
+      requirements:
+        scale: "10K users, 1M API requests/month"
+        budget: "<$100/month"
+    expected_recommendation: gcp
+    expected_services:
+      - Cloud Run
+      - Cloud SQL
+      - Cloud Storage
+    token_tier: T1
+
+  - name: enterprise-windows-migration
+    description: "Enterprise migrating Windows Server and SQL Server workloads"
+    input:
+      workload_type: hybrid
+      current_state: "on-premises (500 Windows VMs, 50 SQL Server instances)"
+      priorities: [migration-ease, cost, compliance]
+      constraints:
+        region: "us-east, eu-west"
+        compliance: "SOC 2, ISO 27001"
+    expected_recommendation: azure
+    expected_rationale:
+      - Azure Hybrid Benefit (up to 80% savings)
+      - Azure Migrate tools
+      - Active Directory integration
+    token_tier: T2
+
+  - name: data-analytics-platform
+    description: "Data analytics platform with petabyte-scale requirements"
+    input:
+      workload_type: data-processing
+      priorities: [performance, cost, analytics-capabilities]
+      requirements:
+        data_volume: "500TB initial, 50TB/month growth"
+        queries: "Complex SQL, sub-second response"
+    expected_recommendation: gcp
+    expected_services:
+      - BigQuery
+      - Cloud Storage
+      - Dataflow
+    token_tier: T1
+
+  - name: multi-cloud-strategy
+    description: "Enterprise designing multi-cloud for vendor independence"
+    input:
+      workload_type: hybrid
+      priorities: [vendor-independence, best-of-breed, compliance]
+      constraints:
+        compliance: "FedRAMP High, HIPAA"
+      requirements:
+        multi_cloud: true
+    expected_recommendation: multi-cloud
+    expected_pattern: "best-of-breed"
+    expected_distribution:
+      aws: ["Lambda (serverless)", "S3 (object storage)"]
+      gcp: ["BigQuery (analytics)", "GKE (Kubernetes)"]
+      azure: ["Azure AD (identity)", "Azure Government (compliance)"]
+    token_tier: T2
+
+  - name: kubernetes-native-workload
+    description: "Cloud-native app with Kubernetes requirement"
+    input:
+      workload_type: web-app
+      priorities: [kubernetes-maturity, cost, portability]
+      requirements:
+        container_orchestration: "Kubernetes required"
+        scale: "100+ microservices"
+    expected_recommendation: gcp
+    expected_services:
+      - GKE Autopilot
+    expected_rationale:
+      - Most mature managed Kubernetes
+      - Autopilot mode (fully managed)
+      - Cost-effective for K8s workloads
+    token_tier: T1
+
+  - name: invalid-contradictory-requirements
+    description: "Error case: contradictory cloud provider constraints"
+    input:
+      workload_type: web-app
+      priorities: [cost]
+      constraints:
+        provider: "must use AWS"
+        no_vendor_lockin: true
+    expected_error: "Contradictory requirements: must use AWS conflicts with no vendor lock-in"
+    token_tier: T1

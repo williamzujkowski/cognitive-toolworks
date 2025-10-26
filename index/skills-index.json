@@ -211,6 +211,25 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/cloud-multicloud-advisor/SKILL.md"
   },
   {
+    "slug": "cloud-provider-advisor",
+    "name": "Cloud Provider Selection Advisor",
+    "summary": "Compare AWS, GCP, and Azure to select the best cloud provider based on workload requirements, cost, compliance, and migration complexity.",
+    "keywords": [
+      "cloud-comparison",
+      "aws",
+      "gcp",
+      "azure",
+      "cloud-selection",
+      "multi-cloud",
+      "vendor-comparison",
+      "cost-comparison",
+      "migration-planning"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/cloud-provider-advisor/SKILL.md"
+  },
+  {
     "slug": "cloud-serverless-designer",
     "name": "Serverless Deployment Designer",
     "summary": "Design serverless function deployments for AWS Lambda, Azure Functions, and Google Cloud Functions with event sources, IAM, and cold start optimization.",
