@@ -1,0 +1,111 @@
+---
+skill: "db-migration-generator"
+version: "1.0.0"
+description: "Evaluation scenarios for Database Migration Script Generator skill"
+
+scenarios:
+  - id: "eval-001"
+    name: "Add column with NOT NULL constraint"
+    tier: "T2"
+    inputs:
+      migration_tool: "alembic"
+      database: "postgresql"
+      migration_type: "schema"
+      downtime_allowed: false
+      migration_description: "Add required email column to users table with backfill"
+    expected_outputs:
+      - "Alembic upgrade() function with add_column"
+      - "Backfill UPDATE statement for existing rows"
+      - "alter_column to add NOT NULL constraint after backfill"
+      - "downgrade() function with drop_column"
+      - "Validation query checking for NULL values"
+    success_criteria:
+      - "Migration adds column as nullable first"
+      - "Backfill executes before adding NOT NULL"
+      - "Rollback script drops column safely"
+      - "No table locks during migration"
+
+  - id: "eval-002"
+    name: "Data migration with transformation"
+    tier: "T2"
+    inputs:
+      migration_tool: "flyway"
+      database: "mysql"
+      migration_type: "data"
+      downtime_allowed: true
+      migration_description: "Split full_name into first_name and last_name"
+    expected_outputs:
+      - "Flyway SQL migration (V*__split_name.sql)"
+      - "ALTER TABLE statements to add new columns"
+      - "UPDATE statement with string splitting logic (SUBSTRING_INDEX)"
+      - "DROP COLUMN for old full_name column"
+      - "Rollback script (U*__undo_split_name.sql)"
+      - "Validation query checking data integrity"
+    success_criteria:
+      - "All rows have first_name populated"
+      - "last_name handles single-name users (empty string)"
+      - "Rollback concatenates names back to full_name"
+      - "Migration is idempotent"
+
+  - id: "eval-003"
+    name: "Zero-downtime index creation"
+    tier: "T3"
+    inputs:
+      migration_tool: "alembic"
+      database: "postgresql"
+      migration_type: "schema"
+      downtime_allowed: false
+      migration_description: "Add composite index on email and status columns"
+    expected_outputs:
+      - "Alembic migration with create_index"
+      - "postgresql_concurrently=True flag"
+      - "Validation query using pg_indexes"
+      - "Deployment guide with lock monitoring steps"
+      - "Estimated duration based on table size"
+    success_criteria:
+      - "Index created with CONCURRENTLY"
+      - "No exclusive table locks during creation"
+      - "Rollback drops index with CONCURRENTLY"
+      - "Deployment guide includes pg_stat_progress_create_index monitoring"
+
+  - id: "eval-004"
+    name: "Expand/contract pattern for column rename"
+    tier: "T3"
+    inputs:
+      migration_tool: "liquibase"
+      database: "postgresql"
+      migration_type: "hybrid"
+      downtime_allowed: false
+      migration_description: "Rename username to email with zero downtime"
+    expected_outputs:
+      - "Phase 1 migration: Add email column, create trigger"
+      - "Phase 2 migration: Backfill email from username"
+      - "Phase 3 migration: Drop username column and trigger"
+      - "Deployment guide with multi-phase rollout timeline"
+      - "Validation tests for each phase"
+    success_criteria:
+      - "Three separate changesets for each phase"
+      - "Trigger syncs username to email during transition"
+      - "Application deployment happens between Phase 2 and 3"
+      - "Each phase has independent rollback"
+
+  - id: "eval-005"
+    name: "MySQL online DDL with large table"
+    tier: "T3"
+    inputs:
+      migration_tool: "flyway"
+      database: "mysql"
+      migration_type: "schema"
+      downtime_allowed: false
+      migration_description: "Add index to 10M row table with zero downtime"
+    expected_outputs:
+      - "Flyway SQL migration with ALTER TABLE"
+      - "ALGORITHM=INPLACE, LOCK=NONE specification"
+      - "Validation query checking index exists"
+      - "Deployment guide with pt-online-schema-change alternative"
+      - "Estimated duration (15-30 minutes for 10M rows)"
+    success_criteria:
+      - "ALTER TABLE uses online DDL syntax"
+      - "No full table copy required"
+      - "Deployment guide includes progress monitoring"
+      - "Rollback procedure documented"

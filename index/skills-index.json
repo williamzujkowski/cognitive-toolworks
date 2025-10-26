@@ -389,6 +389,26 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/database-optimization-analyzer/SKILL.md"
   },
   {
+    "slug": "db-migration-generator",
+    "name": "Database Migration Script Generator",
+    "summary": "Generate database migration scripts for Liquibase, Flyway, Alembic with rollback safety, data preservation, and zero-downtime patterns",
+    "keywords": [
+      "database-migration",
+      "liquibase",
+      "flyway",
+      "alembic",
+      "schema-migration",
+      "zero-downtime",
+      "rollback",
+      "ddl",
+      "postgresql",
+      "mysql"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/db-migration-generator/SKILL.md"
+  },
+  {
     "slug": "deployment-strategy-designer",
     "name": "Deployment Strategy Designer",
     "summary": "Design deployment strategies (rolling, blue-green, canary) with platform-specific implementations and automated rollback procedures.",
@@ -488,6 +508,26 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/frontend-framework-advisor/SKILL.md"
+  },
+  {
+    "slug": "graphql-schema-designer",
+    "name": "GraphQL Schema Designer",
+    "summary": "Design GraphQL schemas with federation, resolvers, dataloaders, n+1 query prevention, and schema stitching patterns",
+    "keywords": [
+      "graphql",
+      "apollo-federation",
+      "schema-design",
+      "dataloaders",
+      "n+1-prevention",
+      "schema-stitching",
+      "resolvers",
+      "graphql-subscriptions",
+      "graphql-directives",
+      "query-optimization"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/graphql-schema-designer/SKILL.md"
   },
   {
     "slug": "gemini-cli-delegator",
@@ -1054,5 +1094,29 @@
     "owner": "william",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/message-queue-designer/SKILL.md"
+  },
+  {
+    "slug": "mobile-cicd-generator",
+    "name": "Mobile CI/CD Pipeline Generator",
+    "summary": "Generate mobile CI/CD pipelines for iOS (Fastlane, TestFlight) and Android (Gradle, Play Store) with code signing, beta distribution, and crash reporting",
+    "keywords": [
+      "mobile",
+      "ci-cd",
+      "ios",
+      "android",
+      "fastlane",
+      "testflight",
+      "play-store",
+      "react-native",
+      "flutter",
+      "github-actions",
+      "gitlab-ci",
+      "code-signing",
+      "beta-distribution",
+      "crash-reporting"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/mobile-cicd-generator/SKILL.md"
   }
 ]

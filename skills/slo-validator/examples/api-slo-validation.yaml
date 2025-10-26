@@ -1,0 +1,29 @@
+# Example: Validate 99.9% availability SLO for API service
+# Platform: Prometheus with Grafana dashboards
+
+slo_definition:
+  name: "API Service Availability"
+  target: 99.9
+  window: "30d"
+  sli_query: |
+    sum(rate(http_requests_total{service="api",status!~"5.."}[5m]))
+    / sum(rate(http_requests_total{service="api"}[5m]))
+
+metrics_source: prometheus
+time_window: "28d"
+error_budget_policy: moderate
+
+# Expected Output:
+# 1. Validation report showing 99.87% actual (FAIL - missed by 0.03%)
+# 2. Alert rules for 1h/6h/3d burn rate windows
+# 3. Error budget status: 12.2 minutes overdrawn
+# 4. Grafana dashboard with SLO gauge, budget graph, burn rate panels
+
+# Generated Prometheus alert (abbreviated):
+# - alert: SLOFastBurn
+#   expr: |
+#     (1 - (sum(rate(http_requests_total{status!~"5.."}[1h]))
+#           / sum(rate(http_requests_total[1h]))))
+#     > (14.4 * 0.001)  # 14.4x normal burn for 99.9% SLO
+#   for: 2m
+#   labels: {severity: critical}

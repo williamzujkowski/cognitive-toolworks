@@ -1,0 +1,20 @@
+{
+  "slug": "slo-validator",
+  "name": "Service Level Objective Validator",
+  "summary": "Validate SLO definitions against actual metrics, generate alerting rules, and design error budget policies with burn rate calculations.",
+  "keywords": [
+    "slo",
+    "validation",
+    "error-budget",
+    "burn-rate",
+    "alerting",
+    "prometheus",
+    "sre",
+    "observability",
+    "compliance",
+    "monitoring"
+  ],
+  "owner": "william@cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "/skills/slo-validator/SKILL.md"
+}
