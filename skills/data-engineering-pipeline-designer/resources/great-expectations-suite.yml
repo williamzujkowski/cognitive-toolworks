@@ -1,0 +1,92 @@
+# Great Expectations suite: Common data quality checks for pipelines
+# Apply at checkpoints: pre-ingestion, post-transformation, pre-load
+
+suite_name: ecommerce_orders_quality_suite
+
+expectations:
+  # Nullity checks: critical columns must not be null
+  - expectation_type: expect_column_values_to_not_be_null
+    kwargs:
+      column: order_id
+    meta:
+      criticality: critical  # Fail pipeline if this fails
+
+  - expectation_type: expect_column_values_to_not_be_null
+    kwargs:
+      column: customer_id
+    meta:
+      criticality: critical
+
+  # Uniqueness: primary keys must be unique
+  - expectation_type: expect_column_values_to_be_unique
+    kwargs:
+      column: order_id
+    meta:
+      criticality: critical
+
+  # Range checks: numeric values within expected bounds
+  - expectation_type: expect_column_values_to_be_between
+    kwargs:
+      column: order_total
+      min_value: 0.01
+      max_value: 1000000.00
+    meta:
+      criticality: warning  # Alert but don't fail pipeline
+
+  # Format checks: email validation
+  - expectation_type: expect_column_values_to_match_regex
+    kwargs:
+      column: customer_email
+      regex: "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
+    meta:
+      criticality: warning
+
+  # Referential integrity: foreign key relationships
+  - expectation_type: expect_column_values_to_be_in_set
+    kwargs:
+      column: order_status
+      value_set: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
+    meta:
+      criticality: critical
+
+  # Freshness: data should be recent (for daily pipelines)
+  - expectation_type: expect_column_max_to_be_between
+    kwargs:
+      column: order_date
+      min_value:
+        $PARAMETER: pipeline_run_date - 7 days
+      max_value:
+        $PARAMETER: pipeline_run_date
+    meta:
+      criticality: warning
+
+  # Volume checks: detect anomalies in row counts
+  - expectation_type: expect_table_row_count_to_be_between
+    kwargs:
+      min_value: 100  # Minimum expected daily orders
+      max_value: 1000000  # Maximum plausible daily orders
+    meta:
+      criticality: warning
+
+# Checkpoint configuration
+checkpoints:
+  staging_checkpoint:
+    validations:
+      - batch_request:
+          datasource_name: snowflake_staging
+          data_asset_name: orders
+        expectation_suite_name: ecommerce_orders_quality_suite
+    action_list:
+      - name: store_validation_result
+      - name: update_data_docs
+      - name: send_slack_notification_on_failure
+
+  marts_checkpoint:
+    validations:
+      - batch_request:
+          datasource_name: snowflake_analytics
+          data_asset_name: fct_daily_revenue
+        expectation_suite_name: marts_quality_suite
+    action_list:
+      - name: store_validation_result
+      - name: send_email_on_failure

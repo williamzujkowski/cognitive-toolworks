@@ -1,0 +1,19 @@
+@startuml C4_Context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title System Context Diagram for [System Name]
+
+Person(user, "User", "Primary system user")
+Person(admin, "Administrator", "System administrator")
+
+System(system, "System Name", "Brief description of the system's purpose")
+
+System_Ext(external1, "External System 1", "Description of external dependency")
+System_Ext(external2, "External System 2", "Description of external dependency")
+
+Rel(user, system, "Uses", "HTTPS")
+Rel(admin, system, "Configures", "HTTPS")
+Rel(system, external1, "Reads data from", "REST/JSON")
+Rel(system, external2, "Sends events to", "Kafka")
+
+@enduml

@@ -1,0 +1,106 @@
+# Saga Choreography Pattern Template
+# Use this template for event-driven saga coordination without central orchestrator
+
+pattern: Saga (Choreography)
+description: Each service listens to events, performs local transaction, and publishes new events
+
+# Event Flow Example: Order Processing
+event_flow:
+  1_order_created:
+    service: OrderService
+    action: Create order in pending state
+    event_published: OrderCreated
+    payload:
+      orderId: "uuid"
+      customerId: "uuid"
+      items: [{ productId, quantity, price }]
+      totalAmount: "decimal"
+      timestamp: "ISO-8601"
+
+  2_payment_processing:
+    service: PaymentService
+    listens_to: OrderCreated
+    action: Charge payment method
+    events_published:
+      success: PaymentProcessed
+      failure: PaymentFailed
+    compensation: RefundPayment (if later step fails)
+
+  3_inventory_reservation:
+    service: InventoryService
+    listens_to: PaymentProcessed
+    action: Reserve stock for order items
+    events_published:
+      success: InventoryReserved
+      failure: InventoryUnavailable
+    compensation: ReleaseInventory
+
+  4_shipment_scheduling:
+    service: ShipmentService
+    listens_to: InventoryReserved
+    action: Schedule delivery
+    events_published:
+      success: ShipmentScheduled
+      failure: ShipmentFailed
+    compensation: CancelShipment
+
+# Compensation Flow (if any step fails)
+compensation_triggers:
+  - if: PaymentFailed
+    then: PublishOrderCancelled
+
+  - if: InventoryUnavailable
+    then:
+      - PublishRefundPayment
+      - PublishOrderCancelled
+
+  - if: ShipmentFailed
+    then:
+      - PublishReleaseInventory
+      - PublishRefundPayment
+      - PublishOrderCancelled
+
+# Implementation Requirements
+implementation:
+  message_broker:
+    options: [Kafka, RabbitMQ, AWS SNS/SQS, Azure Service Bus]
+    requirements:
+      - at_least_once_delivery: true
+      - ordered_messages: true (per partition/queue)
+      - dead_letter_queue: true
+
+  idempotency:
+    strategy: Event ID deduplication
+    storage: Redis or database table with unique constraint on eventId
+
+  correlation:
+    correlation_id: Propagate orderId across all events
+    distributed_tracing: Use OpenTelemetry with correlation ID
+
+  retry_policy:
+    max_attempts: 3
+    backoff: exponential (1s, 2s, 4s)
+    timeout_per_attempt: 5s
+
+# Monitoring
+observability:
+  metrics:
+    - saga_duration_seconds{saga_type="order_processing"}
+    - saga_compensation_total{reason="payment_failed|inventory_unavailable|shipment_failed"}
+    - event_processing_duration_seconds{service, event_type}
+
+  traces:
+    correlation_field: orderId
+    required_spans: [order_created, payment_processed, inventory_reserved, shipment_scheduled]
+
+  alerts:
+    - condition: compensation_rate > 10%
+      severity: warning
+      action: Investigate payment gateway or inventory availability
+
+    - condition: saga_duration > p95(30s)
+      severity: warning
+      action: Check for slow services or message broker lag
+
+# Code Scaffolding (Spring Boot example)
+# See saga-choreography-spring-boot.java in this directory for full implementation

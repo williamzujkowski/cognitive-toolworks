@@ -1,0 +1,141 @@
+# CQRS + Event Sourcing Pattern Template
+# Use this template for systems requiring audit trails, temporal queries, and read/write optimization
+
+pattern: CQRS + Event Sourcing
+description: Separate command (write) and query (read) models with event store as source of truth
+
+# Architecture Components
+components:
+  command_side:
+    purpose: Handle write operations with domain validation
+    components:
+      - command_handlers: Validate commands, apply business rules
+      - aggregates: Domain entities that enforce invariants
+      - event_store: Append-only log of domain events
+    commands:
+      - CreateOrder: { customerId, items[], shippingAddress }
+      - UpdateOrderStatus: { orderId, newStatus }
+      - CancelOrder: { orderId, reason }
+
+  query_side:
+    purpose: Serve read requests from optimized projections
+    components:
+      - query_handlers: Read from projection stores
+      - projections: Denormalized read models updated from events
+      - projection_stores: Redis, Elasticsearch, MongoDB (read-optimized)
+    queries:
+      - GetOrderDetails: { orderId } → OrderDetailsView
+      - SearchOrders: { customerId, status, dateRange } → OrderListView
+      - GetOrderHistory: { orderId } → EventTimelineView
+
+# Event Store Schema
+event_store:
+  structure: Append-only table/stream per aggregate type
+  schema:
+    event_id: uuid (unique, indexed)
+    aggregate_id: uuid (partition key for efficient retrieval)
+    aggregate_type: string (Order, Customer, Product)
+    event_type: string (OrderCreated, OrderStatusUpdated)
+    event_version: integer (for event schema versioning)
+    timestamp: datetime (ISO-8601)
+    payload: json (event data)
+    metadata: json (correlation_id, user_id, source_ip)
+
+  implementations:
+    - EventStoreDB: https://eventstore.com (purpose-built)
+    - Kafka: Compacted topics as event log
+    - DynamoDB: Streams + table with composite key (aggregate_id, timestamp)
+    - PostgreSQL: JSONB column with GIN index
+
+# Event Flow
+event_flow:
+  1_command_received:
+    service: Command Handler
+    action: Validate command (business rules, authorization)
+
+  2_event_generation:
+    action: Create domain event(s) from command
+    example: CreateOrder → [OrderCreated, InventoryReserved]
+
+  3_event_persistence:
+    action: Append events to event store (atomic)
+    guarantee: All-or-nothing commit
+
+  4_event_publication:
+    action: Publish events to message bus
+    consumers: Query-side projections, external systems
+
+  5_projection_update:
+    action: Projection handlers consume events and update read models
+    consistency: Eventual (typically <1s lag)
+
+# Projection Examples
+projections:
+  order_details_view:
+    source_events: [OrderCreated, OrderStatusUpdated, OrderCancelled]
+    schema:
+      order_id: uuid
+      customer_id: uuid
+      status: string
+      items: json
+      total_amount: decimal
+      created_at: datetime
+      updated_at: datetime
+    store: Redis (for fast lookups by order_id)
+
+  order_search_view:
+    source_events: [OrderCreated, OrderStatusUpdated]
+    schema:
+      order_id: uuid
+      customer_id: uuid
+      status: string
+      total_amount: decimal
+      created_at: datetime
+    store: Elasticsearch (for full-text search and faceting)
+    indexes: [customer_id, status, created_at]
+
+# Event Versioning Strategy
+event_versioning:
+  approach: Semantic versioning with upcasting
+  example:
+    OrderCreated_v1:
+      payload: { orderId, items[], totalAmount }
+    OrderCreated_v2:
+      payload: { orderId, items[], totalAmount, shippingAddress }
+      upcaster: Set shippingAddress = null for v1 events
+
+  migration: Deploy upcasters before introducing v2 events
+
+# Snapshots (Performance Optimization)
+snapshots:
+  purpose: Avoid replaying thousands of events to rebuild aggregate state
+  frequency: Every 100 events or every 1 hour
+  schema:
+    aggregate_id: uuid
+    aggregate_type: string
+    snapshot_version: integer
+    state: json (serialized aggregate state)
+    event_version_at_snapshot: integer
+
+  rebuild_process:
+    1: Load latest snapshot
+    2: Replay events from snapshot version to current
+    3: Reconstruct current state
+
+# Monitoring
+observability:
+  metrics:
+    - command_latency_seconds{command_type}
+    - query_latency_seconds{query_type}
+    - projection_lag_seconds{projection_name}
+    - event_store_write_throughput
+    - event_replay_duration_seconds
+
+  alerts:
+    - projection_lag > 10s → Investigate event processing bottleneck
+    - event_store_write_errors > 1% → Check storage capacity/availability
+    - event_replay_duration > 5min → Consider more frequent snapshots
+
+# Code Scaffolding
+# See cqrs-event-sourcing-spring-boot.java for Axon Framework example
+# See cqrs-event-sourcing-nodejs.ts for NestJS CQRS module example

@@ -1,0 +1,171 @@
+# Evaluations for data-engineering-pipeline-designer skill
+# 5 scenarios covering batch, streaming, quality, and error handling
+
+evals:
+  - name: batch_elt_standard
+    description: "Standard daily batch ELT pipeline with quality checks"
+    input:
+      pipeline_type: batch
+      source_systems:
+        - type: postgres
+          name: orders_db
+          tables: [orders, customers, products]
+      transformation_requirements:
+        - "Join orders with customers"
+        - "Calculate daily revenue"
+      quality_requirements:
+        - "order_id must be unique"
+        - "order_total > 0"
+      orchestration_platform: airflow
+      target_systems:
+        - type: snowflake
+          schema: analytics
+      schedule: "0 2 * * *"
+    expected_output:
+      pipeline_architecture:
+        type: batch
+        orchestration:
+          platform: airflow
+          schedule: "0 2 * * *"
+        layers:
+          ingestion:
+            method: incremental
+          transformation:
+            tool: dbt
+          quality:
+            framework: great_expectations
+    success_criteria:
+      - "Output includes valid Airflow DAG structure"
+      - "dbt models follow staging -> marts pattern"
+      - "Great Expectations checks for uniqueness and range"
+      - "Token usage ≤ 2000 (T1)"
+
+  - name: streaming_kafka_realtime
+    description: "Real-time streaming pipeline with Kafka and schema registry"
+    input:
+      pipeline_type: streaming
+      source_systems:
+        - type: kafka
+          topic: clickstream_events
+          schema_registry: true
+      transformation_requirements:
+        - "Aggregate clicks per user per hour"
+        - "Join with user dimension"
+      quality_requirements:
+        - "Schema validation enforced"
+        - "Latency < 500ms p99"
+      orchestration_platform: kafka
+      target_systems:
+        - type: kafka
+          topic: aggregated_metrics
+    expected_output:
+      pipeline_architecture:
+        type: streaming
+        orchestration:
+          platform: kafka
+        layers:
+          transformation:
+            tool: ksqlDB
+          quality:
+            schema_validation: enforce
+    success_criteria:
+      - "Output includes Kafka consumer group config"
+      - "ksqlDB stream processing query included"
+      - "Schema registry configuration present"
+      - "Exactly-once semantics enabled"
+
+  - name: incremental_large_table
+    description: "Incremental batch pipeline for 100M+ row table"
+    input:
+      pipeline_type: batch
+      source_systems:
+        - type: postgres
+          name: transactions
+          size: "150M rows"
+          watermark_column: updated_at
+      transformation_requirements:
+        - "Incremental load using watermark"
+      quality_requirements:
+        - "No duplicates on transaction_id"
+      orchestration_platform: airflow
+      target_systems:
+        - type: bigquery
+          dataset: finance
+    expected_output:
+      pipeline_architecture:
+        layers:
+          ingestion:
+            method: incremental
+          transformation:
+            materialization: incremental
+    success_criteria:
+      - "Incremental strategy specified (not full refresh)"
+      - "Watermark tracking implemented"
+      - "dbt incremental model with merge strategy"
+      - "Quality check for duplicate prevention"
+
+  - name: quality_check_failure_handling
+    description: "Pipeline with critical quality check failure scenarios"
+    input:
+      pipeline_type: batch
+      source_systems:
+        - type: s3
+          path: "s3://data/orders/"
+      transformation_requirements:
+        - "Validate revenue calculations"
+      quality_requirements:
+        - "revenue > 0 (critical - block pipeline)"
+        - "email format valid (warning - continue)"
+      orchestration_platform: airflow
+      target_systems:
+        - type: snowflake
+    expected_output:
+      pipeline_architecture:
+        layers:
+          quality:
+            action_on_failure: block
+            checkpoints:
+              - name: critical_checks
+                fail_on_error: true
+              - name: warning_checks
+                fail_on_error: false
+    success_criteria:
+      - "Critical checks configured to block pipeline"
+      - "Warning checks configured to alert only"
+      - "Quarantine strategy for bad records mentioned"
+      - "Alert configuration included"
+
+  - name: hybrid_batch_streaming
+    description: "Hybrid pipeline with both batch and streaming components"
+    input:
+      pipeline_type: hybrid
+      source_systems:
+        - type: kafka
+          topic: real_time_events
+        - type: s3
+          path: "s3://historical/"
+      transformation_requirements:
+        - "Real-time dashboard (streaming)"
+        - "Overnight aggregation (batch)"
+      quality_requirements:
+        - "Data freshness < 5 min (streaming)"
+        - "Historical completeness check (batch)"
+      orchestration_platform: airflow
+      target_systems:
+        - type: redshift
+          real_time_view: true
+          historical_table: true
+    expected_output:
+      pipeline_architecture:
+        type: hybrid
+        layers:
+          ingestion:
+            sources:
+              - stream: kafka
+              - batch: s3
+    success_criteria:
+      - "Both Kafka and Airflow orchestration components present"
+      - "Lambda architecture pattern identified"
+      - "Separate quality checks for streaming vs batch"
+      - "Data freshness monitoring for streaming layer"
+      - "Token usage ≤ 6000 (T2 for complexity)"

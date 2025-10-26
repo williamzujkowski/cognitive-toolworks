@@ -1,0 +1,31 @@
+{
+  "slug": "frontend-framework-advisor",
+  "name": "Frontend Framework Advisor",
+  "summary": "Guide React, Vue, and mobile (iOS/Android/React Native) development with component architecture, state management, and performance optimization patterns.",
+  "category": "frontend",
+  "keywords": [
+    "react",
+    "vue",
+    "ios",
+    "android",
+    "react-native",
+    "frontend-architecture",
+    "state-management",
+    "component-design",
+    "mobile-development",
+    "performance-optimization",
+    "swiftui",
+    "jetpack-compose",
+    "hooks",
+    "composition-api"
+  ],
+  "dependencies": [
+    "testing-strategy-composer"
+  ],
+  "priority": "P2",
+  "phase": 2,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/frontend-framework-advisor/SKILL.md"
+}

@@ -1,0 +1,176 @@
+# Circuit Breaker Pattern Configuration Template
+# Use this template for fault tolerance when calling unreliable dependencies
+
+pattern: Circuit Breaker
+description: Prevent cascading failures by detecting faults and stopping requests to failing services
+
+# Circuit Breaker States
+states:
+  CLOSED:
+    description: Normal operation, requests pass through
+    transition_to_OPEN:
+      condition: Failure threshold exceeded
+      example: 5 failures in 10-second window OR 50% error rate
+
+  OPEN:
+    description: Circuit is open, reject requests immediately without calling service
+    behavior: Return fallback response or error
+    transition_to_HALF_OPEN:
+      condition: Timeout period elapses
+      example: 30 seconds after opening
+
+  HALF_OPEN:
+    description: Testing if service recovered, allow limited requests
+    behavior: Allow single test request
+    transition_to_CLOSED:
+      condition: Test request succeeds
+    transition_to_OPEN:
+      condition: Test request fails
+
+# Configuration Parameters
+configuration:
+  failure_threshold:
+    description: Number or percentage of failures to trigger circuit open
+    examples:
+      count_based: 5 consecutive failures
+      rate_based: 50% error rate in sliding window
+    recommendation: Use rate-based for variable traffic
+
+  timeout:
+    description: Maximum time to wait for response before considering failure
+    examples:
+      fast_api: 2 seconds
+      slow_batch: 30 seconds
+    recommendation: Set based on service SLA + margin (e.g., SLA * 1.2)
+
+  wait_duration_in_open_state:
+    description: Time to wait before transitioning to half-open
+    examples:
+      fast_recovery: 10 seconds
+      conservative: 60 seconds
+    recommendation: Based on service recovery time observation
+
+  permitted_calls_in_half_open:
+    description: Number of test calls allowed in half-open state
+    examples:
+      single_test: 1 call
+      gradual_recovery: 3 calls (2 must succeed)
+    recommendation: 1 call for simplicity, 3+ for gradual recovery
+
+  sliding_window_size:
+    description: Size of window for calculating failure rate
+    examples:
+      count_based: Last 10 requests
+      time_based: Last 60 seconds
+    recommendation: Time-based for variable traffic patterns
+
+# Fallback Strategies
+fallback_strategies:
+  cached_response:
+    description: Return last successful response from cache
+    use_case: Product catalog, configuration data
+    ttl: Based on data staleness tolerance (e.g., 5 minutes)
+
+  default_value:
+    description: Return static default or empty result
+    use_case: Recommendation engine (return popular items), optional features
+
+  graceful_degradation:
+    description: Partial response with reduced functionality
+    use_case: Return user profile without enrichment data
+
+  fail_fast:
+    description: Immediately return error without retrying
+    use_case: Critical path where fallback is not acceptable
+    error_message: "Service temporarily unavailable, please try again later"
+
+# Implementation Examples
+
+# Resilience4j (Java/Spring Boot)
+resilience4j:
+  circuit_breaker:
+    instances:
+      payment_service:
+        failure_rate_threshold: 50
+        slow_call_rate_threshold: 50
+        slow_call_duration_threshold: 3s
+        permitted_number_of_calls_in_half_open_state: 3
+        sliding_window_type: TIME_BASED
+        sliding_window_size: 10
+        minimum_number_of_calls: 5
+        wait_duration_in_open_state: 30s
+        automatic_transition_from_open_to_half_open: true
+
+# Polly (.NET)
+polly:
+  circuit_breaker_policy:
+    exceptions_allowed_before_breaking: 5
+    duration_of_break: 30s
+    on_break: Log circuit opened event
+    on_reset: Log circuit closed event
+    on_half_open: Log circuit testing recovery
+
+# Hystrix (deprecated, use Resilience4j)
+# Included for reference only - Hystrix is in maintenance mode
+
+# opossum (Node.js)
+opossum:
+  circuit_breaker_options:
+    timeout: 3000 # ms
+    error_threshold_percentage: 50
+    reset_timeout: 30000 # ms
+    rolling_count_timeout: 10000 # ms
+    rolling_count_buckets: 10
+    name: 'payment-service-circuit'
+    fallback: (error) => ({ status: 'unavailable', cached: true })
+
+# Monitoring
+observability:
+  metrics:
+    - circuit_breaker_state{service, circuit_name} # CLOSED=0, OPEN=1, HALF_OPEN=2
+    - circuit_breaker_calls_total{service, result="success|failure|circuit_open"}
+    - circuit_breaker_fallback_calls_total{service}
+    - circuit_breaker_failure_rate{service}
+    - circuit_breaker_slow_call_rate{service}
+
+  events:
+    - circuit_opened{service, reason="failure_threshold|slow_calls"}
+    - circuit_closed{service}
+    - circuit_half_opened{service}
+    - fallback_executed{service, fallback_type}
+
+  alerts:
+    - circuit_open_duration > 5 minutes → Page on-call engineer
+    - fallback_rate > 20% → Investigate service degradation
+    - multiple_circuits_open → Potential cascading failure
+
+# Anti-Patterns to Avoid
+anti_patterns:
+  timeout_too_long:
+    problem: Ties up resources waiting for slow service
+    mitigation: Set timeout to service SLA + small buffer (e.g., 2s for 1.5s SLA)
+
+  no_fallback:
+    problem: Users see errors instead of degraded experience
+    mitigation: Always provide fallback (cached, default, partial response)
+
+  ignoring_half_open:
+    problem: Circuit stays open indefinitely after transient failure
+    mitigation: Configure automatic transition to half-open for recovery testing
+
+  too_sensitive:
+    problem: Circuit opens on minor blips
+    mitigation: Require minimum number of calls before calculating rate (e.g., 5 calls)
+
+# Integration with Service Mesh (Istio/Linkerd)
+service_mesh_integration:
+  istio_destination_rule:
+    consecutive_errors: 5
+    interval: 10s
+    base_ejection_time: 30s
+    max_ejection_percent: 50
+
+  benefits:
+    - Language-agnostic circuit breaking at proxy level
+    - No application code changes required
+    - Centralized configuration via CRDs

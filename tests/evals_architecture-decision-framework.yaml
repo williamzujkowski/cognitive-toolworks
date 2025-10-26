@@ -1,0 +1,120 @@
+---
+skill: architecture-decision-framework
+version: 1.0.0
+test_scenarios:
+  - scenario: "T1_simple_layered_architecture"
+    tier: T1
+    description: "Generate simple ADR for traditional three-tier web application"
+    inputs:
+      decision_context: "Build internal admin dashboard for employee management"
+      constraints:
+        - "Small team (3 developers)"
+        - "Moderate traffic (<1000 users)"
+        - "Traditional SQL database required"
+      stakeholders: ["Engineering Lead", "Product Manager"]
+    expected_outputs:
+      - adr_format: "nygard"
+      - pattern_recommendation: "layered"
+      - token_budget_met: true
+      - rationale_present: true
+    success_criteria:
+      - "ADR generated with status, context, decision, consequences"
+      - "Layered architecture recommended"
+      - "Token usage ≤ 2000"
+
+  - scenario: "T2_microservices_event_driven"
+    tier: T2
+    description: "Evaluate event-driven vs synchronous for microservices migration"
+    inputs:
+      decision_context: "Migrate monolithic e-commerce to microservices"
+      constraints:
+        - performance: "<200ms latency p95"
+        - scalability: "50k concurrent users"
+        - maintainability: "Independent team deployment"
+      current_architecture: "Monolithic Java Spring application"
+      stakeholders: ["CTO", "Engineering Managers", "Platform Team"]
+    expected_outputs:
+      - adr_format: "y-statement"
+      - patterns_evaluated: ["event-driven", "hexagonal", "cqrs"]
+      - trade_off_analysis: "ATAM with sensitivity points"
+      - c4_context_diagram: true
+      - pattern_recommendation: "event-driven + hexagonal"
+    success_criteria:
+      - "Y-statement ADR with all 6 components"
+      - "ATAM identifies performance vs maintainability trade-off"
+      - "C4 context diagram generated"
+      - "Token usage ≤ 6000"
+
+  - scenario: "T2_hexagonal_testability"
+    tier: T2
+    description: "Decision for domain-driven design with hexagonal architecture"
+    inputs:
+      decision_context: "New fintech payment processing system with complex business rules"
+      constraints:
+        - "High test coverage required (>80%)"
+        - "PCI-DSS compliance"
+        - "Business logic must be isolated from infrastructure"
+      stakeholders: ["Security Team", "Product Owner", "Engineering"]
+    expected_outputs:
+      - adr_format: "nygard"
+      - pattern_recommendation: "hexagonal"
+      - trade_off_analysis: "testability vs complexity"
+    success_criteria:
+      - "Hexagonal architecture recommended for domain isolation"
+      - "Testability identified as primary driver"
+      - "Infrastructure adapter strategy documented"
+      - "Token usage ≤ 6000"
+
+  - scenario: "T3_cqrs_event_sourcing"
+    tier: T3
+    description: "Full analysis for CQRS + event sourcing implementation"
+    inputs:
+      decision_context: "High-volume trading platform with audit requirements"
+      constraints:
+        - "Read-heavy workload (100:1 read:write ratio)"
+        - "Complete audit trail required (regulatory)"
+        - "Real-time analytics on trading data"
+        - "Eventual consistency acceptable"
+      current_architecture: "Traditional CRUD with read replicas"
+      stakeholders: ["Compliance", "CTO", "Trading Desk", "Engineering"]
+    expected_outputs:
+      - adr_format: "MADR"
+      - patterns_evaluated: ["cqrs", "event-sourcing", "event-driven", "hexagonal"]
+      - full_atam_analysis: true
+      - c4_diagrams: ["context", "container", "component"]
+      - migration_strategy: "strangler"
+    success_criteria:
+      - "MADR with complete sections (context, drivers, options, outcome, pros/cons)"
+      - "CQRS + event sourcing recommended"
+      - "Event sourcing justification tied to audit requirements"
+      - "All 3 C4 levels generated"
+      - "Strangler pattern migration roadmap"
+      - "Token usage ≤ 12000"
+
+  - scenario: "T2_pattern_anti_selection"
+    tier: T2
+    description: "Identify when NOT to use complex patterns"
+    inputs:
+      decision_context: "Simple CRUD API for user preferences"
+      constraints:
+        - "Low traffic (<100 requests/min)"
+        - "Single developer maintaining"
+        - "No complex business logic"
+      stakeholders: ["Solo Developer"]
+    expected_outputs:
+      - adr_format: "nygard"
+      - pattern_recommendation: "layered"
+      - patterns_rejected: ["hexagonal", "event-driven", "cqrs"]
+    success_criteria:
+      - "Simple layered architecture recommended"
+      - "Complex patterns explicitly rejected with rationale"
+      - "Over-engineering risk identified"
+      - "Token usage ≤ 6000"
+
+validation_rules:
+  - "All ADRs must have: title, status, context, decision, consequences"
+  - "Trade-off analysis must cite specific quality attributes"
+  - "C4 diagrams must be valid PlantUML or Mermaid syntax"
+  - "All external references must have access date"
+  - "Pattern recommendations must link to authoritative sources"
+  - "Token budgets strictly enforced (T1≤2k, T2≤6k, T3≤12k)"

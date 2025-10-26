@@ -1,0 +1,27 @@
+{
+  "slug": "data-engineering-pipeline-designer",
+  "name": "Data Engineering Pipeline Designer",
+  "summary": "Design data pipelines with quality checks, orchestration, and governance using modern data stack patterns for robust ELT/ETL workflows.",
+  "category": "data-engineering",
+  "keywords": [
+    "data-engineering",
+    "airflow",
+    "dbt",
+    "great-expectations",
+    "kafka",
+    "data-quality",
+    "orchestration",
+    "ETL",
+    "ELT",
+    "data-pipeline"
+  ],
+  "dependencies": [
+    "database-optimization-analyzer"
+  ],
+  "priority": "P2",
+  "phase": 2,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "/skills/data-engineering-pipeline-designer/SKILL.md"
+}

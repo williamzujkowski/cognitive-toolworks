@@ -1,0 +1,30 @@
+{
+  "slug": "microservices-pattern-architect",
+  "name": "Microservices Pattern Architect",
+  "summary": "Apply microservices patterns (Saga, CQRS, Event Sourcing, Circuit Breaker, API Gateway, Service Discovery) with implementation guidance.",
+  "category": "architecture",
+  "keywords": [
+    "microservices",
+    "saga",
+    "cqrs",
+    "event-sourcing",
+    "circuit-breaker",
+    "api-gateway",
+    "service-discovery",
+    "distributed-transactions",
+    "eventual-consistency",
+    "fault-tolerance",
+    "resilience",
+    "choreography",
+    "orchestration"
+  ],
+  "dependencies": [
+    "cloud-native-deployment-orchestrator"
+  ],
+  "priority": "P1",
+  "phase": 2,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "/skills/microservices-pattern-architect/SKILL.md"
+}

@@ -1,0 +1,39 @@
+# Example: E-commerce Daily Orders Pipeline (Airflow + dbt + Great Expectations)
+
+## Input
+pipeline_type: batch
+sources: [postgres.orders, postgres.customers]
+transformations: join orders+customers, calc daily_revenue
+quality: order_id unique, order_total > 0
+target: snowflake.analytics
+schedule: daily 2 AM
+
+## Output: Airflow DAG Skeleton
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
+from great_expectations_provider.operators.great_expectations import GreatExpectationsOperator
+
+with DAG('ecommerce_orders_elt', schedule='0 2 * * *', catchup=False):
+    check_source = GreatExpectationsOperator(task_id='validate_source', checkpoint_name='orders_source')
+    load_staging = SnowflakeOperator(task_id='load_staging', sql='COPY INTO staging.orders FROM @s3_stage')
+    run_dbt = PythonOperator(task_id='dbt_run', python_callable=lambda: dbt.run(['--models', 'marts']))
+    check_output = GreatExpectationsOperator(task_id='validate_output', checkpoint_name='orders_marts')
+
+    check_source >> load_staging >> run_dbt >> check_output
+
+## dbt Model: fct_daily_revenue.sql
+WITH orders AS (SELECT * FROM {{ ref('stg_orders') }}),
+     products AS (SELECT * FROM {{ ref('stg_products') }})
+SELECT DATE(order_date) AS revenue_date,
+       p.category,
+       SUM(o.order_total) AS total_revenue
+FROM orders o JOIN products p ON o.product_id = p.product_id
+GROUP BY 1, 2
+
+## Great Expectations Suite
+expectations:
+  - expectation_type: expect_column_values_to_be_unique
+    kwargs: {column: order_id}
+  - expectation_type: expect_column_values_to_be_between
+    kwargs: {column: order_total, min_value: 0.01}

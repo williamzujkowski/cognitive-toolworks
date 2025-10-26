@@ -1,0 +1,28 @@
+# Frontend Framework Advisor - Example Usage
+
+## Input (T1: React with moderate state complexity)
+{"platform": "react", "project_type": "new", "tier": "T1",
+ "state_complexity": "moderate", "performance_requirements": "standard"}
+
+## Output
+{
+  "architecture_plan": {
+    "file_structure": ["/src/components", "/src/hooks", "/src/context"],
+    "component_hierarchy": "App > AuthProvider > Router > [Dashboard, Profile]",
+    "pattern": "container/presentational"
+  },
+  "state_management_recommendation": {
+    "approach": "React Context API + useReducer",
+    "rationale": "Moderate complexity fits Context; avoids Redux overhead",
+    "libraries": ["react (built-in)"]
+  },
+  "performance_patterns": [
+    {"pattern": "React.memo", "use_case": "Memoize list items"},
+    {"pattern": "useMemo", "use_case": "Cache computations"},
+    {"pattern": "React.lazy", "use_case": "Code-split routes"}
+  ],
+  "testing_integration": {
+    "unit_testing_tools": ["Jest", "React Testing Library"],
+    "coverage_target": 80
+  }
+}
