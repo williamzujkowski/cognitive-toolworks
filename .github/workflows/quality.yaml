@@ -1,0 +1,74 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Format check (black)
+        run: black --check --diff .
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Type check (mypy)
+        run: mypy tooling/
+        continue-on-error: false
+
+      - name: Run tests with coverage
+        run: |
+          pytest --cov=tooling --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          fail_ci_if_error: false
+
+      - name: Security audit (pip-audit)
+        run: pip-audit --require-hashes --disable-pip
+        continue-on-error: true  # P1 - warn but don't block
+
+      - name: Security scan (bandit)
+        run: bandit -r tooling/ -f json -o bandit-report.json
+        continue-on-error: true  # P1 - warn but don't block
+
+      - name: Upload security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+          retention-days: 30
+
+      - name: Post summary
+        if: always()
+        run: |
+          echo "## Quality Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Formatting: black" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Linting: ruff" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Type checking: mypy" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Tests: pytest with coverage" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️  Security: pip-audit + bandit (advisory)" >> $GITHUB_STEP_SUMMARY

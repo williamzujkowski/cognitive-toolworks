@@ -1,0 +1,70 @@
+skill: tooling-typescript-generator
+version: 1.0.0
+timestamp: 2025-10-26T00:00:00-05:00
+
+scenarios:
+  - name: basic-library-npm
+    description: "Generate a simple TypeScript library with npm"
+    input:
+      project_type: library
+      package_manager: npm
+      typescript_version: "5.5"
+      project_name: "utils-library"
+    expected:
+      - package.json with library configuration
+      - tsconfig.json with strict mode
+      - src/index.ts entry point
+      - Basic .gitignore
+    token_tier: T1
+
+  - name: react-app-vite-pnpm
+    description: "Generate React application with Vite and pnpm"
+    input:
+      project_type: react
+      package_manager: pnpm
+      typescript_version: "5.5"
+      project_name: "dashboard-app"
+    expected:
+      - vite.config.ts with React plugin
+      - React dependencies in package.json
+      - TypeScript React type definitions
+      - Vitest configuration
+    token_tier: T2
+
+  - name: cli-tool-esm
+    description: "Generate CLI tool with ESM modules"
+    input:
+      project_type: cli
+      package_manager: yarn
+      typescript_version: "5.4"
+      project_name: "build-tool"
+    expected:
+      - package.json with bin field
+      - Shebang in entry file
+      - Commander.js or yargs setup
+      - Bundled dependencies
+    token_tier: T2
+
+  - name: monorepo-turborepo
+    description: "Generate monorepo with Turborepo and pnpm workspaces"
+    input:
+      project_type: monorepo
+      package_manager: pnpm
+      typescript_version: "5.5"
+      project_name: "workspace"
+    expected:
+      - pnpm-workspace.yaml
+      - turbo.json with pipeline
+      - packages/* structure
+      - Shared tsconfig.json
+    token_tier: T3
+
+  - name: invalid-package-name
+    description: "Error case: uppercase package name should be rejected"
+    input:
+      project_type: library
+      package_manager: npm
+      typescript_version: "5.5"
+      project_name: "InvalidName"
+    expected_error: "project_name must be valid npm package name (lowercase, hyphens allowed)"
+    token_tier: T1

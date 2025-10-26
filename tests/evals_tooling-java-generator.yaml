@@ -1,0 +1,62 @@
+skill: tooling-java-generator
+version: 1.0.0
+scenarios:
+  - name: basic-library-maven
+    description: Generate basic Java library with Maven
+    input:
+      project_type: library
+      build_tool: maven
+      java_version: "17"
+      project_name: "data-utils"
+    expected_outputs:
+      - pom.xml with java 17 configuration
+      - src/main/java directory structure
+      - JUnit 5 test dependencies
+      - .gitignore file
+
+  - name: spring-boot-gradle
+    description: Generate Spring Boot microservice with Gradle
+    input:
+      project_type: spring-boot
+      build_tool: gradle
+      java_version: "21"
+      project_name: "user-api"
+    expected_outputs:
+      - build.gradle with Spring Boot plugin
+      - Spring Boot application class
+      - application.yml configuration
+      - Test configuration with JUnit 5
+
+  - name: multi-module-maven
+    description: Generate multi-module Maven project (T3)
+    input:
+      project_type: microservice
+      build_tool: maven
+      java_version: "21"
+      project_name: "order-system"
+    expected_outputs:
+      - Parent pom.xml with modules
+      - Submodule structure (api, core, service)
+      - Dependency management section
+      - Multi-stage Dockerfile
+
+  - name: native-image-gradle
+    description: Generate GraalVM native-image project
+    input:
+      project_type: application
+      build_tool: gradle
+      java_version: "21"
+      project_name: "cli-tool"
+    expected_outputs:
+      - Gradle native-image plugin configuration
+      - Reflection configuration files
+      - Build optimization settings
+
+  - name: invalid-java-version
+    description: Reject unsupported Java version
+    input:
+      project_type: library
+      build_tool: maven
+      java_version: "8"
+      project_name: "legacy-lib"
+    expected_error: "Minimum Java 11 required"

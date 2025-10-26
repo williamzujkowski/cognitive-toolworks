@@ -40,10 +40,10 @@ license: Apache-2.0
 **Do NOT use when:**
 
 - Single-region deployment (use cloud-native-orchestrator or devops-pipeline-orchestrator)
-- Only need vendor selection (use multicloud-strategy-advisor skill)
-- Simple CDN setup without regional compute (use edge-computing-architect skill)
+- Only need vendor selection (use cloud-multicloud-advisor skill)
+- Simple CDN setup without regional compute (use cloud-edge-architect skill)
 - Requirements unclear or region selection incomplete
-- Only Kubernetes federation (use cloud-native-orchestrator with service-mesh-configurator)
+- Only Kubernetes federation (use cloud-native-orchestrator with kubernetes-servicemesh-configurator)
 
 ---
 
@@ -59,12 +59,12 @@ license: Apache-2.0
    - `data_strategy` specified (active-active, active-passive, read-replicas)
    - `failover_requirements` documented (RTO, RPO, automated vs manual)
 3. **Skill availability**: Verify required skills exist in `/skills/` directory:
-   - `cloud-platform-integrator`
-   - `deployment-strategy-designer`
+   - `cloud-kubernetes-integrator`
+   - `devops-deployment-designer`
    - `database-optimization-analyzer`
-   - `multicloud-strategy-advisor`
-   - `iac-template-generator`
-   - `networksec-architecture-validator`
+   - `cloud-multicloud-advisor`
+   - `devops-iac-generator`
+   - `security-network-validator`
 4. **Source freshness**: All cloud provider region documentation current; pricing/capabilities <90 days old
 
 **Abort conditions:**
@@ -171,7 +171,7 @@ You are a Multi-Region Deployment Orchestrator agent specializing in coordinatin
    - **Global load balancing**: AWS Global Accelerator, Azure Front Door, Google Cloud Load Balancing
    - **Edge locations**: CloudFront (400+ edge locations), Azure CDN, Cloud CDN
 
-**Delegation**: Invoke `multicloud-strategy-advisor` skill for vendor comparison if multi-cloud required.
+**Delegation**: Invoke `cloud-multicloud-advisor` skill for vendor comparison if multi-cloud required.
 
 **Output:**
 - Regional topology diagram (text-based: PlantUML or Mermaid)
@@ -198,26 +198,26 @@ You are a Multi-Region Deployment Orchestrator agent specializing in coordinatin
 **Process:**
 
 1. **Infrastructure as Code generation**:
-   - **Delegation**: Invoke `iac-template-generator` skill for each region
+   - **Delegation**: Invoke `devops-iac-generator` skill for each region
    - **Parameterization**: Region-specific variables (availability zones, CIDR blocks, instance types)
    - **Terraform modules**: Shared module with region overrides
    - **CloudFormation StackSets**: Deploy to multiple regions with single template
 
 2. **Region-specific deployment** (accessed 2025-10-26T01:56:06-04:00):
    - **Compute**: EC2/VMs in each region with auto-scaling groups
-   - **Containers**: EKS/AKS/GKE clusters per region; delegate to `cloud-platform-integrator`
+   - **Containers**: EKS/AKS/GKE clusters per region; delegate to `cloud-kubernetes-integrator`
    - **Serverless**: Lambda/Functions replicated across regions
    - **Databases**: Regional databases with replication (covered in Step 3)
    - **Storage**: S3 buckets per region with cross-region replication (CRR)
 
 3. **Network and security**:
-   - **Delegation**: Invoke `networksec-architecture-validator` for security posture
+   - **Delegation**: Invoke `security-network-validator` for security posture
    - **VPC/VNet per region**: Isolated network per region with consistent CIDR scheme
    - **Security groups/NSGs**: Replicate security rules across regions
    - **IAM/RBAC**: Regional IAM roles with cross-region trust relationships
 
 4. **Deployment strategy**:
-   - **Delegation**: Invoke `deployment-strategy-designer` for rollout plan
+   - **Delegation**: Invoke `devops-deployment-designer` for rollout plan
    - **Canary region**: Deploy to lowest-traffic region first (e.g., ap-southeast-2)
    - **Progressive rollout**: Validate canary, then deploy to remaining regions
    - **Rollback plan**: Regional rollback without impacting other regions

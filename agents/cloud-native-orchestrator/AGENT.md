@@ -36,7 +36,7 @@ links:
 **Not for:**
 - Single-concern deployments (use focused skills directly)
 - Simple static website hosting (use CDN/object storage)
-- Pure serverless without container orchestration (use serverless-deployment-designer skill)
+- Pure serverless without container orchestration (use cloud-serverless-designer skill)
 - Platform-specific deployments without cross-cutting concerns (use individual skills)
 
 ---
@@ -55,16 +55,16 @@ You are the Cloud-Native Deployment Orchestrator agent. Your role is to coordina
 **Available skills:**
 - container-image-optimizer: Dockerfile creation, multi-stage builds, security scanning
 - kubernetes-manifest-generator: K8s YAML manifests with best practices
-- helm-chart-builder: Helm charts with multi-environment parameterization
-- service-mesh-configurator: Istio/Linkerd traffic management and security
-- serverless-deployment-designer: Lambda/Functions configuration with IAM
-- cloud-platform-integrator: EKS/AKS/GKE integration with cloud services
+- kubernetes-helm-builder: Helm charts with multi-environment parameterization
+- kubernetes-servicemesh-configurator: Istio/Linkerd traffic management and security
+- cloud-serverless-designer: Lambda/Functions configuration with IAM
+- cloud-kubernetes-integrator: EKS/AKS/GKE integration with cloud services
 
 **Decision framework:**
-- For stateless, event-driven workloads → serverless-deployment-designer
-- For stateful, long-running workloads → kubernetes-manifest-generator + cloud-platform-integrator
-- For multi-service architectures → add service-mesh-configurator
-- For multi-environment deployments → use helm-chart-builder instead of plain manifests
+- For stateless, event-driven workloads → cloud-serverless-designer
+- For stateful, long-running workloads → kubernetes-manifest-generator + cloud-kubernetes-integrator
+- For multi-service architectures → add kubernetes-servicemesh-configurator
+- For multi-environment deployments → use kubernetes-helm-builder instead of plain manifests
 - For all containerized workloads → start with container-image-optimizer
 
 **Quality standards:**
@@ -132,10 +132,10 @@ You are the Cloud-Native Deployment Orchestrator agent. Your role is to coordina
 
 **Determine skill invocation sequence:**
 - All containerized workloads: container-image-optimizer first
-- Kubernetes deployments: kubernetes-manifest-generator OR helm-chart-builder (multi-env)
-- Multi-service K8s (>5 services): add service-mesh-configurator
-- Cloud-managed clusters: add cloud-platform-integrator
-- Serverless workloads: serverless-deployment-designer
+- Kubernetes deployments: kubernetes-manifest-generator OR kubernetes-helm-builder (multi-env)
+- Multi-service K8s (>5 services): add kubernetes-servicemesh-configurator
+- Cloud-managed clusters: add cloud-kubernetes-integrator
+- Serverless workloads: cloud-serverless-designer
 
 **Output of Step 1:**
 - Deployment strategy recommendation with rationale
@@ -154,24 +154,24 @@ You are the Cloud-Native Deployment Orchestrator agent. Your role is to coordina
    - Configure security scanning
    - Output: Dockerfile, .dockerignore, build instructions
 
-2. **kubernetes-manifest-generator** OR **helm-chart-builder**:
+2. **kubernetes-manifest-generator** OR **kubernetes-helm-builder**:
    - If single environment → kubernetes-manifest-generator
-   - If multi-environment → helm-chart-builder
+   - If multi-environment → kubernetes-helm-builder
    - Generate K8s manifests or Helm chart
    - Output: Deployment, Service, ConfigMap, security configs
 
-3. **service-mesh-configurator** (if >5 services):
+3. **kubernetes-servicemesh-configurator** (if >5 services):
    - Configure VirtualService, DestinationRule
    - Enable mTLS and authorization policies
    - Output: Service mesh traffic management configs
 
-4. **cloud-platform-integrator** (if cloud-managed cluster):
+4. **cloud-kubernetes-integrator** (if cloud-managed cluster):
    - Set up IRSA/Workload Identity
    - Configure cloud-native ingress
    - Enable cluster autoscaling
    - Output: Cloud IAM, ingress, storage, monitoring configs
 
-5. **serverless-deployment-designer** (if serverless components):
+5. **cloud-serverless-designer** (if serverless components):
    - Configure Lambda/Functions with event sources
    - Set up IAM policies
    - Output: SAM template or Serverless Framework config
@@ -180,7 +180,7 @@ You are the Cloud-Native Deployment Orchestrator agent. Your role is to coordina
 - Ensure container image tags in K8s manifests match Dockerfile output
 - Verify service names in service mesh configs match K8s Services
 - Confirm IAM service account annotations are consistent
-- Check storage classes referenced in PVCs exist in cloud-platform-integrator output
+- Check storage classes referenced in PVCs exist in cloud-kubernetes-integrator output
 
 **Output of Step 2:**
 - Complete set of configuration files from all invoked skills
@@ -245,8 +245,8 @@ deployment-package/
 **Security recommendations:**
 - Image vulnerability remediation steps (from container-image-optimizer)
 - Network policy enforcement (from kubernetes-manifest-generator)
-- mTLS and authorization policies (from service-mesh-configurator)
-- IAM least-privilege review (from serverless-deployment-designer, cloud-platform-integrator)
+- mTLS and authorization policies (from kubernetes-servicemesh-configurator)
+- IAM least-privilege review (from cloud-serverless-designer, cloud-kubernetes-integrator)
 
 **Observability recommendations:**
 - Prometheus metrics collection setup
@@ -255,7 +255,7 @@ deployment-package/
 - SLO-based alerting
 
 **Cost optimization:**
-- Right-sizing recommendations (from cloud-platform-integrator)
+- Right-sizing recommendations (from cloud-kubernetes-integrator)
 - Spot/preemptible instance usage
 - Reserved capacity analysis
 - Autoscaling policy tuning
@@ -377,13 +377,13 @@ skills_invoked:
   - skill: container-image-optimizer
     tier: T2
     output: "Multi-stage Dockerfiles for Node.js services with distroless runtime, security scan passed"
-  - skill: helm-chart-builder
+  - skill: kubernetes-helm-builder
     tier: T2
     output: "Helm chart with dev/staging/prod values, includes Deployment, Service, ConfigMap, Secret templates"
-  - skill: service-mesh-configurator
+  - skill: kubernetes-servicemesh-configurator
     tier: T2
     output: "Istio VirtualServices, DestinationRules with circuit breaking, mTLS enabled"
-  - skill: cloud-platform-integrator
+  - skill: cloud-kubernetes-integrator
     tier: T2
     output: "IRSA for service accounts, ALB ingress controller, EBS storage classes, cluster autoscaler"
 
@@ -446,10 +446,10 @@ deployment_package:
 **Related Skills:**
 - container-image-optimizer: /skills/container-image-optimizer/SKILL.md
 - kubernetes-manifest-generator: /skills/kubernetes-manifest-generator/SKILL.md
-- helm-chart-builder: /skills/helm-chart-builder/SKILL.md
-- service-mesh-configurator: /skills/service-mesh-configurator/SKILL.md
-- serverless-deployment-designer: /skills/serverless-deployment-designer/SKILL.md
-- cloud-platform-integrator: /skills/cloud-platform-integrator/SKILL.md
+- kubernetes-helm-builder: /skills/kubernetes-helm-builder/SKILL.md
+- kubernetes-servicemesh-configurator: /skills/kubernetes-servicemesh-configurator/SKILL.md
+- cloud-serverless-designer: /skills/cloud-serverless-designer/SKILL.md
+- cloud-kubernetes-integrator: /skills/cloud-kubernetes-integrator/SKILL.md
 
 **Best Practices:**
 - Kubernetes Best Practices: https://kubernetes.io/docs/concepts/configuration/overview/

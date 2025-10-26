@@ -13,15 +13,14 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Tuple
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
-from urllib.error import URLError, HTTPError
 
 try:
-    import yaml  # type: ignore
+    import yaml  # type: ignore[import-untyped,unused-ignore]
 except Exception:  # pragma: no cover
-    yaml = None
+    yaml = None  # type: ignore[assignment]
 
 FRONT_MATTER_DELIM = re.compile(r"^---\s*$")
 
@@ -65,12 +64,12 @@ def extract_body(md_text: str) -> str:
     if end_idx is None:
         return md_text
 
-    return "\n".join(lines[end_idx + 1:])
+    return "\n".join(lines[end_idx + 1 :])
 
 
-def check_heading_order(body: str, path: Path) -> List[LintIssue]:
+def check_heading_order(body: str, path: Path) -> list[LintIssue]:
     """Verify required sections appear in the correct order."""
-    issues: List[LintIssue] = []
+    issues: list[LintIssue] = []
 
     # Find all h2 headings
     h2_pattern = re.compile(r"^## (.+)$", re.MULTILINE)
@@ -109,19 +108,16 @@ def check_heading_order(body: str, path: Path) -> List[LintIssue]:
     return issues
 
 
-def check_code_fences(body: str, path: Path) -> List[LintIssue]:
+def check_code_fences(body: str, path: Path) -> list[LintIssue]:
     """Verify all code fences are properly closed."""
-    issues: List[LintIssue] = []
+    issues: list[LintIssue] = []
     fence_pattern = re.compile(r"^```")
     lines = body.splitlines()
 
-    open_line: Optional[int] = None
+    open_line: int | None = None
     for i, line in enumerate(lines, start=1):
         if fence_pattern.match(line):
-            if open_line is None:
-                open_line = i
-            else:
-                open_line = None  # Close the fence
+            open_line = i if open_line is None else None
 
     if open_line is not None:
         issues.append(
@@ -134,10 +130,10 @@ def check_code_fences(body: str, path: Path) -> List[LintIssue]:
     return issues
 
 
-def extract_links(body: str) -> List[str]:
+def extract_links(body: str) -> list[str]:
     """Extract all HTTP(S) URLs from markdown."""
     # Match markdown links [text](url) and bare URLs
-    md_link_pattern = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
+    md_link_pattern = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
     bare_url_pattern = re.compile(r'https?://[^\s<>"\)]+')
 
     urls = []
@@ -145,18 +141,18 @@ def extract_links(body: str) -> List[str]:
     # Extract from markdown links
     for match in md_link_pattern.finditer(body):
         url = match.group(2)
-        if url.startswith(('http://', 'https://')):
+        if url.startswith(("http://", "https://")):
             urls.append(url)
 
     # Extract bare URLs (not already in markdown links)
-    body_no_md = md_link_pattern.sub('', body)
+    body_no_md = md_link_pattern.sub("", body)
     for match in bare_url_pattern.finditer(body_no_md):
         urls.append(match.group(0))
 
     return list(set(urls))  # Deduplicate
 
 
-def check_link_validity(url: str, timeout: int = 5) -> Tuple[bool, Optional[str]]:
+def check_link_validity(url: str, timeout: int = 5) -> tuple[bool, str | None]:
     """Check if URL is accessible. Returns (is_valid, error_message)."""
     try:
         parsed = urlparse(url)
@@ -164,18 +160,18 @@ def check_link_validity(url: str, timeout: int = 5) -> Tuple[bool, Optional[str]
             return False, "Invalid URL format"
 
         # Skip fragment-only or anchor links
-        if url.startswith('#'):
+        if url.startswith("#"):
             return True, None
 
         # Make HEAD request to check accessibility
-        req = Request(url, method='HEAD')
-        req.add_header('User-Agent', 'SkillLinter/1.0')
+        # S310: URL validation is intentional for link checking; URLs from skill docs
+        req = Request(url, method="HEAD")  # noqa: S310
+        req.add_header("User-Agent", "SkillLinter/1.0")
 
-        with urlopen(req, timeout=timeout) as response:
+        with urlopen(req, timeout=timeout) as response:  # noqa: S310
             if response.status < 400:
                 return True, None
-            else:
-                return False, f"HTTP {response.status}"
+            return False, f"HTTP {response.status}"
 
     except HTTPError as e:
         return False, f"HTTP {e.code}"
@@ -185,9 +181,9 @@ def check_link_validity(url: str, timeout: int = 5) -> Tuple[bool, Optional[str]
         return False, f"Error: {str(e)[:50]}"
 
 
-def check_links(body: str, path: Path, validate: bool = False) -> List[LintIssue]:
+def check_links(body: str, path: Path, validate: bool = False) -> list[LintIssue]:
     """Check external links. If validate=True, perform HTTP checks."""
-    issues: List[LintIssue] = []
+    issues: list[LintIssue] = []
     urls = extract_links(body)
 
     if not urls:
@@ -208,9 +204,9 @@ def check_links(body: str, path: Path, validate: bool = False) -> List[LintIssue
     return issues
 
 
-def lint_skill_file(path: Path, validate_links: bool = False) -> List[LintIssue]:
+def lint_skill_file(path: Path, validate_links: bool = False) -> list[LintIssue]:
     """Run all lint checks on a SKILL.md file."""
-    issues: List[LintIssue] = []
+    issues: list[LintIssue] = []
 
     try:
         content = read_text(path)
@@ -228,9 +224,7 @@ def lint_skill_file(path: Path, validate_links: bool = False) -> List[LintIssue]
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(
-        description="Lint SKILL.md files for style consistency"
-    )
+    ap = argparse.ArgumentParser(description="Lint SKILL.md files for style consistency")
     ap.add_argument(
         "--root",
         type=Path,
@@ -256,7 +250,7 @@ def main() -> int:
         print("No skills found.")
         return 0
 
-    total_issues: List[LintIssue] = []
+    total_issues: list[LintIssue] = []
     for p in md_files:
         issues = lint_skill_file(p, validate_links=args.validate_links)
         if issues:

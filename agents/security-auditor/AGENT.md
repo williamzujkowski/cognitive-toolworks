@@ -45,14 +45,14 @@ You are a Security Auditor agent that orchestrates comprehensive security assess
 - Coordinate threat modeling when required (T3 assessments)
 
 **Available security skills:**
-1. `appsec-validator` - Application security (OWASP Top 10, API security)
-2. `cloudsec-posture-analyzer` - Cloud security (AWS, Azure, GCP)
-3. `container-security-checker` - Container/Kubernetes security
-4. `cryptosec-validator` - Cryptographic implementations
-5. `iam-security-reviewer` - Identity and access management
-6. `networksec-architecture-validator` - Network security architecture
-7. `ossec-hardening-checker` - Operating system hardening
-8. `zerotrust-maturity-assessor` - Zero-trust maturity
+1. `security-security-appsec-validator` - Application security (OWASP Top 10, API security)
+2. `security-cloud-analyzer` - Cloud security (AWS, Azure, GCP)
+3. `security-container-validator` - Container/Kubernetes security
+4. `security-crypto-validator` - Cryptographic implementations
+5. `security-iam-reviewer` - Identity and access management
+6. `security-network-validator` - Network security architecture
+7. `security-os-validator` - Operating system hardening
+8. `security-zerotrust-assessor` - Zero-trust maturity
 
 **Token budget constraint:** System prompt ≤1500 tokens (currently: ~250 tokens used)
 
@@ -129,14 +129,14 @@ threat_model_required: true # optional, default false for T1/T2
 **Skill routing table:**
 | Domain | Skill Slug | Required Inputs |
 |--------|-----------|----------------|
-| appsec | appsec-validator | application_identifier, assessment_scope, check_level |
-| cloudsec | cloudsec-posture-analyzer | cloud_platform, resource_scope, compliance_check |
-| containersec | container-security-checker | platform, cluster_identifier, check_scope |
-| cryptosec | cryptosec-validator | target_system, crypto_scope, compliance_standard |
-| iam | iam-security-reviewer | identity_provider, iam_scope, authenticator_level |
-| networksec | networksec-architecture-validator | network_identifier, architecture_scope, segmentation_model |
-| ossec | ossec-hardening-checker | os_platform, os_distribution, cis_level |
-| zerotrust | zerotrust-maturity-assessor | organization_identifier, ztmm_pillars, target_maturity |
+| appsec | security-appsec-validator | application_identifier, assessment_scope, check_level |
+| cloudsec | security-cloud-analyzer | cloud_platform, resource_scope, compliance_check |
+| containersec | security-container-validator | platform, cluster_identifier, check_scope |
+| cryptosec | security-crypto-validator | target_system, crypto_scope, compliance_standard |
+| iam | security-iam-reviewer | identity_provider, iam_scope, authenticator_level |
+| networksec | security-network-validator | network_identifier, architecture_scope, segmentation_model |
+| ossec | security-os-validator | os_platform, os_distribution, cis_level |
+| zerotrust | security-zerotrust-assessor | organization_identifier, ztmm_pillars, target_maturity |
 
 ### Step 2: Parallel Skill Execution
 
@@ -294,9 +294,9 @@ assessment_tier: "T1"
 # Agent workflow
 1. Auto-detect domains: [appsec, iam, cryptosec]
 2. Invoke skills in parallel:
-   - appsec-validator (check_level: critical-only)
-   - iam-security-reviewer (iam_scope: authentication)
-   - cryptosec-validator (crypto_scope: tls)
+   - security-appsec-validator (check_level: critical-only)
+   - security-iam-reviewer (iam_scope: authentication)
+   - security-crypto-validator (crypto_scope: tls)
 3. Aggregate findings (1 high from appsec)
 4. Generate quick summary
 
@@ -366,11 +366,11 @@ threat_model_required: true
 - OWASP Threat Modeling: https://owasp.org/www-community/Threat_Modeling (accessed 2025-10-26T01:33:55-04:00)
 
 **Skills Documentation:**
-- `/skills/appsec-validator/SKILL.md`
-- `/skills/cloudsec-posture-analyzer/SKILL.md`
-- `/skills/container-security-checker/SKILL.md`
-- `/skills/cryptosec-validator/SKILL.md`
-- `/skills/iam-security-reviewer/SKILL.md`
-- `/skills/networksec-architecture-validator/SKILL.md`
-- `/skills/ossec-hardening-checker/SKILL.md`
-- `/skills/zerotrust-maturity-assessor/SKILL.md`
+- `/skills/security-security-appsec-validator/SKILL.md`
+- `/skills/security-cloud-analyzer/SKILL.md`
+- `/skills/security-container-validator/SKILL.md`
+- `/skills/security-crypto-validator/SKILL.md`
+- `/skills/security-iam-reviewer/SKILL.md`
+- `/skills/security-network-validator/SKILL.md`
+- `/skills/security-os-validator/SKILL.md`
+- `/skills/security-zerotrust-assessor/SKILL.md`
