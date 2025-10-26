@@ -1,0 +1,30 @@
+# GCP Serverless Web Application Architecture Example
+# Cloud Run + Cloud SQL + Cloud Storage + Cloud CDN
+
+architecture:
+  workload_type: web-app
+  services:
+    - category: compute
+      service: Cloud Run
+      config: "Python 3.12, 1 vCPU, 512Mi, auto-scale 0-100"
+      rationale: "Serverless containers, pay-per-use, automatic HTTPS"
+
+    - category: database
+      service: Cloud SQL PostgreSQL
+      config: "db-f1-micro, 10GB, automated backups, private IP"
+      rationale: "Managed relational DB, point-in-time recovery"
+
+    - category: storage
+      service: Cloud Storage
+      config: "Standard class, versioning, lifecycle to Nearline@30d"
+      rationale: "Object storage for static assets, 11 9s durability"
+
+    - category: networking
+      service: Cloud CDN + Global Load Balancer
+      config: "HTTPS, managed SSL cert, cache static content"
+      rationale: "Global distribution, reduced latency, DDoS protection"
+
+cost_estimate:
+  monthly_usd: 63
+  breakdown: {compute: 15, database: 25, storage: 3, cdn: 12, lb: 8}
+  optimizations: ["Use committed use for Cloud SQL", "Move old data to Archive class"]

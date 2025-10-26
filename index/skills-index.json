@@ -124,6 +124,29 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/cloud-edge-architect/SKILL.md"
   },
   {
+    "slug": "cloud-gcp-architect",
+    "name": "GCP Multi-Service Architect",
+    "summary": "Design GCP solutions across compute, storage, networking, and serverless with cost optimization, security hardening, and Framework alignment.",
+    "keywords": [
+      "gcp",
+      "google-cloud",
+      "cloud-architecture",
+      "compute-engine",
+      "cloud-run",
+      "cloud-functions",
+      "gke",
+      "cloud-storage",
+      "terraform",
+      "architecture-framework",
+      "serverless",
+      "cost-optimization",
+      "multi-region"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/cloud-gcp-architect/SKILL.md"
+  },
+  {
     "slug": "cloud-kubernetes-integrator",
     "name": "Cloud Platform Integrator",
     "summary": "Integrate Kubernetes workloads with AWS EKS, Azure AKS, and GCP GKE including IAM, ingress controllers, storage classes, and platform-specific features.",
