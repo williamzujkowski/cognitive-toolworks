@@ -1,0 +1,226 @@
+skill: e2e-testing-generator
+version: 1.0.0
+evaluations:
+  - scenario: "Basic Login Flow Test Suite (Playwright)"
+    description: "Generate Playwright test suite for authentication flow with page objects"
+    tier: T1
+    inputs:
+      framework: playwright
+      application_type: spa
+      test_scope: smoke
+      features:
+        - user_authentication
+        - dashboard_navigation
+      accessibility_level: none
+    expected_outputs:
+      test_suite:
+        test_count: 3
+        coverage_areas:
+          - login
+          - logout
+          - dashboard_access
+      page_objects:
+        models:
+          - LoginPage
+          - DashboardPage
+      ci_config:
+        browser_matrix:
+          - chromium
+    validation_criteria:
+      - "Test suite includes login, logout, and dashboard navigation tests"
+      - "Page object pattern implemented for LoginPage and DashboardPage"
+      - "Tests use data-testid selectors for stability"
+      - "No hardcoded credentials in test files"
+      - "Configuration file (playwright.config.ts) generated"
+    token_budget: 2000
+
+  - scenario: "E-Commerce Checkout Flow with Accessibility (Cypress)"
+    description: "Generate comprehensive checkout flow tests with WCAG AA validation"
+    tier: T2
+    inputs:
+      framework: cypress
+      application_type: web
+      test_scope: critical-path
+      features:
+        - product_browsing
+        - cart_management
+        - checkout_process
+        - payment_processing
+      accessibility_level: wcag-aa
+    expected_outputs:
+      test_suite:
+        test_count: 12
+        coverage_areas:
+          - product_catalog
+          - add_to_cart
+          - cart_operations
+          - checkout_form
+          - payment_submission
+          - order_confirmation
+      page_objects:
+        models:
+          - ProductListPage
+          - ProductDetailPage
+          - CartPage
+          - CheckoutPage
+          - OrderConfirmationPage
+      a11y_checks:
+        compliance_level: wcag-aa
+        rules:
+          - color-contrast
+          - label
+          - button-name
+          - form-field-multiple-labels
+          - aria-valid-attr-value
+    validation_criteria:
+      - "Checkout flow covers all major steps from browsing to confirmation"
+      - "Page objects encapsulate each checkout step"
+      - "Accessibility checks integrated using cypress-axe"
+      - "WCAG AA compliance validated on each page"
+      - "Visual regression tests for cart and checkout pages"
+      - "Test data fixtures for products and user accounts"
+    token_budget: 6000
+
+  - scenario: "Admin CRUD Operations with CI Integration (Playwright)"
+    description: "Full regression suite for admin panel with parallel execution and CI pipeline"
+    tier: T3
+    inputs:
+      framework: playwright
+      application_type: spa
+      test_scope: full-regression
+      features:
+        - user_management
+        - content_management
+        - analytics_dashboard
+        - settings_configuration
+      accessibility_level: wcag-aa
+    expected_outputs:
+      test_suite:
+        test_count: 35
+        coverage_areas:
+          - create_user
+          - edit_user
+          - delete_user
+          - create_content
+          - publish_content
+          - view_analytics
+          - update_settings
+      page_objects:
+        models:
+          - AdminLoginPage
+          - UserListPage
+          - UserFormPage
+          - ContentEditorPage
+          - AnalyticsDashboardPage
+          - SettingsPage
+      ci_config:
+        pipeline_file: .github/workflows/e2e-tests.yml
+        parallelization_strategy: sharding
+        browser_matrix:
+          - chromium
+          - firefox
+          - webkit
+        estimated_duration_minutes: 25
+      a11y_checks:
+        compliance_level: wcag-aa
+        violation_handling: fail
+    validation_criteria:
+      - "CRUD operations tested for all major entities"
+      - "Page objects follow consistent naming and structure"
+      - "GitHub Actions workflow configured with 4-way sharding"
+      - "Cross-browser testing on Chromium, Firefox, and WebKit"
+      - "Accessibility violations fail the build"
+      - "Flaky test retry logic (max 2 retries) configured"
+      - "Screenshots and traces captured on failure"
+      - "HTML test report generated and stored as artifact"
+      - "Parallel execution completes in ≤25 minutes"
+    token_budget: 12000
+
+  - scenario: "Mobile-Responsive SPA with Visual Regression (Selenium)"
+    description: "Generate Selenium tests for mobile-responsive app with screenshot comparison"
+    tier: T2
+    inputs:
+      framework: selenium
+      application_type: mobile-web
+      test_scope: critical-path
+      features:
+        - responsive_navigation
+        - mobile_forms
+        - touch_interactions
+      accessibility_level: wcag-aa
+    expected_outputs:
+      test_suite:
+        test_count: 15
+        coverage_areas:
+          - mobile_menu_navigation
+          - form_input_mobile
+          - swipe_gestures
+          - orientation_changes
+      page_objects:
+        models:
+          - MobileNavPage
+          - MobileFormPage
+        helpers:
+          - swipe_helper
+          - orientation_helper
+      ci_config:
+        browser_matrix:
+          - chrome_mobile
+          - safari_ios
+    validation_criteria:
+      - "Mobile viewport emulation configured (375x667, 414x896)"
+      - "Touch interaction tests for swipe and tap gestures"
+      - "Visual regression tests capture mobile and tablet views"
+      - "Selenium Grid configuration for mobile browser emulation"
+      - "Accessibility checks adapted for mobile interactions"
+    token_budget: 6000
+
+  - scenario: "Multi-Tab Workflow Testing (Playwright)"
+    description: "Test complex workflows requiring multiple browser contexts and tabs"
+    tier: T2
+    inputs:
+      framework: playwright
+      application_type: web
+      test_scope: critical-path
+      features:
+        - oauth_authentication
+        - multi_tab_coordination
+        - external_integrations
+      accessibility_level: wcag-a
+    expected_outputs:
+      test_suite:
+        test_count: 8
+        coverage_areas:
+          - oauth_popup_flow
+          - tab_synchronization
+          - cross_tab_messaging
+      page_objects:
+        models:
+          - OAuthPopupPage
+          - MainAppPage
+        helpers:
+          - context_manager
+          - tab_switcher
+    validation_criteria:
+      - "OAuth popup handled in separate browser context"
+      - "Tab coordination tests verify cross-tab state synchronization"
+      - "Page objects support multi-context operations"
+      - "External integration stubs configured for deterministic tests"
+      - "No flaky waits for tab switching or popup handling"
+    token_budget: 5000
+
+quality_gates:
+  max_token_usage:
+    T1: 2000
+    T2: 6000
+    T3: 12000
+  required_elements:
+    - "Page object models with clear separation of concerns"
+    - "No hardcoded credentials or secrets"
+    - "Explicit waits (no arbitrary timeouts)"
+    - "Accessibility checks where specified"
+    - "CI configuration for T3 scenarios"
+  performance_targets:
+    smoke_suite_max_minutes: 5
+    critical_path_max_minutes: 20
+    full_regression_max_minutes: 60

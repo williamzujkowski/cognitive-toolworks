@@ -35,6 +35,24 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/api-design-validator/SKILL.md"
   },
   {
+    "slug": "appsec-validator",
+    "name": "Application Security Validator",
+    "summary": "Validate application security using OWASP Top 10 2021 and API Security Top 10 guidelines with injection prevention and access control checks.",
+    "keywords": [
+      "appsec",
+      "owasp",
+      "web-security",
+      "api-security",
+      "injection",
+      "xss",
+      "authentication",
+      "authorization"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/appsec-validator/SKILL.md"
+  },
+  {
     "slug": "architecture-decision-framework",
     "name": "Architecture Decision Framework",
     "summary": "Guide architecture decisions using ADRs, trade-off analysis, pattern catalogs, and C4 diagrams for layered, hexagonal, event-driven, and CQRS patterns.",
@@ -100,6 +118,23 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/chaos-engineering-designer/SKILL.md"
   },
   {
+    "slug": "cicd-pipeline-generator",
+    "name": "CI/CD Pipeline Generator",
+    "summary": "Generate platform-specific CI/CD pipeline configurations for GitHub Actions, GitLab CI, Jenkins, and Azure DevOps with build, test, and deploy stages.",
+    "keywords": [
+      "cicd",
+      "github-actions",
+      "gitlab-ci",
+      "jenkins",
+      "azure-devops",
+      "pipeline",
+      "automation"
+    ],
+    "owner": "william@cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/cicd-pipeline-generator/SKILL.md"
+  },
+  {
     "slug": "cloud-native-deployment-orchestrator",
     "name": "Cloud-Native Deployment Orchestrator",
     "summary": "Design and validate Kubernetes, container, serverless, and service mesh deployments with platform-specific optimizations for AWS, Azure, and GCP.",
@@ -127,101 +162,6 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/cloud-native-deployment-orchestrator/SKILL.md"
   },
   {
-    "slug": "container-image-optimizer",
-    "name": "Container Image Optimizer",
-    "summary": "Create optimized Dockerfiles with multi-stage builds, security hardening, and vulnerability scanning for minimal, secure container images.",
-    "keywords": [
-      "docker",
-      "dockerfile",
-      "container",
-      "multi-stage-build",
-      "image-optimization",
-      "container-security",
-      "vulnerability-scanning",
-      "distroless",
-      "alpine"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/container-image-optimizer/SKILL.md"
-  },
-  {
-    "slug": "kubernetes-manifest-generator",
-    "name": "Kubernetes Manifest Generator",
-    "summary": "Generate and validate Kubernetes YAML manifests with best practices for Deployments, Services, ConfigMaps, and security policies.",
-    "keywords": [
-      "kubernetes",
-      "yaml",
-      "deployment",
-      "service",
-      "configmap",
-      "networkpolicy",
-      "rbac",
-      "pod-security",
-      "manifest-generation"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/kubernetes-manifest-generator/SKILL.md"
-  },
-  {
-    "slug": "helm-chart-builder",
-    "name": "Helm Chart Builder",
-    "summary": "Build production-grade Helm charts with templating, values.yaml parameterization, dependencies, and hooks for multi-environment Kubernetes deployments.",
-    "keywords": [
-      "helm",
-      "helm-chart",
-      "kubernetes",
-      "templating",
-      "values-yaml",
-      "chart-dependencies",
-      "helm-hooks",
-      "multi-environment"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/helm-chart-builder/SKILL.md"
-  },
-  {
-    "slug": "service-mesh-configurator",
-    "name": "Service Mesh Configurator",
-    "summary": "Configure service mesh (Istio, Linkerd, Consul) with traffic routing, mTLS, observability, and advanced traffic management for microservices.",
-    "keywords": [
-      "service-mesh",
-      "istio",
-      "linkerd",
-      "consul",
-      "mtls",
-      "traffic-management",
-      "canary-deployment",
-      "circuit-breaker",
-      "distributed-tracing",
-      "microservices"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/service-mesh-configurator/SKILL.md"
-  },
-  {
-    "slug": "serverless-deployment-designer",
-    "name": "Serverless Deployment Designer",
-    "summary": "Design serverless function deployments for AWS Lambda, Azure Functions, and Google Cloud Functions with event sources, IAM, and cold start optimization.",
-    "keywords": [
-      "serverless",
-      "lambda",
-      "azure-functions",
-      "cloud-functions",
-      "event-driven",
-      "iam",
-      "sam",
-      "serverless-framework",
-      "cold-start-optimization"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/serverless-deployment-designer/SKILL.md"
-  },
-  {
     "slug": "cloud-platform-integrator",
     "name": "Cloud Platform Integrator",
     "summary": "Integrate Kubernetes workloads with AWS EKS, Azure AKS, and GCP GKE including IAM, ingress controllers, storage classes, and platform-specific features.",
@@ -240,6 +180,25 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/cloud-platform-integrator/SKILL.md"
+  },
+  {
+    "slug": "cloudsec-posture-analyzer",
+    "name": "Cloud Security Posture Analyzer",
+    "summary": "Evaluate cloud security posture across AWS, Azure, and GCP with storage exposure checks, IAM policy review, and encryption validation.",
+    "keywords": [
+      "cloud-security",
+      "aws-security",
+      "azure-security",
+      "gcp-security",
+      "iam",
+      "storage-security",
+      "encryption",
+      "network-security",
+      "cis-benchmark"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/cloudsec-posture-analyzer/SKILL.md"
   },
   {
     "slug": "codex-cli-delegator",
@@ -298,6 +257,43 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/compliance-automation-engine/SKILL.md"
   },
   {
+    "slug": "container-image-optimizer",
+    "name": "Container Image Optimizer",
+    "summary": "Create optimized Dockerfiles with multi-stage builds, security hardening, and vulnerability scanning for minimal, secure container images.",
+    "keywords": [
+      "docker",
+      "dockerfile",
+      "container",
+      "multi-stage-build",
+      "image-optimization",
+      "container-security",
+      "vulnerability-scanning",
+      "distroless",
+      "alpine"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/container-image-optimizer/SKILL.md"
+  },
+  {
+    "slug": "container-security-checker",
+    "name": "Container Security Checker",
+    "summary": "Validate container and Kubernetes security using CIS benchmarks with pod security standards, RBAC review, and image vulnerability checks.",
+    "keywords": [
+      "container-security",
+      "kubernetes-security",
+      "docker-security",
+      "cis-benchmark",
+      "pod-security",
+      "rbac",
+      "network-policies",
+      "admission-controller"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/container-security-checker/SKILL.md"
+  },
+  {
     "slug": "content-documentation-generator",
     "name": "Content & Documentation Generator",
     "summary": "Generate technical documentation, API docs, and content with accessibility and SEO optimization.",
@@ -331,6 +327,25 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/cost-optimization-analyzer/SKILL.md"
+  },
+  {
+    "slug": "cryptosec-validator",
+    "name": "Cryptographic Security Validator",
+    "summary": "Validate cryptographic implementations using NIST standards with TLS configuration, cipher suite analysis, and certificate lifecycle checks.",
+    "keywords": [
+      "cryptography",
+      "tls",
+      "ssl",
+      "certificates",
+      "encryption",
+      "key-management",
+      "cipher-suites",
+      "nist",
+      "fips"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/cryptosec-validator/SKILL.md"
   },
   {
     "slug": "data-engineering-pipeline-designer",
@@ -372,23 +387,6 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/database-optimization-analyzer/SKILL.md"
-  },
-  {
-    "slug": "cicd-pipeline-generator",
-    "name": "CI/CD Pipeline Generator",
-    "summary": "Generate platform-specific CI/CD pipeline configurations for GitHub Actions, GitLab CI, Jenkins, and Azure DevOps with build, test, and deploy stages.",
-    "keywords": [
-      "cicd",
-      "github-actions",
-      "gitlab-ci",
-      "jenkins",
-      "azure-devops",
-      "pipeline",
-      "automation"
-    ],
-    "owner": "william@cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/cicd-pipeline-generator/SKILL.md"
   },
   {
     "slug": "deployment-strategy-designer",
@@ -468,25 +466,6 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/fedramp-poam-qc/SKILL.md"
   },
   {
-    "slug": "iac-template-generator",
-    "name": "Infrastructure as Code Template Generator",
-    "summary": "Generate IaC templates for Terraform, CloudFormation, and Pulumi with modules for compute, storage, networking, and multi-environment support.",
-    "keywords": [
-      "infrastructure-as-code",
-      "terraform",
-      "cloudformation",
-      "pulumi",
-      "cdk",
-      "aws",
-      "azure",
-      "gcp",
-      "iac"
-    ],
-    "owner": "william@cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/iac-template-generator/SKILL.md"
-  },
-  {
     "slug": "frontend-framework-advisor",
     "name": "Frontend Framework Advisor",
     "summary": "Guide React, Vue, and mobile (iOS/Android/React Native) development with component architecture, state management, and performance optimization patterns.",
@@ -525,6 +504,62 @@
     "owner": "cognitive-toolworks",
     "version": "2.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/gemini-cli-delegator/SKILL.md"
+  },
+  {
+    "slug": "helm-chart-builder",
+    "name": "Helm Chart Builder",
+    "summary": "Build production-grade Helm charts with templating, values.yaml parameterization, dependencies, and hooks for multi-environment Kubernetes deployments.",
+    "keywords": [
+      "helm",
+      "helm-chart",
+      "kubernetes",
+      "templating",
+      "values-yaml",
+      "chart-dependencies",
+      "helm-hooks",
+      "multi-environment"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/helm-chart-builder/SKILL.md"
+  },
+  {
+    "slug": "iac-template-generator",
+    "name": "Infrastructure as Code Template Generator",
+    "summary": "Generate IaC templates for Terraform, CloudFormation, and Pulumi with modules for compute, storage, networking, and multi-environment support.",
+    "keywords": [
+      "infrastructure-as-code",
+      "terraform",
+      "cloudformation",
+      "pulumi",
+      "cdk",
+      "aws",
+      "azure",
+      "gcp",
+      "iac"
+    ],
+    "owner": "william@cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/iac-template-generator/SKILL.md"
+  },
+  {
+    "slug": "iam-security-reviewer",
+    "name": "IAM Security Reviewer",
+    "summary": "Review identity and access management using NIST SP 800-63B guidelines with MFA enforcement, password policy, and least privilege validation.",
+    "keywords": [
+      "iam",
+      "identity",
+      "authentication",
+      "authorization",
+      "mfa",
+      "password-policy",
+      "least-privilege",
+      "pam",
+      "nist-800-63b"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/iam-security-reviewer/SKILL.md"
   },
   {
     "slug": "incident-response-playbook-generator",
@@ -567,6 +602,67 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/infrastructure-drift-detector/SKILL.md"
   },
   {
+    "slug": "integration-testing-designer",
+    "name": "Integration Testing Designer",
+    "summary": "Design integration test scenarios with database fixtures, external service mocks, contract testing, and test environment setup for microservices and APIs.",
+    "keywords": [
+      "integration-testing",
+      "testcontainers",
+      "database-fixtures",
+      "service-mocks",
+      "wiremock",
+      "pact",
+      "contract-testing",
+      "docker-compose",
+      "test-environment",
+      "api-testing"
+    ],
+    "owner": "william@cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/integration-testing-designer/SKILL.md"
+  },
+  {
+    "slug": "kubernetes-manifest-generator",
+    "name": "Kubernetes Manifest Generator",
+    "summary": "Generate and validate Kubernetes YAML manifests with best practices for Deployments, Services, ConfigMaps, and security policies.",
+    "keywords": [
+      "kubernetes",
+      "yaml",
+      "deployment",
+      "service",
+      "configmap",
+      "networkpolicy",
+      "rbac",
+      "pod-security",
+      "manifest-generation"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/kubernetes-manifest-generator/SKILL.md"
+  },
+  {
+    "slug": "load-testing-designer",
+    "name": "Load Testing Scenario Designer",
+    "summary": "Design load testing scenarios using k6, JMeter, Gatling, or Locust with ramp-up patterns, think time modeling, and performance SLI validation.",
+    "keywords": [
+      "load-testing",
+      "performance-testing",
+      "k6",
+      "jmeter",
+      "gatling",
+      "locust",
+      "sli-validation",
+      "ramp-up",
+      "stress-testing",
+      "spike-testing",
+      "soak-testing",
+      "performance-engineering"
+    ],
+    "owner": "william@cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/load-testing-designer/SKILL.md"
+  },
+  {
     "slug": "microservices-pattern-architect",
     "name": "Microservices Pattern Architect",
     "summary": "Apply microservices patterns (Saga, CQRS, Event Sourcing, Circuit Breaker, API Gateway, Service Discovery) with implementation guidance and templates.",
@@ -588,26 +684,6 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/microservices-pattern-architect/SKILL.md"
-  },
-  {
-    "slug": "observability-stack-configurator",
-    "name": "Observability Stack Configurator",
-    "summary": "Configure comprehensive observability with metrics, logging, tracing, and alerting using Prometheus, OpenTelemetry, CloudWatch, and Grafana.",
-    "keywords": [
-      "observability",
-      "prometheus",
-      "opentelemetry",
-      "grafana",
-      "cloudwatch",
-      "logging",
-      "tracing",
-      "metrics",
-      "alerting",
-      "monitoring"
-    ],
-    "owner": "william@cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/observability-stack-configurator/SKILL.md"
   },
   {
     "slug": "mlops-lifecycle-manager",
@@ -648,116 +724,6 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/multicloud-strategy-advisor/SKILL.md"
   },
   {
-    "slug": "oscal-ssp-validate",
-    "name": "OSCAL SSP Validator",
-    "summary": "Validates OSCAL System Security Plan documents against schemas, profiles, and cross-reference requirements with tiered validation depth.",
-    "keywords": [
-      "oscal",
-      "ssp",
-      "validation",
-      "schema",
-      "profile",
-      "compliance",
-      "security"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/oscal-ssp-validate/SKILL.md"
-  },
-  {
-    "slug": "appsec-validator",
-    "name": "Application Security Validator",
-    "summary": "Validate application security using OWASP Top 10 2021 and API Security Top 10 guidelines with injection prevention and access control checks.",
-    "keywords": [
-      "appsec",
-      "owasp",
-      "web-security",
-      "api-security",
-      "injection",
-      "xss",
-      "authentication",
-      "authorization"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/appsec-validator/SKILL.md"
-  },
-  {
-    "slug": "cloudsec-posture-analyzer",
-    "name": "Cloud Security Posture Analyzer",
-    "summary": "Evaluate cloud security posture across AWS, Azure, and GCP with storage exposure checks, IAM policy review, and encryption validation.",
-    "keywords": [
-      "cloud-security",
-      "aws-security",
-      "azure-security",
-      "gcp-security",
-      "iam",
-      "storage-security",
-      "encryption",
-      "network-security",
-      "cis-benchmark"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/cloudsec-posture-analyzer/SKILL.md"
-  },
-  {
-    "slug": "container-security-checker",
-    "name": "Container Security Checker",
-    "summary": "Validate container and Kubernetes security using CIS benchmarks with pod security standards, RBAC review, and image vulnerability checks.",
-    "keywords": [
-      "container-security",
-      "kubernetes-security",
-      "docker-security",
-      "cis-benchmark",
-      "pod-security",
-      "rbac",
-      "network-policies",
-      "admission-controller"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/container-security-checker/SKILL.md"
-  },
-  {
-    "slug": "cryptosec-validator",
-    "name": "Cryptographic Security Validator",
-    "summary": "Validate cryptographic implementations using NIST standards with TLS configuration, cipher suite analysis, and certificate lifecycle checks.",
-    "keywords": [
-      "cryptography",
-      "tls",
-      "ssl",
-      "certificates",
-      "encryption",
-      "key-management",
-      "cipher-suites",
-      "nist",
-      "fips"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/cryptosec-validator/SKILL.md"
-  },
-  {
-    "slug": "iam-security-reviewer",
-    "name": "IAM Security Reviewer",
-    "summary": "Review identity and access management using NIST SP 800-63B guidelines with MFA enforcement, password policy, and least privilege validation.",
-    "keywords": [
-      "iam",
-      "identity",
-      "authentication",
-      "authorization",
-      "mfa",
-      "password-policy",
-      "least-privilege",
-      "pam",
-      "nist-800-63b"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/iam-security-reviewer/SKILL.md"
-  },
-  {
     "slug": "networksec-architecture-validator",
     "name": "Network Security Architecture Validator",
     "summary": "Validate network security architecture with firewall rule analysis, segmentation verification, and defense-in-depth assessment.",
@@ -774,6 +740,43 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/networksec-architecture-validator/SKILL.md"
+  },
+  {
+    "slug": "observability-stack-configurator",
+    "name": "Observability Stack Configurator",
+    "summary": "Configure comprehensive observability with metrics, logging, tracing, and alerting using Prometheus, OpenTelemetry, CloudWatch, and Grafana.",
+    "keywords": [
+      "observability",
+      "prometheus",
+      "opentelemetry",
+      "grafana",
+      "cloudwatch",
+      "logging",
+      "tracing",
+      "metrics",
+      "alerting",
+      "monitoring"
+    ],
+    "owner": "william@cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/observability-stack-configurator/SKILL.md"
+  },
+  {
+    "slug": "oscal-ssp-validate",
+    "name": "OSCAL SSP Validator",
+    "summary": "Validates OSCAL System Security Plan documents against schemas, profiles, and cross-reference requirements with tiered validation depth.",
+    "keywords": [
+      "oscal",
+      "ssp",
+      "validation",
+      "schema",
+      "profile",
+      "compliance",
+      "security"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/oscal-ssp-validate/SKILL.md"
   },
   {
     "slug": "ossec-hardening-checker",
@@ -794,23 +797,23 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/ossec-hardening-checker/SKILL.md"
   },
   {
-    "slug": "zerotrust-maturity-assessor",
-    "name": "Zero Trust Maturity Assessor",
-    "summary": "Evaluate zero-trust architecture maturity using CISA ZTMM with identity verification, device trust, micro-segmentation, and continuous monitoring.",
+    "slug": "python-tooling-specialist",
+    "name": "Python Tooling Specialist",
+    "summary": "Generate Python project scaffolding with Poetry/pipenv, pytest configuration, type hints (mypy), linting (ruff/black), and packaging (setuptools/flit).",
     "keywords": [
-      "zero-trust",
-      "zero-trust-architecture",
-      "zta",
-      "ztmm",
-      "cisa",
-      "never-trust-always-verify",
-      "micro-segmentation",
-      "continuous-verification",
-      "identity-centric"
+      "python",
+      "tooling",
+      "poetry",
+      "pytest",
+      "mypy",
+      "ruff",
+      "black",
+      "packaging",
+      "pre-commit"
     ],
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/zerotrust-maturity-assessor/SKILL.md"
+    "entry": "/home/william/git/cognitive-toolworks/skills/python-tooling-specialist/SKILL.md"
   },
   {
     "slug": "security-assessment-framework",
@@ -836,6 +839,45 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/security-assessment-framework/SKILL.md"
+  },
+  {
+    "slug": "serverless-deployment-designer",
+    "name": "Serverless Deployment Designer",
+    "summary": "Design serverless function deployments for AWS Lambda, Azure Functions, and Google Cloud Functions with event sources, IAM, and cold start optimization.",
+    "keywords": [
+      "serverless",
+      "lambda",
+      "azure-functions",
+      "cloud-functions",
+      "event-driven",
+      "iam",
+      "sam",
+      "serverless-framework",
+      "cold-start-optimization"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/serverless-deployment-designer/SKILL.md"
+  },
+  {
+    "slug": "service-mesh-configurator",
+    "name": "Service Mesh Configurator",
+    "summary": "Configure service mesh (Istio, Linkerd, Consul) with traffic routing, mTLS, observability, and advanced traffic management for microservices.",
+    "keywords": [
+      "service-mesh",
+      "istio",
+      "linkerd",
+      "consul",
+      "mtls",
+      "traffic-management",
+      "canary-deployment",
+      "circuit-breaker",
+      "distributed-tracing",
+      "microservices"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/service-mesh-configurator/SKILL.md"
   },
   {
     "slug": "skill-creation",
@@ -912,6 +954,26 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/testing-strategy-composer/SKILL.md"
   },
   {
+    "slug": "unit-testing-generator",
+    "name": "Unit Testing Framework Generator",
+    "summary": "Generate unit test scaffolding and test suites for Jest, PyTest, Go testing, JUnit, RSpec with mocking, assertions, and coverage configuration",
+    "keywords": [
+      "testing",
+      "unit-tests",
+      "jest",
+      "pytest",
+      "junit",
+      "rspec",
+      "mocking",
+      "coverage",
+      "tdd",
+      "go-testing"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/unit-testing-generator/SKILL.md"
+  },
+  {
     "slug": "ux-design-system-validator",
     "name": "UX Design System Validator",
     "summary": "Validate design systems for accessibility (WCAG), responsive design, and component consistency with design token analysis.",
@@ -953,5 +1015,44 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/zero-trust-architecture-designer/SKILL.md"
+  },
+  {
+    "slug": "zerotrust-maturity-assessor",
+    "name": "Zero Trust Maturity Assessor",
+    "summary": "Evaluate zero-trust architecture maturity using CISA ZTMM with identity verification, device trust, micro-segmentation, and continuous monitoring.",
+    "keywords": [
+      "zero-trust",
+      "zero-trust-architecture",
+      "zta",
+      "ztmm",
+      "cisa",
+      "never-trust-always-verify",
+      "micro-segmentation",
+      "continuous-verification",
+      "identity-centric"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/zerotrust-maturity-assessor/SKILL.md"
+  },
+  {
+    "slug": "message-queue-designer",
+    "name": "Message Queue Pattern Designer",
+    "summary": "Design message queue patterns for RabbitMQ, Kafka, SQS, Azure Service Bus with dead-letter queues, idempotency, ordering guarantees, and backpressure",
+    "keywords": [
+      "message-queue",
+      "kafka",
+      "rabbitmq",
+      "sqs",
+      "azure-service-bus",
+      "pubsub",
+      "dead-letter-queue",
+      "idempotency",
+      "exactly-once",
+      "backpressure"
+    ],
+    "owner": "william",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/message-queue-designer/SKILL.md"
   }
 ]

@@ -1,0 +1,112 @@
+skill: integration-testing-designer
+version: 1.0.0
+scenarios:
+
+  - id: 1
+    name: "REST API with PostgreSQL and Stripe mock"
+    input:
+      services: ["payment-api"]
+      dependencies:
+        databases: ["postgres"]
+        apis: ["stripe"]
+      test_scope: "happy-path"
+      tech_stack: ["spring-boot", "testcontainers", "wiremock"]
+    expected:
+      test_scenarios:
+        - contains: "payment"
+        - contains: "stripe"
+      fixtures:
+        database_seeds:
+          - table: "users"
+      mock_configurations:
+        - service_name: "stripe"
+          tool: "wiremock"
+      environment_setup:
+        format: "testcontainers"
+    pass_criteria:
+      - "At least one test scenario defined"
+      - "Database fixture includes users table"
+      - "Stripe API is mocked with WireMock"
+      - "TestContainers setup provided"
+
+  - id: 2
+    name: "Microservice with Kafka and Redis"
+    input:
+      services: ["order-service"]
+      dependencies:
+        queues: ["kafka"]
+        caches: ["redis"]
+      test_scope: "edge-cases"
+      tech_stack: ["pytest", "testcontainers"]
+    expected:
+      test_scenarios:
+        - count: ">= 3"
+      environment_setup:
+        format: "docker-compose"
+        contains: ["kafka", "redis"]
+    pass_criteria:
+      - "Multiple test scenarios for edge cases"
+      - "Docker Compose includes Kafka and Redis"
+      - "Test scenarios cover message queue failures"
+
+  - id: 3
+    name: "Contract testing between consumer and provider"
+    input:
+      services: ["user-service", "notification-service"]
+      dependencies:
+        apis: ["user-service"]
+      test_scope: "happy-path"
+      tech_stack: ["pact", "jest"]
+    expected:
+      contract_tests:
+        - consumer: "notification-service"
+          provider: "user-service"
+          contract_format: "pact"
+      test_scenarios:
+        - contains: "contract"
+    pass_criteria:
+      - "Pact contract test defined"
+      - "Consumer and provider clearly identified"
+      - "At least one interaction specified"
+
+  - id: 4
+    name: "GraphQL API with MongoDB"
+    input:
+      services: ["graphql-api"]
+      dependencies:
+        databases: ["mongodb"]
+      test_scope: "smoke"
+      tech_stack: ["node", "jest", "testcontainers"]
+    expected:
+      test_scenarios:
+        - count: "3-5"
+      fixtures:
+        database_seeds:
+          - format: "json"
+      environment_setup:
+        contains: "mongodb"
+    pass_criteria:
+      - "Smoke tests (3-5 scenarios)"
+      - "MongoDB seed data in JSON format"
+      - "TestContainers configuration for MongoDB"
+
+  - id: 5
+    name: "Multi-service saga with transaction rollback"
+    input:
+      services: ["order-service", "inventory-service", "payment-service"]
+      dependencies:
+        databases: ["postgres"]
+        queues: ["rabbitmq"]
+      test_scope: "full"
+      tech_stack: ["spring-boot", "testcontainers"]
+    expected:
+      test_scenarios:
+        - contains: "saga"
+        - contains: "rollback"
+      environment_setup:
+        contains: ["postgres", "rabbitmq"]
+    pass_criteria:
+      - "Saga pattern test scenarios included"
+      - "Rollback and compensation logic tested"
+      - "Multi-container environment with DB and queue"
+      - "Error scenarios for distributed transactions"

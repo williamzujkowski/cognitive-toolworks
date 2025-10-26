@@ -1,0 +1,105 @@
+---
+skill: go-project-scaffolder
+version: 1.0.0
+scenarios:
+  - name: basic_cli_tool
+    description: "Generate basic CLI tool with minimal features"
+    input:
+      project_type: cli
+      project_name: github.com/example/clitool
+      features: [testing]
+    expected_outputs:
+      - go.mod with module github.com/example/clitool
+      - cmd/clitool/main.go exists
+      - Makefile with build, test, clean targets
+      - .gitignore includes bin/, *.exe
+      - internal/ directory for private packages
+      - testify dependency in go.mod or test files
+    assertions:
+      - go_mod_valid: true
+      - makefile_has_build_target: true
+      - entry_point_exists: cmd/clitool/main.go
+      - gitignore_includes_artifacts: true
+
+  - name: microservice_with_testing_and_linting
+    description: "Generate REST microservice with testing and linting"
+    input:
+      project_type: microservice
+      project_name: github.com/example/apiservice
+      features: [testing, mocking, linting]
+    expected_outputs:
+      - cmd/server/main.go HTTP server entry point
+      - internal/handler, internal/service, internal/repository directories
+      - .golangci.yml with version 2 config
+      - Makefile with build, test, lint, test-coverage targets
+      - mocks/ directory for gomock generated mocks
+      - internal/*_test.go with testify imports
+    assertions:
+      - golangci_lint_config_exists: true
+      - golangci_lint_version_2: true
+      - makefile_has_lint_target: true
+      - mocks_directory_exists: true
+      - testify_used_in_tests: true
+
+  - name: library_minimal_setup
+    description: "Generate Go library with basic testing"
+    input:
+      project_type: library
+      project_name: github.com/example/mylib
+      features: [testing, linting]
+    expected_outputs:
+      - Root package files (not in cmd/)
+      - internal/ for private implementation
+      - go.mod and go.sum
+      - .golangci.yml
+      - Makefile with test and lint
+      - README.md with usage examples
+    assertions:
+      - no_cmd_directory: true
+      - root_package_exists: true
+      - readme_has_usage: true
+      - golangci_lint_enabled: true
+
+  - name: grpc_service_full_production
+    description: "Generate gRPC service with full production features"
+    input:
+      project_type: grpc-service
+      project_name: github.com/example/userservice
+      features: [testing, mocking, linting, build-automation, ci, wire, otel]
+    expected_outputs:
+      - api/proto/*.proto files
+      - cmd/server/main.go with gRPC server
+      - internal/di/wire.go and wire_gen.go
+      - internal/telemetry/tracer.go OTel setup
+      - .goreleaser.yml for multi-platform releases
+      - .github/workflows/ci.yml GitHub Actions
+      - Makefile with proto-gen, wire, build, test, lint, release targets
+      - .golangci.yml v2 config
+    assertions:
+      - proto_files_exist: api/proto/
+      - wire_config_exists: internal/di/wire.go
+      - otel_tracer_exists: internal/telemetry/tracer.go
+      - goreleaser_config_exists: true
+      - github_actions_ci_exists: true
+      - makefile_has_proto_gen: true
+      - makefile_has_wire_target: true
+      - makefile_has_release_target: true
+
+  - name: cli_with_ci_and_releases
+    description: "Generate CLI tool with CI/CD and goreleaser"
+    input:
+      project_type: cli
+      project_name: github.com/example/deploytool
+      features: [testing, linting, build-automation, ci]
+    expected_outputs:
+      - .goreleaser.yml with multi-platform builds (linux, darwin, windows)
+      - .github/workflows/ci.yml with test, lint, build, release jobs
+      - Makefile with release target calling goreleaser
+      - README.md with installation instructions and badges
+      - go.mod with Go 1.21+
+    assertions:
+      - goreleaser_supports_multiple_platforms: true
+      - ci_runs_on_multiple_go_versions: true
+      - ci_has_release_job: true
+      - readme_has_badges: true
+      - go_version_is_1_21_or_higher: true

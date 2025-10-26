@@ -1,0 +1,78 @@
+skill: terraform-module-patterns
+version: 1.0.0
+scenarios:
+  - name: "basic-vpc-module"
+    description: "Create basic AWS VPC module with subnet calculation"
+    inputs:
+      module_type: "network"
+      cloud_provider: "aws"
+      testing_required: true
+    expected:
+      - "variables.tf with validation blocks"
+      - "outputs.tf with descriptions"
+      - "examples/basic/ directory"
+      - "Terratest test file"
+    success_criteria:
+      - "Variable validation for CIDR blocks"
+      - "Output documentation present"
+      - "Example is runnable"
+
+  - name: "compute-module-with-validation"
+    description: "Create compute module with instance type validation"
+    inputs:
+      module_type: "compute"
+      cloud_provider: "aws"
+      testing_required: true
+    expected:
+      - "Instance type validation rules"
+      - "AMI selection logic"
+      - "Security group outputs"
+      - "Terratest assertions for instance state"
+    success_criteria:
+      - "Validation prevents invalid instance types"
+      - "Tests verify instance is running"
+
+  - name: "composite-module"
+    description: "Create composite module combining network + compute"
+    inputs:
+      module_type: "composite"
+      cloud_provider: "aws"
+      testing_required: true
+    expected:
+      - "Child module composition pattern"
+      - "Module dependency injection"
+      - "Combined outputs from sub-modules"
+      - "Integration tests"
+    success_criteria:
+      - "VPC module outputs feed compute module inputs"
+      - "Tests validate end-to-end deployment"
+
+  - name: "multi-cloud-database-module"
+    description: "Create database module with multi-cloud support"
+    inputs:
+      module_type: "database"
+      cloud_provider: "multi-cloud"
+      testing_required: true
+    expected:
+      - "Provider-agnostic variable names"
+      - "Conditional resource creation per provider"
+      - "Normalized outputs across providers"
+      - "Provider-specific test scenarios"
+    success_criteria:
+      - "Module works on AWS and Azure"
+      - "Output schemas are consistent"
+
+  - name: "module-without-testing"
+    description: "Create simple module without Terratest scaffolding"
+    inputs:
+      module_type: "network"
+      cloud_provider: "gcp"
+      testing_required: false
+    expected:
+      - "Basic module structure"
+      - "Variables and outputs"
+      - "Examples directory"
+      - "No test/ directory"
+    success_criteria:
+      - "Core module files present"
+      - "No Terratest dependencies"

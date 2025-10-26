@@ -1,0 +1,26 @@
+INPUT: module_type="network", cloud_provider="aws", testing_required=true
+
+OUTPUT (variables_tf):
+  variable "vpc_cidr" {
+    type        = string
+    description = "CIDR block for VPC"
+    validation {
+      condition     = can(cidrhost(var.vpc_cidr, 0))
+      error_message = "Must be valid IPv4 CIDR."
+    }
+  }
+
+OUTPUT (outputs_tf):
+  output "vpc_id" {
+    description = "ID of the created VPC"
+    value       = aws_vpc.main.id
+  }
+
+OUTPUT (test_code):
+  func TestVPCModule(t *testing.T) {
+    opts := &terraform.Options{TerraformDir: "../examples/basic"}
+    defer terraform.Destroy(t, opts)
+    terraform.InitAndApply(t, opts)
+    vpcID := terraform.Output(t, opts, "vpc_id")
+    assert.NotEmpty(t, vpcID)
+  }

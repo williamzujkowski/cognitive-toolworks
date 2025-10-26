@@ -1,0 +1,30 @@
+# Example: gRPC Microservice with Wire and OpenTelemetry
+Input:
+{"project_type": "grpc-service", "project_name": "github.com/example/userservice",
+ "features": ["testing", "mocking", "linting", "build-automation", "ci", "wire", "otel"]}
+
+Output Structure:
+├── cmd/server/main.go          # Entry point with OTel setup
+├── api/proto/user.proto         # User service protobuf definitions
+├── internal/
+│   ├── di/wire.go               # Wire provider sets
+│   ├── handler/user_handler.go  # gRPC handler implementation
+│   ├── service/user_service.go  # Business logic
+│   ├── repository/user_repo.go  # Data access
+│   └── telemetry/tracer.go      # OTel configuration
+├── go.mod                       # github.com/example/userservice, go 1.21
+├── Makefile                     # build, test, lint, wire, proto-gen, release
+├── .golangci.yml                # v2 config with standard linters
+├── .goreleaser.yml              # Multi-platform builds
+└── .github/workflows/ci.yml     # CI: test, lint, build, release on tag
+
+Makefile:
+.PHONY: proto-gen wire build test
+proto-gen:
+	protoc --go_out=. --go-grpc_out=. api/proto/*.proto
+wire:
+	cd internal/di && wire
+build: proto-gen wire
+	go build -o bin/server ./cmd/server
+test:
+	go test -v -cover ./...

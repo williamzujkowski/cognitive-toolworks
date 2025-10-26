@@ -1,0 +1,20 @@
+{
+  "slug": "unit-testing-generator",
+  "name": "Unit Testing Framework Generator",
+  "summary": "Generate unit test scaffolding and test suites for Jest, PyTest, Go testing, JUnit, RSpec with mocking, assertions, and coverage configuration",
+  "keywords": [
+    "testing",
+    "unit-tests",
+    "jest",
+    "pytest",
+    "junit",
+    "rspec",
+    "mocking",
+    "coverage",
+    "tdd",
+    "go-testing"
+  ],
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "/home/william/git/cognitive-toolworks/skills/unit-testing-generator/SKILL.md"
+}

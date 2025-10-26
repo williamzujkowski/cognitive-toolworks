@@ -1,0 +1,39 @@
+# Kafka Order Processing with Exactly-Once Semantics
+# Partition strategy by customer_id for ordering guarantees
+
+topic_config:
+  name: orders.events
+  partitions: 12
+  replication_factor: 3
+  config:
+    min.insync.replicas: 2
+    retention.ms: 604800000  # 7 days
+    compression.type: snappy
+
+producer:
+  properties:
+    enable.idempotence: true
+    transactional.id: order-producer-1
+    acks: all
+    max.in.flight.requests.per.connection: 5
+  code: |
+    ProducerRecord<String, Order> record = new ProducerRecord<>(
+      "orders.events",
+      order.getCustomerId(),  // partition key
+      order
+    );
+    producer.send(record);
+
+consumer:
+  properties:
+    group.id: order-processors
+    isolation.level: read_committed
+    enable.auto.commit: false
+  code: |
+    while (true) {
+      records = consumer.poll(Duration.ofMillis(100));
+      for (record : records) {
+        processOrder(record.value());
+      }
+      consumer.commitSync();
+    }

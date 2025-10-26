@@ -1,0 +1,116 @@
+# Evaluation scenarios for Load Testing Scenario Designer skill
+
+scenarios:
+  - name: "Basic API Load Test"
+    description: "Generate k6 script for simple API endpoint load test"
+    input:
+      target_service: "https://api.example.com/users"
+      test_type: "load"
+      sli_requirements:
+        p95_latency_ms: 500
+        error_rate_percent: 1
+      tool: "k6"
+    expected_output:
+      - contains: "import http from 'k6/http'"
+      - contains: "export const options"
+      - contains: "stages:"
+      - contains: "thresholds:"
+      - contains: "http_req_duration"
+      - contains: "p(95)<500"
+    validation:
+      - script_is_valid_javascript: true
+      - contains_ramp_up_pattern: true
+      - assertions_match_sli: true
+
+  - name: "Spike Test with SLI Validation"
+    description: "Design spike test with rapid VU increase and latency thresholds"
+    input:
+      target_service: "https://api.example.com/search"
+      test_type: "spike"
+      sli_requirements:
+        p95_latency_ms: 1000
+        p99_latency_ms: 2000
+        error_rate_percent: 2
+      tool: "k6"
+      scenario_details:
+        peak_users: 5000
+        spike_duration_seconds: 120
+    expected_output:
+      - contains: "stages:"
+      - pattern: "target: 5000.*duration: '.*[0-2]m.*'"
+      - contains: "p(95)<1000"
+      - contains: "p(99)<2000"
+      - contains: "rate<0.02"
+    validation:
+      - rapid_ramp_up: true
+      - short_sustain_period: true
+      - multiple_latency_thresholds: true
+
+  - name: "Endurance/Soak Test"
+    description: "Generate long-duration soak test to detect memory leaks"
+    input:
+      target_service: "https://api.example.com/status"
+      test_type: "soak"
+      sli_requirements:
+        p95_latency_ms: 300
+        error_rate_percent: 0.5
+      tool: "k6"
+      scenario_details:
+        sustained_users: 500
+        duration_hours: 4
+    expected_output:
+      - contains: "stages:"
+      - pattern: "duration: '[3-4]h.*target: 500"
+      - contains: "thresholds:"
+    validation:
+      - long_duration: true
+      - moderate_vu_count: true
+      - sustained_load_pattern: true
+
+  - name: "JMeter Multi-Endpoint Stress Test"
+    description: "Design JMeter-based stress test for multiple endpoints"
+    input:
+      target_service: "https://api.example.com"
+      test_type: "stress"
+      sli_requirements:
+        p95_latency_ms: 800
+        throughput_rps: 1000
+        error_rate_percent: 1
+      tool: "jmeter"
+      scenario_details:
+        endpoints:
+          - "/api/users"
+          - "/api/products"
+          - "/api/orders"
+        max_users: 2000
+    expected_output:
+      - contains: "ThreadGroup"
+      - contains_any: ["HTTPSampler", "HTTP Request"]
+      - contains: "DurationAssertion"
+    validation:
+      - jmeter_xml_structure: true
+      - multiple_samplers: true
+      - incremental_load_stages: true
+
+  - name: "Locust Distributed Load Test"
+    description: "Generate Locust script with distributed execution config"
+    input:
+      target_service: "https://api.example.com/checkout"
+      test_type: "load"
+      sli_requirements:
+        p95_latency_ms: 600
+        error_rate_percent: 0.5
+      tool: "locust"
+      scenario_details:
+        peak_users: 3000
+        distributed: true
+        worker_count: 5
+    expected_output:
+      - contains: "from locust import"
+      - contains: "class"
+      - contains: "@task"
+      - contains: "HttpUser"
+    validation:
+      - valid_python_syntax: true
+      - contains_task_methods: true
+      - distributed_config_present: true

@@ -1,0 +1,103 @@
+---
+skill: "python-tooling-specialist"
+version: "1.0.0"
+description: "Evaluation scenarios for Python Tooling Specialist skill"
+
+scenarios:
+  - id: "eval-001"
+    name: "Library project with Poetry"
+    tier: "T2"
+    inputs:
+      project_type: "library"
+      dependency_manager: "poetry"
+      python_version: "3.11"
+      project_name: "my-lib"
+    expected_outputs:
+      - "pyproject.toml with [tool.poetry] section"
+      - "src/my_lib/__init__.py"
+      - "src/my_lib/py.typed"
+      - "tests/ directory"
+      - "[tool.pytest.ini_options] in pyproject.toml"
+      - "[tool.mypy] with strict = true"
+      - ".pre-commit-config.yaml"
+    success_criteria:
+      - "All files syntactically valid"
+      - "Poetry install command succeeds"
+      - "pytest configuration includes coverage"
+
+  - id: "eval-002"
+    name: "CLI application with pipenv"
+    tier: "T3"
+    inputs:
+      project_type: "cli"
+      dependency_manager: "pipenv"
+      python_version: "3.12"
+      project_name: "my-cli"
+    expected_outputs:
+      - "Pipfile with [packages] and [dev-packages]"
+      - "src/my_cli/cli.py with entry point"
+      - "[tool.poetry.scripts] or setup.py entry_points"
+      - "Makefile with install, test, lint targets"
+    success_criteria:
+      - "Entry point callable after install"
+      - "CLI --help output generated"
+      - "Tests cover CLI argument parsing"
+
+  - id: "eval-003"
+    name: "Data pipeline with pip-tools"
+    tier: "T2"
+    inputs:
+      project_type: "data-pipeline"
+      dependency_manager: "pip-tools"
+      python_version: "3.10"
+      project_name: "etl-pipeline"
+    expected_outputs:
+      - "requirements.in with pandas, numpy"
+      - "requirements-dev.in with pytest, mypy"
+      - "Makefile with pip-compile targets"
+      - "pyproject.toml with [tool.pytest.ini_options]"
+      - "[tool.mypy] configured for pandas-stubs"
+    success_criteria:
+      - "pip-compile generates requirements.txt"
+      - "All dependencies installable"
+      - "mypy passes with pandas type stubs"
+
+  - id: "eval-004"
+    name: "Application with relaxed typing"
+    tier: "T2"
+    inputs:
+      project_type: "application"
+      dependency_manager: "poetry"
+      python_version: "3.11"
+      project_name: "web-app"
+    expected_outputs:
+      - "pyproject.toml with Poetry configuration"
+      - "web_app/ directory (flat layout)"
+      - "[tool.mypy] with less strict settings than library"
+      - "tests/integration/ directory structure"
+      - "ruff configuration with application-friendly rules"
+    success_criteria:
+      - "mypy allows untyped defs in some modules"
+      - "Integration tests separated from unit tests"
+      - "Docker configuration optional"
+
+  - id: "eval-005"
+    name: "Publishing-ready library"
+    tier: "T3"
+    inputs:
+      project_type: "library"
+      dependency_manager: "poetry"
+      python_version: "3.11"
+      project_name: "published-lib"
+    expected_outputs:
+      - "pyproject.toml with classifiers and keywords"
+      - "LICENSE file"
+      - "README.md with badges and installation instructions"
+      - ".github/workflows/publish.yml"
+      - "MANIFEST.in for non-Python files"
+      - "docs/ with Sphinx configuration"
+    success_criteria:
+      - "poetry build creates wheel and sdist"
+      - "twine check passes on built packages"
+      - "All PyPI metadata fields populated"
+      - "GitHub Actions workflow validates on push"
