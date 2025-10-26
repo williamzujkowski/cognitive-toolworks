@@ -1,119 +1,109 @@
-# Cognitive Toolworks - Skills Repository
+# cognitive-toolworks
 
-A library of small, composable Skills using Anthropic's SKILL.md format, optimized for LLM consumption with progressive disclosure and minimal token usage.
+30 production-ready Skills for Claude CLI. No fluff, no marketing nonsense.
 
-## Purpose
+## What This Is
 
-This repository provides:
+A library of small, composable Skills using Anthropic's SKILL.md format. Each skill is:
+- **Focused**: Does one thing, does it right
+- **Tiered**: T1 (≤2k tokens) → T2 (≤6k) → T3 (≤12k) for progressive disclosure
+- **Cited**: Every claim has a source with access date. No hallucinations.
+- **Validated**: CI enforces format, checks secrets, verifies links
 
-- **Reusable Skills**: Small, focused capabilities with clear triggers and outputs
-- **Progressive Disclosure**: Tiered procedures (T1/T2/T3) that minimize token usage
-- **Research Discipline**: Citations with access dates for all claims
-- **Deterministic Structure**: Validated format, indexed for discovery
-- **Safe Operations**: No secrets, PII-free, with CI gates
+## Usage with Claude CLI
 
-## Quick Start
+### 1. Clone and Point Claude at It
 
-### Adding a New Skill
-
-1. Create a folder under `/skills/<skill-slug>/`
-2. Write a `SKILL.md` following the template (see CLAUDE.md section 3)
-3. Add one small example (≤30 lines) in `/skills/<skill-slug>/examples/`
-4. Create 3-5 test scenarios in `/tests/evals_<slug>.yaml`
-5. Run validation: `python tooling/validate_skill.py skills/<skill-slug>/SKILL.md`
-6. Update index: `python tooling/build_index.py`
-
-### Skill Structure (Required Sections)
-
-Each SKILL.md must include in order:
-
-1. **Purpose & When-To-Use** - Trigger conditions
-2. **Pre-Checks** - Input validation, time normalization
-3. **Procedure** - Tiered steps (T1 ≤2k, T2 ≤6k, T3 ≤12k tokens)
-4. **Decision Rules** - Ambiguity handling, abort conditions
-5. **Output Contract** - Explicit schema and required fields
-6. **Examples** - One small example (≤30 lines)
-7. **Quality Gates** - Token budgets, safety checks
-8. **Resources** - Links only (no large quoted text)
-
-### Progressive Disclosure Model
-
-Skills use a three-tier approach to balance speed and depth:
-
-- **T1 (≤2k tokens)**: Fast path for common 80% cases; minimal retrieval
-- **T2 (≤6k tokens)**: Extended validation with 2-4 sources
-- **T3 (≤12k tokens)**: Deep research, rationale, eval generation
-
-LLMs load only the tier needed for the task, minimizing context consumption.
-
-## Repository Layout
-
-```
-/index/
-  skills-index.json         # Generated discovery manifest
-  embeddings/               # Optional ANN vectors
-/skills/
-  <skill-slug>/
-    SKILL.md                # Required (Anthropic format)
-    examples/               # 1-2 tiny files (≤30 lines)
-    resources/              # Small templates/schemas
-    scripts/                # Optional helpers
-    CHANGELOG.md
-/tests/
-  evals_<slug>.yaml         # 3-5 scenarios per skill
-/tooling/
-  validate_skill.py         # Schema/format/safety checks
-  build_index.py            # Generates index
-  lint_skill.py             # Heading/link verification
-/.github/workflows/
-  skills-ci.yaml            # CI pipeline
+```bash
+git clone https://github.com/williamzujkowski/cognitive-toolworks.git
+cd cognitive-toolworks
 ```
 
-## Governance
+Tell Claude CLI about this repo by referencing `CLAUDE.md` in your conversations. Claude will read the skills you need and follow the rules.
 
-- **CLAUDE.md**: Authoritative rules (single source of truth)
-- **CONTRIBUTING.md**: How to contribute
-- **CODE_OF_CONDUCT.md**: Community standards
-- **LICENSE**: Apache-2.0
+### 2. Use a Skill
 
-## Research & Citations
+Just ask Claude to use a skill by name:
 
-All nontrivial claims must include:
+```
+Use the microservices-pattern-architect skill to recommend patterns for my e-commerce checkout flow.
+```
 
-- Reputable source (official docs > standards > technical sources)
-- Clickable hyperlink
-- Access date in NOW_ET format (America/New_York, ISO-8601)
+Claude loads only what it needs (T1 for simple cases, T2/T3 when you need depth).
 
-Priority: Official documentation > Standards/specs > Reputable technical sources > High-quality blogs
+### 3. Create a New Skill
 
-## Quality Gates (CI)
+```
+Use the skill-creation skill to build a new skill for Kubernetes deployment validation.
+```
 
-PRs must pass:
+The meta-skill generates everything: SKILL.md, examples, tests, index entry. Enforces CLAUDE.md rules automatically.
 
-1. **Validation**: Required sections, token budgets, secret checks
-2. **Lint**: Section order, links, headings
-3. **Index**: Deterministic build, no duplicate slugs
-4. **Evals**: Test scenarios pass
+## What's Inside
 
-## Token Budget Enforcement
+**30 skills across 5 categories:**
 
-Every skill must declare and respect:
+- **Architecture** (8): Decision frameworks, microservices patterns, data pipelines, frontend frameworks, IaC, containers, databases, APIs
+- **Operations** (8): Security assessment, compliance, code review, performance, testing, deployment, monitoring, cloud migration
+- **Specialized** (12): MLOps, zero-trust, incident response, supply chain security, docs, cost optimization, SRE SLO, drift detection, UX design systems, chaos engineering, multi-cloud, edge computing
+- **AI Delegation** (2): Gemini CLI (large context), Codex CLI (code generation)
 
-- T1 budget (≤2k tokens)
-- T2 budget (≤6k tokens)
-- T3 budget (≤12k tokens)
+Full list: `ls skills/` or check `index/skills-index.json`.
 
-Examples must be ≤30 lines. Descriptions must be ≤160 characters.
+## Rules (Read CLAUDE.md)
+
+CLAUDE.md is the authoritative rulebook. Key points:
+
+- **Accuracy**: Zero tolerance for fabrication. Every claim needs a source.
+- **Token budgets**: T1/T2/T3 are hard limits, not suggestions.
+- **Examples**: ≤30 lines. No exceptions.
+- **No secrets**: If you commit an API key, the validator will catch it and your PR fails.
+- **Git workflow**: Feature branches only. Squash-merge to main. See CLAUDE.md §13.
+
+## Contributing
+
+1. Read CLAUDE.md (seriously, read it)
+2. Branch from main: `git checkout -b feature/your-skill`
+3. Build your skill following §3 format
+4. Run validator: `python3 tooling/validate_skill.py`
+5. Build index: `python3 tooling/build_index.py`
+6. PR with `gh pr create` (see CLAUDE.md §13 for template)
+
+CI runs validation, linting, indexing, and evals. If it fails, fix it. No hand-waving.
+
+See CONTRIBUTING.md for details.
+
+## Quality Gates
+
+Every PR must pass:
+1. Validation (format, token budgets, secrets check)
+2. Linting (section order, links, headings)
+3. Index build (deterministic, no duplicates)
+4. Evals (test scenarios)
+
+See CLAUDE.md §8 for what gets checked.
+
+## Structure
+
+```
+skills/<slug>/SKILL.md      # The skill (required sections, cited sources)
+skills/<slug>/examples/     # Small examples (≤30 lines each)
+skills/<slug>/resources/    # Templates, schemas, configs
+tests/evals_<slug>.yaml     # 3-5 test scenarios
+index/skills-index.json     # Discovery manifest (generated)
+```
 
 ## License
 
-Apache-2.0 - See LICENSE file
+Apache-2.0
 
-## Owner
+## Maintainer
 
-cloud.gov OCS
+Personal project - cognitive-toolworks
 
 ---
 
-**Last Updated**: 2025-10-25
-**Status**: Active Development
+**Last Updated**: 2025-10-26T03:43:18-04:00
+**CLAUDE.md Version**: 1.1.0
+**Skills**: 30
+**Status**: Production

@@ -52,5 +52,5 @@ Violations of research integrity (fabricated sources, plagiarism, bypassing safe
 
 ---
 
-**Maintained by**: cloud.gov OCS
+**Maintained by**: cognitive-toolworks
 **Last Updated**: 2025-10-25

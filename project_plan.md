@@ -285,7 +285,7 @@ Route this request to skill(s):
     "name": "Create a New Skill from Topic",
     "summary": "Generates a production-ready SKILL.md, examples, evals, and index entry.",
     "keywords": ["authoring","generator","skills.md","progressive-disclosure"],
-    "owner": "cloud.gov OCS",
+    "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "skills/skill-creation/SKILL.md"
   }

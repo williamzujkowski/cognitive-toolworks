@@ -47,7 +47,7 @@ Update `/index/skills-index.json` entry:
   "name": "Skill Name",
   "summary": "≤160 char description",
   "keywords": ["key1", "key2"],
-  "owner": "cloud.gov OCS",
+  "owner": "cognitive-toolworks",
   "version": "1.0.0",
   "entry": "/skills/skill-slug/SKILL.md"
 }
@@ -145,5 +145,5 @@ By contributing, you agree that your contributions will be licensed under Apache
 
 ---
 
-**Maintained by**: cloud.gov OCS
+**Maintained by**: cognitive-toolworks
 **Last Updated**: 2025-10-25

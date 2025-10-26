@@ -2,7 +2,7 @@
 
 ```
 STATUS: AUTHORITATIVE
-VERSION: 1.0.0
+VERSION: 1.1.0
 LAST_AUDIT: 2025-10-25T21:04:34-04:00
 NEXT_REVIEW: 2026-01-23T21:04:34-05:00
 SCOPE: Personal/public Skills library (Anthropic Skills standard)
@@ -22,7 +22,7 @@ If any rule conflicts with another document, **this wins**.
 
 ---
 
-## 1) Time, Safety, and Non-Fabrication (hard rules)
+## 1) Time, Safety, and Accuracy (hard rules)
 
 **Authoritative Time**
 
@@ -33,6 +33,13 @@ If any rule conflicts with another document, **this wins**.
 
 * Personal/public repo. **No secrets, no private PII**, no employer/internal material.
 * Do not invent facts. Every nontrivial claim must have a linkable source with access date = `NOW_ET`.
+
+**Zero-Tolerance Accuracy Rules**
+
+* **Never fabricate** version numbers, API signatures, command flags, or schema fields.
+* **Never guess** at technical specifications — if uncertain, mark as `[TODO: verify X]` and stop.
+* **Never approximate** counts, dates, or quantitative claims without explicit source + method.
+* If a source is paywalled, offline, or unverifiable, **do not cite it** — find an alternative or omit the claim.
 
 ---
 
@@ -102,18 +109,64 @@ Rules:
 
 ## 4) Research & Citations
 
-**Priority:** official docs → standards/specs → reputable technical sources → high-quality blogs.
-**Every claim** that could change or be disputed must include a **clickable hyperlink** + **access date = `NOW_ET`**.
-**Verification checklist**:
+**Source Hierarchy (strict precedence)**
 
-* [ ] Source is reputable and says what you claim
-* [ ] Link works
-* [ ] Numbers have scope/method/context
-* [ ] If time-sensitive, capture version/date
+1. **Primary/official**: product docs, RFCs, NIST publications, W3C specs
+2. **Authoritative secondary**: GitHub repos (official maintainers), Apache/Linux Foundation docs
+3. **Reputable technical**: high-quality blogs with named authors, established tutorial sites
+4. **Community**: Stack Overflow (with vote threshold ≥10), Reddit (with caution)
+
+**Never acceptable**: paywalled sources, link-rotted URLs, unverifiable claims, LLM-generated summaries without primary source.
+
+**Every claim** that could change or be disputed must include a **clickable hyperlink** + **access date = `NOW_ET`**.
+
+**Verification checklist (expanded)**:
+
+* [ ] Source is from tier 1–3 in hierarchy above
+* [ ] Link works and content is publicly accessible
+* [ ] Source explicitly states what you claim (no inference leaps)
+* [ ] Numbers/metrics include scope, method, and context
+* [ ] If version-specific (API, schema, etc.), version is captured
+* [ ] If time-sensitive, access date = `NOW_ET` is present
+* [ ] If multiple sources conflict, note the conflict and use the most authoritative
 
 **Example (inline):**
 
-> “OSCAL profile validation requires schema/version alignment (accessed `NOW_ET`): <link>”
+> "OSCAL profile validation requires schema/version alignment (accessed `NOW_ET`): <link>"
+
+---
+
+## 4A) Technical Accuracy Requirements
+
+**For version numbers, API signatures, command flags:**
+
+* Copy **exact** syntax from official docs or `--help` output.
+* Include version context: "as of v2.3.1 (accessed `NOW_ET`)" or "in Python 3.11+".
+* If a feature varies across versions, specify the range or mark uncertainty: `[TODO: verify flag support in v1.x vs v2.x]`.
+
+**For code examples:**
+
+* All runnable examples must be **tested** or marked as pseudo-code.
+* Provide interpreter/runtime version: "Tested with Python 3.11.5" or "Node.js 20.x".
+* If using library-specific syntax, include import statements and library version.
+
+**For quantitative claims:**
+
+* Always cite the measurement method: "≤2k tokens (measured via `tiktoken` cl100k_base)".
+* If benchmarking, specify: environment, sample size, date, and tooling.
+* Avoid vague terms like "fast," "small," or "efficient" without numbers or context.
+
+**For schema/data structures:**
+
+* Never invent field names. Copy from official JSON Schema, OpenAPI spec, or authoritative docs.
+* If showing a subset, mark clearly: "Partial schema; see <link> for full spec".
+* Validate examples against schema if available (or note: "Schema validation pending").
+
+**Error-handling stance:**
+
+* If you cannot verify a claim in ≤3 minutes, **do not include it**.
+* Mark ambiguity: `[TODO: confirm X with source Y]` and stop or defer to T3 research.
+* Never "round up" version numbers, dates, or counts to make documentation cleaner.
 
 ---
 
@@ -167,6 +220,11 @@ When invoked to create a new skill from a topic, the meta-skill must:
    * Token budgets T1/T2/T3 visible
    * Secret patterns check
    * Codeblock sane limits
+   * **Accuracy checks**:
+     * All URLs return HTTP 200 (or mark as `[TODO: verify link]`)
+     * No bare version numbers without context (e.g., reject "v2.0" without source/date)
+     * No `[TODO: ...]` markers in committed skills (must be resolved or removed)
+     * All quantitative claims have units and method
 
 2. **Lint:** `tooling/lint_skill.py` (order, links, headings)
 
@@ -233,7 +291,17 @@ Do not open SKILL.md unless requested.
 * [ ] No secrets or PII; no long pasted sources
 * [ ] Required sections and front-matter keys present
 * [ ] Example ≤30 lines; token budgets present (T1/T2/T3)
-* [ ] Links resolve; claims match sources
+* [ ] **Accuracy requirements (§4A)**:
+  * [ ] All version numbers include context (source, date, or version range)
+  * [ ] All code examples specify runtime/interpreter version
+  * [ ] All quantitative claims cite measurement method and units
+  * [ ] All schema fields copied from authoritative source (no invention)
+  * [ ] No `[TODO: ...]` markers in committed content
+* [ ] **Citations (§4)**:
+  * [ ] All links resolve and return HTTP 200
+  * [ ] All claims traceable to tier 1–3 sources (see §4 hierarchy)
+  * [ ] All sources explicitly state what is claimed (no inference leaps)
+  * [ ] Access dates = `NOW_ET` for all time-sensitive or version-specific content
 * [ ] Index updated and deterministic; no duplicate slugs
 * [ ] Evals added/updated and pass locally
 * [ ] Commit message: clear, imperative, ≤72 chars first line
