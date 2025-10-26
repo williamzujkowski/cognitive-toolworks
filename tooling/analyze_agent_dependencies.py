@@ -4,27 +4,32 @@ Agent→Skill Dependency Graph Analyzer
 Extracts skill references from agents and visualizes relationships
 """
 
+from __future__ import annotations
+
 import json
 import re
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 
 
-def load_agents_index():
+def load_agents_index() -> list[dict[str, Any]]:
     """Load agents index"""
     index_path = Path(__file__).parent.parent / "index" / "agents-index.json"
     with open(index_path) as f:
-        return json.load(f)
+        result: list[dict[str, Any]] = json.load(f)
+        return result
 
 
-def load_skills_index():
+def load_skills_index() -> list[dict[str, Any]]:
     """Load skills index"""
     index_path = Path(__file__).parent.parent / "index" / "skills-index.json"
     with open(index_path) as f:
-        return json.load(f)
+        result: list[dict[str, Any]] = json.load(f)
+        return result
 
 
-def extract_skill_references(agent_md_path):
+def extract_skill_references(agent_md_path: Path) -> list[str]:
     """Extract skill slug references from agent AGENT.md"""
     content = agent_md_path.read_text()
 
@@ -44,13 +49,15 @@ def extract_skill_references(agent_md_path):
     return sorted(skills)
 
 
-def build_dependency_graph():
+def build_dependency_graph() -> tuple[
+    dict[str, dict[str, Any]], dict[str, list[str]]
+]:
     """Build agent→skill dependency graph"""
     agents = load_agents_index()
     skills_set = {s["slug"] for s in load_skills_index()}
 
-    dependencies = {}
-    skill_usage = defaultdict(list)  # skill → list of agents using it
+    dependencies: dict[str, dict[str, Any]] = {}
+    skill_usage: dict[str, list[str]] = defaultdict(list)  # skill → list of agents using it
 
     repo_root = Path(__file__).parent.parent
 
@@ -78,7 +85,7 @@ def build_dependency_graph():
     return dependencies, skill_usage
 
 
-def generate_mermaid_diagram(dependencies):
+def generate_mermaid_diagram(dependencies: dict[str, dict[str, Any]]) -> str:
     """Generate Mermaid flowchart for agent→skill dependencies"""
     lines = ["```mermaid", "graph LR"]
 
@@ -116,7 +123,9 @@ def generate_mermaid_diagram(dependencies):
     return "\n".join(lines)
 
 
-def generate_markdown_report(dependencies, skill_usage):
+def generate_markdown_report(
+    dependencies: dict[str, dict[str, Any]], skill_usage: dict[str, list[str]]
+) -> str:
     """Generate markdown dependency report"""
     md = ["# Agent→Skill Dependency Graph", ""]
 
@@ -212,7 +221,7 @@ def generate_markdown_report(dependencies, skill_usage):
     return "\n".join(md)
 
 
-def main():
+def main() -> None:
     print("Analyzing agent→skill dependencies...")
 
     dependencies, skill_usage = build_dependency_graph()

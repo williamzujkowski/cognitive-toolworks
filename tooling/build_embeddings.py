@@ -4,21 +4,25 @@ Build lightweight embeddings for skill routing
 Uses TF-IDF vectorization for simplicity (no external ML dependencies)
 """
 
+from __future__ import annotations
+
 import json
 import pickle
 from pathlib import Path
+from typing import Any
 
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer  # type: ignore[import-untyped]
 
 
-def load_skills_index():
+def load_skills_index() -> list[dict[str, Any]]:
     """Load skills index"""
     index_path = Path(__file__).parent.parent / "index" / "skills-index.json"
     with open(index_path) as f:
-        return json.load(f)
+        result: list[dict[str, Any]] = json.load(f)
+        return result
 
 
-def build_skill_documents(skills):
+def build_skill_documents(skills: list[dict[str, Any]]) -> tuple[list[str], list[str]]:
     """Build text documents for each skill combining name, summary, keywords"""
     documents = []
     slugs = []
@@ -45,7 +49,7 @@ def build_skill_documents(skills):
     return slugs, documents
 
 
-def build_embeddings(skills):
+def build_embeddings(skills: list[dict[str, Any]]) -> dict[str, Any]:
     """Build TF-IDF embeddings for all skills"""
     slugs, documents = build_skill_documents(skills)
 
@@ -75,7 +79,7 @@ def build_embeddings(skills):
     }
 
 
-def save_embeddings(embeddings, output_dir):
+def save_embeddings(embeddings: dict[str, Any], output_dir: Path | str) -> None:
     """Save embeddings to disk in compact format"""
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -97,7 +101,7 @@ def save_embeddings(embeddings, output_dir):
         json.dump(embeddings["metadata"], f, indent=2)
 
 
-def main():
+def main() -> None:
     print("Building skill embeddings...")
 
     skills = load_skills_index()

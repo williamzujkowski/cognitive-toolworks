@@ -18,9 +18,9 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 try:
-    import yaml
+    import yaml  # type: ignore[import-untyped,unused-ignore]
 except Exception:  # pragma: no cover
-    yaml = None
+    yaml = None  # type: ignore[assignment]
 
 FRONT_MATTER_DELIM = re.compile(r"^---\s*$")
 

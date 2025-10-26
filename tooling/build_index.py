@@ -10,9 +10,9 @@ from pathlib import Path
 from typing import Any
 
 try:
-    import yaml
+    import yaml  # type: ignore[import-untyped,unused-ignore]
 except Exception:  # pragma: no cover
-    yaml = None
+    yaml = None  # type: ignore[assignment]
 
 FRONT_MATTER_DELIM = re.compile(r"^---\s*$")
 

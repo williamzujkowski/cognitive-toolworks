@@ -6,11 +6,12 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 try:
-    import yaml
+    import yaml  # type: ignore[import-untyped,unused-ignore]
 except Exception:  # pragma: no cover
-    yaml = None
+    yaml = None  # type: ignore[assignment]
 
 FRONT_MATTER_DELIM = re.compile(r"^---\s*$")
 REQ_META_KEYS = {
@@ -57,7 +58,7 @@ class SkillValidationIssue:
 
 @dataclass
 class FrontMatter:
-    meta: dict
+    meta: dict[str, Any]
     body: str
 
 

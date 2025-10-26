@@ -4,19 +4,23 @@ Skill Coverage Matrix Analyzer
 Generates domain coverage visualization and gap analysis
 """
 
+from __future__ import annotations
+
 import json
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 
 
-def load_skills_index():
+def load_skills_index() -> list[dict[str, Any]]:
     """Load and parse skills index"""
     index_path = Path(__file__).parent.parent / "index" / "skills-index.json"
     with open(index_path) as f:
-        return json.load(f)
+        result: list[dict[str, Any]] = json.load(f)
+        return result
 
 
-def categorize_skill(slug):
+def categorize_skill(slug: str) -> tuple[str, str]:
     """Categorize skill by domain and tier based on slug"""
     parts = slug.split("-", 2)
 
@@ -47,11 +51,19 @@ def categorize_skill(slug):
     return "Uncategorized", "Other"
 
 
-def analyze_coverage(skills):
+def analyze_coverage(
+    skills: list[dict[str, Any]],
+) -> tuple[
+    dict[str, list[str]],
+    dict[str, int],
+    dict[str, dict[str, list[str]]],
+]:
     """Analyze skill coverage by domain and tier"""
-    by_tier = defaultdict(list)
-    by_domain = defaultdict(int)
-    domain_tier_map = defaultdict(lambda: defaultdict(list))
+    by_tier: dict[str, list[str]] = defaultdict(list)
+    by_domain: dict[str, int] = defaultdict(int)
+    domain_tier_map: dict[str, dict[str, list[str]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
 
     for skill in skills:
         slug = skill["slug"]
@@ -64,7 +76,12 @@ def analyze_coverage(skills):
     return by_tier, by_domain, domain_tier_map
 
 
-def generate_markdown_report(by_tier, by_domain, domain_tier_map, total_skills):
+def generate_markdown_report(
+    by_tier: dict[str, list[str]],
+    by_domain: dict[str, int],
+    domain_tier_map: dict[str, dict[str, list[str]]],
+    total_skills: int,
+) -> str:
     """Generate markdown coverage report"""
     md = ["# Skill Coverage Matrix Analysis", ""]
     md.append(f"**Total Skills**: {total_skills}")
@@ -205,7 +222,7 @@ def generate_markdown_report(by_tier, by_domain, domain_tier_map, total_skills):
     return "\n".join(md)
 
 
-def main():
+def main() -> None:
     skills = load_skills_index()
     total = len(skills)
 
