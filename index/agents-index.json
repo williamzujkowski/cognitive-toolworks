@@ -229,6 +229,31 @@
     "entry": "agents/database-migration-orchestrator/AGENT.md"
   },
   {
+    "slug": "design-system-builder",
+    "name": "Design System Builder",
+    "description": "Orchestrates design system creation and evolution by coordinating design token definition, component library design, accessibility validation, and documentation generation.",
+    "keywords": [
+      "design-system",
+      "design-tokens",
+      "component-library",
+      "ui-patterns",
+      "accessibility",
+      "design-ops",
+      "atomic-design"
+    ],
+    "model": "inherit",
+    "tools": [
+      "Read",
+      "Write",
+      "Bash",
+      "Grep",
+      "Glob"
+    ],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/design-system-builder/AGENT.md"
+  },
+  {
     "slug": "devops-pipeline-orchestrator",
     "name": "DevOps Pipeline Orchestrator",
     "description": "Orchestrates end-to-end DevOps pipeline design by coordinating CI/CD generation, IaC templates, observability, and deployment strategies.",
