@@ -59,5 +59,6 @@
   "testing-load-designer",
   "testing-strategy-composer",
   "testing-unit-generator",
+  "tooling-java-generator",
   "tooling-python-generator"
 ]

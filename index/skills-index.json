@@ -1160,6 +1160,25 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/testing-unit-generator/SKILL.md"
   },
   {
+    "slug": "tooling-java-generator",
+    "name": "Java Tooling Specialist",
+    "summary": "Generate Java project scaffolding with Maven/Gradle, JUnit 5, Mockito, Checkstyle/SpotBugs, and packaging (JAR/WAR/native-image).",
+    "keywords": [
+      "java",
+      "tooling",
+      "maven",
+      "gradle",
+      "junit",
+      "spring-boot",
+      "mockito",
+      "checkstyle",
+      "packaging"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/tooling-java-generator/SKILL.md"
+  },
+  {
     "slug": "tooling-python-generator",
     "name": "Python Tooling Specialist",
     "summary": "Generate Python project scaffolding with Poetry/pipenv, pytest configuration, type hints (mypy), linting (ruff/black), and packaging (setuptools/flit).",
