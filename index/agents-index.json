@@ -413,5 +413,29 @@
     "owner": "cognitive-toolworks",
     "entry": "agents/security-auditor/AGENT.md",
     "replaces": "skills/security-assessment-framework"
+  },
+  {
+    "slug": "testing-orchestrator",
+    "name": "Testing Strategy Orchestrator",
+    "description": "Orchestrates comprehensive testing workflows by coordinating unit, integration, e2e, load, chaos, and contract testing skills for complete quality assurance.",
+    "keywords": [
+      "testing-orchestration",
+      "test-strategy",
+      "quality-assurance",
+      "test-pyramid",
+      "ci-cd-testing",
+      "coverage-optimization"
+    ],
+    "model": "inherit",
+    "tools": [
+      "Read",
+      "Write",
+      "Bash",
+      "Grep",
+      "Glob"
+    ],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/testing-orchestrator/AGENT.md"
   }
 ]
