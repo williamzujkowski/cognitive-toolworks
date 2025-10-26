@@ -1,0 +1,29 @@
+{
+  "slug": "ux-design-system-validator",
+  "name": "UX Design System Validator",
+  "summary": "Validate design systems for accessibility (WCAG), responsive design, and component consistency with design token analysis.",
+  "category": "design-ux",
+  "keywords": [
+    "accessibility",
+    "WCAG",
+    "design-systems",
+    "responsive-design",
+    "design-tokens",
+    "component-library",
+    "a11y",
+    "UX",
+    "WCAG-2.2",
+    "Material-Design",
+    "Apple-HIG",
+    "EAA-2025"
+  ],
+  "dependencies": [
+    "frontend-framework-advisor"
+  ],
+  "priority": "P3",
+  "phase": 3,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/ux-design-system-validator/SKILL.md"
+}

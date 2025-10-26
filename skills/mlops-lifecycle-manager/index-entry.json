@@ -1,0 +1,26 @@
+{
+  "slug": "mlops-lifecycle-manager",
+  "name": "MLOps Lifecycle Manager",
+  "summary": "Manage ML model lifecycle from development to deployment with experiment tracking, versioning, monitoring, and automated retraining workflows.",
+  "category": "ml-ai",
+  "keywords": [
+    "mlops",
+    "machine-learning",
+    "model-deployment",
+    "experiment-tracking",
+    "model-monitoring",
+    "feature-engineering",
+    "model-versioning",
+    "ml-pipeline"
+  ],
+  "dependencies": [
+    "devops-pipeline-architect",
+    "data-engineering-pipeline-designer"
+  ],
+  "priority": "P2",
+  "phase": 3,
+  "token_budget": "T3",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/mlops-lifecycle-manager/SKILL.md"
+}

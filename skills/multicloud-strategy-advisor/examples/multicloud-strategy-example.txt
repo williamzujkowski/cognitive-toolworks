@@ -1,0 +1,41 @@
+# Multi-Cloud Strategy Example: Global SaaS Platform
+
+## Input Requirements
+Business: Global SaaS product (500k users, 15 countries)
+Latency: <50ms in EMEA, <100ms globally
+Compliance: GDPR (EU), HIPAA (US), SOC2
+Budget: $600k/year cloud spend
+Workloads: 200 web VMs, 80TB PostgreSQL, 50TB object storage
+Risk: Medium (prefer portability, avoid single vendor)
+
+## T2 Output (≤6k tokens)
+
+strategy_type: multi-cloud
+vendors:
+  AWS (primary): 8.5/10 - 30 regions, HIPAA/GDPR certified
+  Azure (secondary): 7.8/10 - Best EMEA presence, AD integration
+  GCP (analytics): 8.0/10 - BigQuery for data warehouse
+
+tco_5yr: $2.8M ($560k/yr avg)
+  compute: $1.6M (EC2 t3.xlarge reserved: $0.08/hr × 200 × 8760hr × 5yr)
+  storage: $480k (S3 Standard 80TB: $0.023/GB × 80000GB × 60mo)
+  network: $400k (10TB/mo egress × $0.09/GB × 60mo)
+  managed_services: $200k (RDS Multi-AZ premium)
+  support: $100k (Business tier 3-10% monthly)
+  training: $20k (certifications, tooling)
+
+integration_patterns:
+  - Terraform: Multi-cloud IaC (not CloudFormation)
+  - Kubernetes: EKS + AKS for workload portability
+  - PostgreSQL: RDS + Azure Database (not Aurora/CosmosDB)
+  - Istio: Service mesh for cross-cloud mTLS
+
+lock_in_mitigation:
+  - Data: Parquet format (not DynamoDB/CosmosDB)
+  - Containers: OCI images (not Lambda layers)
+  - Exit: Quarterly DR drill to Azure
+
+roadmap:
+  Phase 1 (12wk): AWS pilot (US workloads)
+  Phase 2 (8wk): Azure pilot (EMEA workloads)
+  Phase 3 (16wk): Production migration (blue/green)

@@ -1,0 +1,27 @@
+{
+  "slug": "edge-computing-architect",
+  "name": "Edge Computing Architecture Designer",
+  "summary": "Design edge computing solutions with CDN integration, edge functions, IoT device management, and latency-optimized deployment patterns.",
+  "category": "cloud-native",
+  "keywords": [
+    "edge-computing",
+    "cdn",
+    "cloudflare-workers",
+    "lambda-edge",
+    "azure-functions",
+    "iot-edge",
+    "content-delivery",
+    "latency-optimization",
+    "edge-functions",
+    "distributed-cache"
+  ],
+  "dependencies": [
+    "cloud-native-deployment-orchestrator"
+  ],
+  "priority": "P3",
+  "phase": 3,
+  "token_budget": "T2",
+  "owner": "william",
+  "version": "1.0.0",
+  "entry": "/home/william/git/cognitive-toolworks/skills/edge-computing-architect/SKILL.md"
+}

@@ -1,0 +1,28 @@
+Zero Trust Architecture Design - T2 Example
+
+Input:
+  target_environment: "hybrid"
+  assessment_tier: "T2"
+  ztmm_pillars: ["identity", "networks", "applications"]
+  business_objectives: "Secure remote workforce, migrate to cloud"
+
+1. CISA ZTMM Assessment:
+   - Identity: Initial (Azure AD with MFA, no FIDO2)
+   - Networks: Traditional (flat network)
+   - Applications: Traditional (shared credentials)
+
+2. Deployment Model: Hybrid (EIG + Micro-segmentation)
+   Rationale: Cloud migration → EIG, datacenter → micro-seg
+
+3. Components:
+   - Policy Engine: Azure AD Conditional Access + ABAC
+   - PEPs: Azure App Proxy, Istio Envoy
+   - IdP: Azure AD with FIDO2 MFA
+   - Micro-seg: Istio service mesh
+
+Output:
+{
+  "deployment_model": "Hybrid",
+  "components": {...},
+  "roadmap_phase_1": "Deploy FIDO2, migrate 5 apps to OIDC"
+}

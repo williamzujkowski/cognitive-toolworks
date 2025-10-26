@@ -1,0 +1,113 @@
+---
+skill: ux-design-system-validator
+version: 1.0.0
+description: Evaluation scenarios for UX Design System Validator skill
+evaluations:
+
+  - scenario: wcag-contrast-violation-detection
+    description: Detect WCAG 2.2 contrast violations in design tokens
+    tier: T1
+    input:
+      design_tokens:
+        color.button.primary.text: "#999999"
+        color.button.primary.background: "#CCCCCC"
+      target_wcag_level: "AA"
+      platforms: ["web"]
+    expected_output:
+      wcag_violations:
+        - criterion: "1.4.3 Contrast (Minimum)"
+          severity: "CRITICAL"
+          description: "Contrast ratio insufficient"
+      validation_report:
+        dimensions:
+          accessibility:
+            score: "< 70"
+    pass_criteria:
+      - Detects contrast violation
+      - Reports severity as CRITICAL or HIGH
+      - Provides remediation guidance
+
+  - scenario: design-token-inconsistency-detection
+    description: Identify mismatched token values across design system
+    tier: T2
+    input:
+      design_tokens:
+        color.brand.primary: "#0066CC"
+      component_library:
+        button.css: "background: #0066CD"
+      platforms: ["web"]
+    expected_output:
+      token_inconsistencies:
+        - token_name: "color.brand.primary"
+          issue: "Value mismatch"
+          recommendation: "Synchronize to single source"
+    pass_criteria:
+      - Detects token value mismatch
+      - Identifies both source locations
+      - Recommends synchronization
+
+  - scenario: responsive-breakpoint-validation
+    description: Validate responsive design breakpoints follow standards
+    tier: T2
+    input:
+      component_library:
+        breakpoints: ["320px", "1024px", "1440px"]
+      platforms: ["web"]
+    expected_output:
+      validation_report:
+        dimensions:
+          responsive_design:
+            issues:
+              - "Missing 768px breakpoint"
+    pass_criteria:
+      - Identifies missing standard breakpoint (768px)
+      - Reports as MEDIUM severity
+      - Suggests adding missing breakpoint
+
+  - scenario: wcag-2-2-new-criteria-target-size
+    description: Validate WCAG 2.2 new criterion Target Size (Minimum)
+    tier: T2
+    input:
+      component_library:
+        button.icon:
+          width: "20px"
+          height: "20px"
+      target_wcag_level: "AA"
+      platforms: ["web", "iOS"]
+    expected_output:
+      wcag_violations:
+        - criterion: "2.5.8 Target Size (Minimum)"
+          level: "AA"
+          severity: "HIGH"
+          description: "20x20px below minimum 24x24px"
+    pass_criteria:
+      - Detects WCAG 2.2 Target Size violation
+      - Reports severity as HIGH
+      - References correct criterion (2.5.8)
+
+  - scenario: multi-platform-design-system-alignment
+    description: Validate design system consistency across web and mobile
+    tier: T2
+    input:
+      component_library:
+        button.primary:
+          web: { touch_target: "40x40px" }
+          iOS: { touch_target: "44x44px" }
+          android: { touch_target: "48x48px" }
+      platforms: ["web", "iOS", "android"]
+    expected_output:
+      validation_report:
+        dimensions:
+          component_library:
+            findings:
+              - "Web touch target below iOS minimum (44x44)"
+              - "Web touch target below Material minimum (48x48)"
+      remediation_plan:
+        prioritized_actions:
+          - priority: "HIGH"
+            action: "Align web touch targets to 44x44 minimum"
+    pass_criteria:
+      - Detects platform-specific guideline violations
+      - References Material Design 3 (48x48) for Android
+      - References Apple HIG (44x44) for iOS
+      - Provides cross-platform alignment recommendation

@@ -1,0 +1,28 @@
+# Edge Computing Architecture Example: Global API Acceleration
+
+## Input
+latency_requirements: <100ms
+deployment_scope: global
+workload_type: edge_function
+platform_preference: cloudflare
+state_requirements: edge_cache
+
+## Output
+Platform: Cloudflare Workers
+Rationale: Global PoP (330+ cities), 50ms to 95% of users
+
+Architecture:
+  [User] → [Cloudflare PoP] → [Edge Fn] → [Origin API]
+              ↓
+           [KV Cache]
+
+Caching:
+  - Static: TTL 1d, edge PoP
+  - API: TTL 60s, stale-while-revalidate 300s
+
+Performance:
+  - Latency reduction: 82% (500ms → 90ms p95)
+  - Cache hit ratio: 91%
+  - Origin offload: 88%
+
+Security: TLS 1.3, rate limit 1k/min, WAF OWASP Top 10

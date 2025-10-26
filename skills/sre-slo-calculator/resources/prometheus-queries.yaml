@@ -1,0 +1,103 @@
+# Prometheus Query Templates for SLI Measurement
+
+# Availability SLI
+availability_sli:
+  description: "Ratio of successful HTTP requests to total requests"
+  query: |
+    sum(rate(http_requests_total{status=~"2..|3.."}[5m]))
+    /
+    sum(rate(http_requests_total[5m]))
+  recording_rule: |
+    - record: sli:http_availability:ratio
+      expr: |
+        sum(rate(http_requests_total{status=~"2..|3.."}[5m]))
+        /
+        sum(rate(http_requests_total[5m]))
+
+# Latency SLI (proportion of requests < threshold)
+latency_sli:
+  description: "Proportion of requests faster than 200ms"
+  query: |
+    sum(rate(http_request_duration_seconds_bucket{le="0.2"}[5m]))
+    /
+    sum(rate(http_request_duration_seconds_count[5m]))
+  recording_rule: |
+    - record: sli:http_latency:ratio
+      expr: |
+        sum(rate(http_request_duration_seconds_bucket{le="0.2"}[5m]))
+        /
+        sum(rate(http_request_duration_seconds_count[5m]))
+
+# Error Budget Burn Rate (1-hour window)
+error_budget_1h_burn:
+  description: "Fast burn rate detection (14.4x for 99.9% SLO)"
+  query: |
+    (1 - (
+      sum(rate(http_requests_total{status=~"2..|3.."}[1h]))
+      /
+      sum(rate(http_requests_total[1h]))
+    )) > (14.4 * (1 - 0.999))
+  alert_rule: |
+    - alert: ErrorBudgetFastBurn
+      expr: |
+        (1 - (
+          sum(rate(http_requests_total{status=~"2..|3.."}[1h]))
+          /
+          sum(rate(http_requests_total[1h]))
+        )) > (14.4 * (1 - 0.999))
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Error budget burning too fast"
+        description: "2% of 30-day error budget consumed in 1 hour"
+
+# Error Budget Burn Rate (6-hour window)
+error_budget_6h_burn:
+  description: "Moderate burn rate detection (6x for 99.9% SLO)"
+  query: |
+    (1 - (
+      sum(rate(http_requests_total{status=~"2..|3.."}[6h]))
+      /
+      sum(rate(http_requests_total[6h]))
+    )) > (6 * (1 - 0.999))
+  alert_rule: |
+    - alert: ErrorBudgetModerateBurn
+      expr: |
+        (1 - (
+          sum(rate(http_requests_total{status=~"2..|3.."}[6h]))
+          /
+          sum(rate(http_requests_total[6h]))
+        )) > (6 * (1 - 0.999))
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Error budget burning moderately fast"
+        description: "5% of 30-day error budget consumed in 6 hours"
+
+# Error Budget Remaining
+error_budget_remaining:
+  description: "Remaining error budget over 30 days"
+  query: |
+    1 - (
+      (1 - (
+        sum(rate(http_requests_total{status=~"2..|3.."}[30d]))
+        /
+        sum(rate(http_requests_total[30d]))
+      )) / (1 - 0.999)
+    )
+
+# Multi-window SLO compliance
+slo_30d_compliance:
+  description: "30-day rolling window SLO compliance"
+  query: |
+    sum(rate(http_requests_total{status=~"2..|3.."}[30d]))
+    /
+    sum(rate(http_requests_total[30d]))
+  recording_rule: |
+    - record: slo:http_availability:30d
+      expr: |
+        sum(rate(http_requests_total{status=~"2..|3.."}[30d]))
+        /
+        sum(rate(http_requests_total[30d]))

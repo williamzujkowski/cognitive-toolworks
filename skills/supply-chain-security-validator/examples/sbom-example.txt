@@ -1,0 +1,32 @@
+# SBOM Generation Example: Node.js Application
+
+## Input
+artifact_type: source
+artifact_location: /path/to/nodejs-app
+sbom_format: both
+verification_tier: T1
+
+## Commands
+# Generate SPDX SBOM
+syft dir:/path/to/nodejs-app -o spdx-json=app-sbom.spdx.json
+
+# Generate CycloneDX SBOM
+syft dir:/path/to/nodejs-app -o cyclonedx-json=app-sbom.cdx.json
+
+# Scan for vulnerabilities
+grype sbom:app-sbom.spdx.json --fail-on medium
+
+## Output (SPDX excerpt - 247 components found)
+{
+  "spdxVersion": "SPDX-2.3",
+  "packages": [
+    {"name": "express", "versionInfo": "4.18.2"},
+    {"name": "lodash", "versionInfo": "4.17.20"}
+  ]
+}
+
+## Vulnerabilities Found
+CVE-2024-1234 | HIGH | lodash@4.17.20 | Fix: upgrade to 4.17.21
+
+## Result
+PASS_WITH_WARNINGS - 0 critical, 1 high, 3 medium

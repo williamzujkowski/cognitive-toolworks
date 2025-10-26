@@ -1,0 +1,82 @@
+{
+  "policy_template": "ABAC Policy for Zero Trust Access Control",
+  "description": "Example attribute-based access control policy template for zero-trust architectures",
+  "policies": [
+    {
+      "policy_id": "zt-001-low-risk-public",
+      "name": "Low Risk User - Public Resources",
+      "subject": {
+        "user.authenticated": true,
+        "user.mfa_verified": true,
+        "user.risk_score": "< 20"
+      },
+      "resource": {
+        "data.classification": "public",
+        "resource.sensitivity": "low"
+      },
+      "context": {
+        "device.compliant": true,
+        "network.trusted": true
+      },
+      "action": "GRANT",
+      "obligations": {
+        "session_timeout_hours": 8,
+        "log_level": "INFO"
+      }
+    },
+    {
+      "policy_id": "zt-002-high-risk-sensitive",
+      "name": "High Risk User - Sensitive Data",
+      "subject": {
+        "user.authenticated": true,
+        "user.mfa_verified": true,
+        "user.risk_score": ">= 30 AND <= 70"
+      },
+      "resource": {
+        "data.classification": ["confidential", "pii"],
+        "resource.sensitivity": "high"
+      },
+      "context": {
+        "device.compliant": true,
+        "device.encryption_enabled": true,
+        "location.approved_country": true,
+        "time.business_hours": true
+      },
+      "action": "GRANT_WITH_CONDITIONS",
+      "obligations": {
+        "require_step_up_auth": true,
+        "session_timeout_minutes": 30,
+        "re_auth_interval_minutes": 15,
+        "log_level": "VERBOSE",
+        "watermark_documents": true,
+        "disable_download": true,
+        "notify_soc": true
+      }
+    },
+    {
+      "policy_id": "zt-003-deny-high-risk",
+      "name": "Deny High Risk Access",
+      "subject": {
+        "user.risk_score": "> 70"
+      },
+      "resource": {
+        "data.classification": ["confidential", "secret", "top-secret"]
+      },
+      "context": {},
+      "action": "DENY",
+      "obligations": {
+        "alert_soc": true,
+        "log_level": "CRITICAL",
+        "trigger_investigation": true
+      }
+    }
+  ],
+  "attribute_definitions": {
+    "user.risk_score": "Computed risk score (0-100) based on behavior, location, device posture",
+    "user.mfa_verified": "Boolean indicating successful phishing-resistant MFA",
+    "device.compliant": "Boolean indicating device passes compliance checks (patch level, EDR, encryption)",
+    "data.classification": "Data sensitivity level per classification scheme",
+    "time.business_hours": "Boolean indicating access during approved business hours",
+    "location.approved_country": "Boolean indicating access from approved geographic region"
+  }
+}

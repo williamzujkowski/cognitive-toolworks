@@ -1,0 +1,36 @@
+# Infrastructure Drift Detection Example
+
+## Input
+tool: terraform
+workspace: prod-webapp
+schedule: daily
+remediation_policy: semi-automated
+notifications:
+  - slack: "#infrastructure-alerts"
+  - email: "platform-team@example.com"
+
+## Output
+{
+  "timestamp": "2025-10-25T21:30:36-04:00",
+  "tool": "terraform",
+  "scope": "prod-webapp",
+  "drift_detected": true,
+  "drifted_resources": 2,
+  "resources": [
+    {
+      "id": "aws_security_group.web",
+      "type": "aws_security_group",
+      "change_type": "modified",
+      "severity": "high",
+      "changed_attributes": [
+        {
+          "attribute": "ingress",
+          "before": [{"cidr": "10.0.0.0/8", "port": 443}],
+          "after": [{"cidr": "0.0.0.0/0", "port": 22}]
+        }
+      ],
+      "recommended_action": "revert"
+    }
+  ],
+  "severity_summary": {"high": 1, "medium": 0, "low": 1}
+}

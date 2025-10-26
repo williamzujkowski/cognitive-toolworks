@@ -1,0 +1,229 @@
+{
+  "dashboard": {
+    "title": "ML Model Monitoring Dashboard",
+    "tags": ["mlops", "monitoring", "model-performance"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Prediction Latency (p50, p95, p99)",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(prediction_latency_ms_bucket[5m]))",
+            "legendFormat": "p50"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(prediction_latency_ms_bucket[5m]))",
+            "legendFormat": "p95"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(prediction_latency_ms_bucket[5m]))",
+            "legendFormat": "p99"
+          }
+        ],
+        "yaxes": [
+          {"format": "ms", "label": "Latency"},
+          {"format": "short"}
+        ],
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {"params": [200], "type": "gt"},
+              "operator": {"type": "and"},
+              "query": {"params": ["B", "5m", "now"]},
+              "reducer": {"params": [], "type": "avg"},
+              "type": "query"
+            }
+          ],
+          "name": "High p95 Latency",
+          "message": "p95 latency exceeded 200ms SLO"
+        }
+      },
+      {
+        "id": 2,
+        "title": "Predictions per Second",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "rate(predictions_total[5m])",
+            "legendFormat": "RPS"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Requests/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Prediction Error Rate",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "rate(prediction_errors_total[5m]) / rate(predictions_total[5m])",
+            "legendFormat": "Error Rate"
+          }
+        ],
+        "yaxes": [
+          {"format": "percentunit", "label": "Error %"},
+          {"format": "short"}
+        ],
+        "alert": {
+          "conditions": [
+            {
+              "evaluator": {"params": [0.01], "type": "gt"},
+              "query": {"params": ["A", "5m", "now"]},
+              "reducer": {"params": [], "type": "avg"},
+              "type": "query"
+            }
+          ],
+          "name": "High Error Rate",
+          "message": "Prediction error rate exceeded 1%"
+        }
+      },
+      {
+        "id": 4,
+        "title": "Feature Drift (PSI)",
+        "type": "graph",
+        "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "feature_drift_psi{feature=\"transaction_amount\"}",
+            "legendFormat": "transaction_amount"
+          },
+          {
+            "expr": "feature_drift_psi{feature=\"account_age_days\"}",
+            "legendFormat": "account_age_days"
+          }
+        ],
+        "yaxes": [
+          {"format": "short", "label": "PSI Score"},
+          {"format": "short"}
+        ],
+        "thresholds": [
+          {"value": 0.1, "color": "yellow", "op": "gt"},
+          {"value": 0.2, "color": "orange", "op": "gt"},
+          {"value": 0.25, "color": "red", "op": "gt"}
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Model Predictions Distribution",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 16, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "rate(predictions_total{class=\"0\"}[5m])",
+            "legendFormat": "Class 0 (Negative)"
+          },
+          {
+            "expr": "rate(predictions_total{class=\"1\"}[5m])",
+            "legendFormat": "Class 1 (Positive)"
+          }
+        ],
+        "yaxes": [
+          {"format": "reqps", "label": "Predictions/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Model Accuracy (Labeled Subset)",
+        "type": "singlestat",
+        "gridPos": {"x": 12, "y": 16, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "model_accuracy_labeled_subset"
+          }
+        ],
+        "format": "percentunit",
+        "thresholds": "0.85,0.90",
+        "colors": ["red", "orange", "green"]
+      },
+      {
+        "id": 7,
+        "title": "Active Model Version",
+        "type": "table",
+        "gridPos": {"x": 18, "y": 16, "w": 6, "h": 4},
+        "targets": [
+          {
+            "expr": "model_version_info",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "columns": [
+          {"text": "Model Name", "value": "model_name"},
+          {"text": "Version", "value": "version"},
+          {"text": "Stage", "value": "stage"},
+          {"text": "Deployed", "value": "deployed_at"}
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Resource Utilization",
+        "type": "graph",
+        "gridPos": {"x": 0, "y": 24, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "rate(container_cpu_usage_seconds_total{pod=~\"model-.*\"}[5m])",
+            "legendFormat": "CPU {{pod}}"
+          },
+          {
+            "expr": "container_memory_usage_bytes{pod=~\"model-.*\"} / 1024 / 1024 / 1024",
+            "legendFormat": "Memory {{pod}}"
+          }
+        ],
+        "yaxes": [
+          {"format": "short", "label": "CPU cores / GB RAM"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Retraining Pipeline Status",
+        "type": "table",
+        "gridPos": {"x": 12, "y": 24, "w": 12, "h": 8},
+        "targets": [
+          {
+            "expr": "retraining_pipeline_runs",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "columns": [
+          {"text": "Pipeline", "value": "pipeline_name"},
+          {"text": "Status", "value": "status"},
+          {"text": "Triggered By", "value": "trigger_type"},
+          {"text": "Start Time", "value": "start_time"},
+          {"text": "Duration", "value": "duration_seconds"}
+        ]
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "name": "Model Deployments",
+          "datasource": "Prometheus",
+          "expr": "changes(model_version_info[5m]) > 0",
+          "iconColor": "green",
+          "tags": ["deployment"]
+        },
+        {
+          "name": "Retraining Events",
+          "datasource": "Prometheus",
+          "expr": "changes(retraining_pipeline_runs[5m]) > 0",
+          "iconColor": "blue",
+          "tags": ["retraining"]
+        }
+      ]
+    }
+  }
+}

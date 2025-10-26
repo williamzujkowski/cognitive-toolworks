@@ -1,0 +1,102 @@
+# MLflow Tracking Server Configuration
+# Deploy on Kubernetes with PostgreSQL backend and S3 artifact storage
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mlflow-config
+  namespace: mlops
+data:
+  # Backend store for metadata (experiments, runs, params, metrics)
+  BACKEND_STORE_URI: "postgresql://mlflow:${DB_PASSWORD}@postgres-service:5432/mlflow"
+
+  # Artifact storage for models, plots, files
+  DEFAULT_ARTIFACT_ROOT: "s3://mlops-artifacts"
+
+  # AWS credentials (use IAM roles in production)
+  AWS_REGION: "us-west-2"
+
+  # Server configuration
+  HOST: "0.0.0.0"
+  PORT: "5000"
+  WORKERS: "4"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow-server
+  namespace: mlops
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      serviceAccountName: mlflow-sa  # IAM role for S3 access
+      containers:
+      - name: mlflow
+        image: ghcr.io/mlflow/mlflow:v2.8.0
+        command:
+          - mlflow
+          - server
+          - --backend-store-uri
+          - $(BACKEND_STORE_URI)
+          - --default-artifact-root
+          - $(DEFAULT_ARTIFACT_ROOT)
+          - --host
+          - $(HOST)
+          - --port
+          - $(PORT)
+          - --workers
+          - $(WORKERS)
+        envFrom:
+          - configMapRef:
+              name: mlflow-config
+        env:
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mlflow-secrets
+                key: db-password
+        ports:
+          - containerPort: 5000
+            name: http
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow-service
+  namespace: mlops
+spec:
+  type: LoadBalancer
+  selector:
+    app: mlflow
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP

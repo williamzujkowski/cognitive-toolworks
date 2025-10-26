@@ -1,0 +1,26 @@
+{
+  "slug": "supply-chain-security-validator",
+  "name": "Software Supply Chain Security Validator",
+  "summary": "Validate software supply chain security with SBOM generation, dependency scanning, provenance verification, and SLSA attestation.",
+  "category": "security",
+  "keywords": [
+    "supply-chain-security",
+    "sbom",
+    "spdx",
+    "cyclonedx",
+    "slsa",
+    "provenance",
+    "sigstore",
+    "cosign",
+    "vulnerability-scanning",
+    "dependency-analysis",
+    "eo-14028"
+  ],
+  "dependencies": ["security-assessment-framework"],
+  "priority": "P2",
+  "phase": 3,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/supply-chain-security-validator/SKILL.md"
+}

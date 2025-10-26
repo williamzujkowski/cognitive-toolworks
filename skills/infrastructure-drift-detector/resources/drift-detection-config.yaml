@@ -1,0 +1,72 @@
+# Drift Detection Configuration Template
+# Tool-agnostic configuration for continuous drift monitoring
+
+drift_detection:
+  # Detection schedule
+  schedule:
+    frequency: daily  # hourly, daily, weekly
+    time: "02:00"     # UTC time for daily/weekly scans
+    enabled: true
+
+  # Scope configuration
+  scope:
+    mode: all         # all, tag-based, resource-type
+    tags:             # if mode=tag-based
+      Environment: production
+      ManagedBy: terraform
+    resource_types:   # if mode=resource-type
+      - aws_security_group
+      - aws_iam_role
+      - aws_kms_key
+
+  # Severity classification rules
+  severity_rules:
+    high:
+      - resource_types: [aws_security_group, aws_iam_role, aws_kms_key]
+      - attributes: [ingress, egress, assume_role_policy, key_policy]
+    medium:
+      - resource_types: [aws_instance, aws_rds_instance]
+      - attributes: [instance_type, engine_version]
+    low:
+      - resource_types: [aws_s3_bucket]
+      - attributes: [tags]
+
+  # Notification configuration
+  notifications:
+    slack:
+      enabled: true
+      webhook_url: "${SLACK_WEBHOOK_URL}"
+      channel: "#infrastructure-alerts"
+      severity_threshold: medium  # notify on medium+ severity
+    email:
+      enabled: true
+      recipients: ["platform-team@example.com"]
+      severity_threshold: high    # notify on high severity only
+    webhook:
+      enabled: false
+      url: "${WEBHOOK_URL}"
+      method: POST
+      headers:
+        Content-Type: application/json
+
+  # Remediation policy
+  remediation:
+    strategy: semi-automated  # manual, semi-automated, fully-automated
+    approval_required_for:
+      - severity: high
+      - resource_types: [aws_security_group, aws_iam_role]
+      - environments: [production]
+    auto_remediate:
+      - severity: low
+      - resource_types: [aws_s3_bucket]
+      - attributes: [tags]
+    rollback_enabled: true
+    backup_state: true
+
+  # Compliance mapping
+  compliance:
+    enabled: true
+    frameworks:
+      - nist-csf
+      - fedramp-moderate
+    control_mapping_file: compliance-mapping.json

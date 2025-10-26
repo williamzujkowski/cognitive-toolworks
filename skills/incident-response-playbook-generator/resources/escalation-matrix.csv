@@ -1,0 +1,12 @@
+Role,Primary Contact,Backup Contact,Contact Method,Escalation Threshold,Escalation Trigger
+Incident Commander,On-call Engineer,On-call Manager,PagerDuty + Slack,0 minutes,Incident detected
+Technical Lead,Service Owner,Principal Engineer,PagerDuty + Slack,15 minutes (P0) / 30 minutes (P1),No containment progress
+Communications Lead,Support Manager,Product Manager,Slack + Email,30 minutes (P0) / 60 minutes (P1),Customer impact confirmed
+Security Lead,CISO,Security Engineer,PagerDuty + Phone,15 minutes,Security incident confirmed
+Database Lead,DBA,Database Team Lead,PagerDuty,0 minutes,Database incident
+Infrastructure Lead,SRE,Platform Engineer,PagerDuty,0 minutes,Infrastructure incident
+Executive Sponsor,VP Engineering,CTO,Phone + Email,30 minutes (P0) / 2 hours (P1),Prolonged outage or high customer impact
+Legal Counsel,General Counsel,Privacy Officer,Phone + Email,1 hour,Data breach or regulatory impact
+Public Relations,PR Director,Communications Director,Email + Phone,2 hours,Media attention or public disclosure needed
+Customer Success,CS Manager,Account Manager,Email + Slack,1 hour,High-value customer affected
+Compliance Officer,Compliance Lead,Audit Manager,Email,4 hours,Compliance framework violation detected

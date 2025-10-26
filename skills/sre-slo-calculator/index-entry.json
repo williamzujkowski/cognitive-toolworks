@@ -1,0 +1,27 @@
+{
+  "slug": "sre-slo-calculator",
+  "name": "SRE SLO/SLI Calculator",
+  "summary": "Define and calculate SLIs, SLOs, SLAs, and error budgets with monitoring integration for site reliability engineering.",
+  "category": "reliability",
+  "keywords": [
+    "sre",
+    "slo",
+    "sli",
+    "sla",
+    "error-budget",
+    "reliability",
+    "monitoring",
+    "prometheus",
+    "observability",
+    "availability"
+  ],
+  "dependencies": [
+    "devops-pipeline-architect"
+  ],
+  "priority": "P2",
+  "phase": 3,
+  "token_budget": "T2",
+  "owner": "william@cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "/home/william/git/cognitive-toolworks/skills/sre-slo-calculator/SKILL.md"
+}

@@ -1,0 +1,27 @@
+{
+  "slug": "incident-response-playbook-generator",
+  "name": "Incident Response Playbook Generator",
+  "summary": "Generate incident response playbooks for security incidents, outages, and disaster recovery with NIST SP 800-61 compliance and escalation paths.",
+  "category": "operations",
+  "keywords": [
+    "incident-response",
+    "disaster-recovery",
+    "playbook",
+    "runbook",
+    "nist-800-61",
+    "security-incident",
+    "outage",
+    "escalation",
+    "post-mortem",
+    "on-call"
+  ],
+  "dependencies": [
+    "security-assessment-framework"
+  ],
+  "priority": "P2",
+  "phase": 3,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "/skills/incident-response-playbook-generator/SKILL.md"
+}

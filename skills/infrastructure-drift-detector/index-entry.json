@@ -1,0 +1,27 @@
+{
+  "slug": "infrastructure-drift-detector",
+  "name": "Infrastructure Drift Detection and Remediation",
+  "summary": "Detect and remediate infrastructure drift between IaC definitions and live state with continuous monitoring and automated remediation.",
+  "category": "devops",
+  "keywords": [
+    "infrastructure drift",
+    "terraform drift",
+    "cloudformation drift",
+    "pulumi drift",
+    "drift detection",
+    "drift remediation",
+    "IaC reconciliation",
+    "state management",
+    "compliance monitoring",
+    "policy-as-code"
+  ],
+  "dependencies": [
+    "devops-pipeline-architect"
+  ],
+  "priority": "P2",
+  "phase": 3,
+  "token_budget": "T2",
+  "owner": "william@cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "/skills/infrastructure-drift-detector/SKILL.md"
+}

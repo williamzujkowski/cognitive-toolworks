@@ -1,0 +1,28 @@
+{
+  "slug": "chaos-engineering-designer",
+  "name": "Chaos Engineering Experiment Designer",
+  "summary": "Design chaos engineering experiments to test system resilience with controlled failure injection, hypothesis formulation, and blast radius control.",
+  "category": "reliability",
+  "keywords": [
+    "chaos engineering",
+    "resilience testing",
+    "failure injection",
+    "steady state hypothesis",
+    "blast radius",
+    "chaos mesh",
+    "litmuschaos",
+    "chaos monkey",
+    "SRE",
+    "distributed systems"
+  ],
+  "dependencies": [
+    "cloud-native-deployment-orchestrator",
+    "devops-pipeline-architect"
+  ],
+  "priority": "P3",
+  "phase": 3,
+  "token_budget": "T2",
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "/home/william/git/cognitive-toolworks/skills/chaos-engineering-designer/SKILL.md"
+}

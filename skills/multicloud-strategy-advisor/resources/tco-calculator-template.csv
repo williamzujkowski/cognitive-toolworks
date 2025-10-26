@@ -1,0 +1,51 @@
+Category,Item,Vendor,Unit,Unit_Cost_USD,Quantity,Monthly_Cost,Annual_Cost,3yr_Cost,5yr_Cost,7yr_Cost,Notes
+Compute,VM Instances,AWS,instance-hours,0.0832,175200,14576.64,174919.68,524759.04,874598.40,1224437.76,t3.xlarge reserved (4vCPU/16GB) - 200 instances × 730hr/mo × $0.0832/hr
+Compute,VM Instances,Azure,instance-hours,0.0876,175200,15347.52,184170.24,552510.72,921851.20,1291191.68,D4s_v3 reserved (4vCPU/16GB) - 200 instances × 730hr/mo × $0.0876/hr
+Compute,VM Instances,GCP,instance-hours,0.0794,175200,13915.68,166988.16,500964.48,834940.80,1168917.12,n2-standard-4 committed (4vCPU/16GB) - 200 instances × 730hr/mo × $0.0794/hr
+Storage,Object Storage,AWS,GB-months,0.023,80000,1840.00,22080.00,66240.00,110400.00,154560.00,S3 Standard - 80TB × $0.023/GB
+Storage,Object Storage,Azure,GB-months,0.0184,80000,1472.00,17664.00,52992.00,88320.00,123648.00,Blob Storage Hot - 80TB × $0.0184/GB
+Storage,Object Storage,GCP,GB-months,0.020,80000,1600.00,19200.00,57600.00,96000.00,134400.00,Cloud Storage Standard - 80TB × $0.020/GB
+Storage,Block Storage,AWS,GB-months,0.10,10000,1000.00,12000.00,36000.00,60000.00,84000.00,EBS gp3 - 10TB × $0.10/GB (database volumes)
+Storage,Block Storage,Azure,GB-months,0.12,10000,1200.00,14400.00,43200.00,72000.00,100800.00,Premium SSD - 10TB × $0.12/GB
+Storage,Block Storage,GCP,GB-months,0.17,10000,1700.00,20400.00,61200.00,102000.00,142800.00,Persistent SSD - 10TB × $0.17/GB
+Network,Egress (Internet),AWS,GB,0.09,10000,900.00,10800.00,32400.00,54000.00,75600.00,10TB/mo internet egress × $0.09/GB
+Network,Egress (Internet),Azure,GB,0.087,10000,870.00,10440.00,31320.00,52200.00,73080.00,10TB/mo internet egress × $0.087/GB
+Network,Egress (Internet),GCP,GB,0.085,10000,850.00,10200.00,30600.00,51000.00,71400.00,10TB/mo internet egress × $0.085/GB (first 10TB tier)
+Network,Inter-Region Transfer,AWS,GB,0.02,5000,100.00,1200.00,3600.00,6000.00,8400.00,5TB/mo cross-region replication × $0.02/GB
+Network,Inter-Region Transfer,Azure,GB,0.02,5000,100.00,1200.00,3600.00,6000.00,8400.00,5TB/mo cross-region replication × $0.02/GB
+Network,Inter-Region Transfer,GCP,GB,0.01,5000,50.00,600.00,1800.00,3000.00,4200.00,5TB/mo cross-region replication × $0.01/GB (premium tier)
+Managed_Services,Managed PostgreSQL,AWS,instance-hours,0.348,730,254.04,3048.48,9145.44,15242.40,21339.36,RDS db.r5.xlarge Multi-AZ (4vCPU/32GB) × 730hr/mo × $0.348/hr
+Managed_Services,Managed PostgreSQL,Azure,instance-hours,0.376,730,274.48,3293.76,9881.28,16468.80,23056.32,Azure Database D4s_v3 HA (4vCPU/16GB) × 730hr/mo × $0.376/hr
+Managed_Services,Managed PostgreSQL,GCP,instance-hours,0.3456,730,252.29,3027.48,9082.44,15137.40,21192.36,Cloud SQL db-n1-highmem-4 HA (4vCPU/26GB) × 730hr/mo × $0.3456/hr
+Managed_Services,Load Balancer,AWS,LCU-hours,0.008,730,5.84,70.08,210.24,350.40,490.56,Application Load Balancer - 1 ALB × 730hr × $0.008/LCU-hr
+Managed_Services,Load Balancer,Azure,LCU-hours,0.007,730,5.11,61.32,183.96,306.60,429.24,Application Gateway - 1 AppGW × 730hr × $0.007/LCU-hr
+Managed_Services,Load Balancer,GCP,instance,0.025,1,0.025,0.30,0.90,1.50,2.10,Cloud Load Balancing - forwarding rule × $0.025/hr
+Support,Business Tier,AWS,percentage,0.03,18481.68,554.45,6653.40,19960.20,33267.00,46573.80,3% of monthly AWS spend (first $10k tier)
+Support,Standard Tier,Azure,percentage,0,18964.00,0.00,0.00,0.00,0.00,0.00,Standard support included (no charge)
+Support,Standard Tier,GCP,percentage,0,18268.97,0.00,0.00,0.00,0.00,0.00,Standard support included (no charge)
+Training_Tooling,Certifications,Multi-Cloud,per-engineer,300,10,3000.00,3000.00,3000.00,3000.00,3000.00,AWS/Azure/GCP certs - 10 engineers × $300/cert (annual refresh)
+Training_Tooling,Multi-Cloud IaC,Multi-Cloud,subscription,99,1,99.00,1188.00,3564.00,5940.00,8316.00,Terraform Cloud Team tier - $99/mo
+Training_Tooling,Monitoring,Multi-Cloud,per-host,15,200,3000.00,36000.00,108000.00,180000.00,252000.00,Datadog Pro - 200 hosts × $15/host/mo
+
+# SUMMARY FORMULAS (calculate using spreadsheet)
+# Total Monthly: SUM(Monthly_Cost column)
+# Total Annual: SUM(Annual_Cost column)
+# Total 3yr: SUM(3yr_Cost column)
+# Total 5yr: SUM(5yr_Cost column)
+# Total 7yr: SUM(7yr_Cost column)
+
+# TCO COMPARISON (example)
+# AWS 5yr TCO: $874,598 (compute) + $110,400 (storage) + $54,000 (network-egress) + $6,000 (network-inter) + $15,242 (RDS) + $351 (ALB) + $33,267 (support) = $1,093,858
+# Azure 5yr TCO: $921,851 (compute) + $88,320 (storage) + $52,200 (network-egress) + $6,000 (network-inter) + $16,469 (DB) + $307 (AppGW) + $0 (support) = $1,085,147
+# GCP 5yr TCO: $834,941 (compute) + $96,000 (storage) + $51,000 (network-egress) + $3,000 (network-inter) + $15,137 (SQL) + $2 (LB) + $0 (support) = $1,000,080
+# Plus shared costs: Training $5,940 + IaC $5,940 + Monitoring $180,000 = $191,880
+# GRAND TOTAL 5yr: AWS $1,285,738 | Azure $1,277,027 | GCP $1,191,960
+
+# NOTES:
+# - All pricing as of 2025-10-25T21:30:36-04:00; verify current rates before use
+# - Reserved instance pricing assumes 1yr or 3yr commitments (30-70% discount vs on-demand)
+# - Egress costs are major TCO driver; optimize with CDN, regional caching, direct connect
+# - Support tiers: AWS Business (3-10% monthly), Azure Standard (free), GCP Standard (free)
+# - Hidden costs: certifications, multi-cloud tooling (Terraform, monitoring), training
+# - TCO formula: (Compute + Storage + Network + Services + Support + Training/Tooling) × Time Horizon
+# - Source: EDUCAUSE TCO Framework https://library.educause.edu/resources/2015/4/tco-for-cloud-services-a-framework

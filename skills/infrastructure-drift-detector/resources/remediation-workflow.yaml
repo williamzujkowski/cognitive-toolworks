@@ -1,0 +1,99 @@
+# Remediation Workflow Template
+# Multi-step workflow for drift remediation with approval gates
+
+remediation_workflow:
+  name: infrastructure-drift-remediation
+  version: 1.0.0
+
+  # Pre-flight checks
+  pre_flight:
+    - name: Verify no active operations
+      action: check_terraform_lock
+      abort_on_failure: true
+    - name: Backup state file
+      action: copy_state_to_backup
+      location: s3://backups/terraform-state/${WORKSPACE}/${TIMESTAMP}.tfstate
+      abort_on_failure: true
+    - name: Validate cloud credentials
+      action: verify_cloud_access
+      abort_on_failure: true
+
+  # Remediation steps by action type
+  steps:
+    revert:
+      - name: Generate revert plan
+        action: terraform_plan
+        args: ["-refresh-only"]
+      - name: Request approval (if required)
+        action: request_approval
+        condition: ${SEVERITY} == "high" OR ${ENVIRONMENT} == "production"
+        timeout: 4h
+        approvers: ["platform-team@example.com"]
+      - name: Apply revert
+        action: terraform_apply
+        args: ["-auto-approve"]
+      - name: Verify drift resolved
+        action: drift_scan
+        expect: no_drift
+
+    accept:
+      - name: Import resource to state
+        action: terraform_import
+        resource: ${RESOURCE_ID}
+      - name: Update IaC code
+        action: generate_code_from_state
+        output: ${IaC_REPO}/resources/${RESOURCE_TYPE}.tf
+      - name: Create pull request
+        action: create_pr
+        title: "feat(infra): Accept drift for ${RESOURCE_ID}"
+        body: "Importing manual change from console (change ticket: ${TICKET_ID})"
+
+    ignore:
+      - name: Add lifecycle ignore_changes
+        action: update_terraform_code
+        block: |
+          lifecycle {
+            ignore_changes = [${ATTRIBUTE}]
+          }
+      - name: Create exemption record
+        action: log_exemption
+        exemption_id: EXEMPT-${TIMESTAMP}
+        reason: ${REASON}
+        approved_by: ${APPROVER}
+        expiry: ${EXPIRY_DATE}
+
+  # Post-remediation validation
+  post_validation:
+    - name: Run drift scan
+      action: drift_scan
+      expect: no_drift_or_documented_exemptions
+    - name: Update compliance dashboard
+      action: update_compliance_status
+    - name: Send notification
+      action: notify
+      channels: ["slack", "email"]
+      message: "Drift remediation completed for ${WORKSPACE}"
+
+  # Rollback procedure
+  rollback:
+    - name: Restore state backup
+      action: copy_backup_to_state
+      source: s3://backups/terraform-state/${WORKSPACE}/${BACKUP_TIMESTAMP}.tfstate
+    - name: Alert on-call
+      action: page_oncall
+      severity: critical
+      message: "Drift remediation failed, state restored from backup"
+
+  # Audit logging
+  audit:
+    enabled: true
+    log_destination: s3://audit-logs/drift-remediation/${DATE}/${WORKSPACE}.json
+    fields:
+      - timestamp
+      - workspace
+      - operator
+      - action
+      - resource_id
+      - severity
+      - approval_status
+      - result

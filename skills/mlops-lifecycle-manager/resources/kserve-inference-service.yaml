@@ -1,0 +1,111 @@
+# KServe InferenceService for ML Model Deployment
+# Supports autoscaling, canary deployments, and multi-framework serving
+
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: model-name  # Replace with actual model name
+  namespace: mlops
+  annotations:
+    serving.kserve.io/enable-prometheus-scraping: "true"
+    serving.kserve.io/enable-metric-aggregation: "true"
+spec:
+  predictor:
+    # Choose one: sklearn, xgboost, pytorch, tensorflow, onnx, triton
+    xgboost:
+      # Model storage URI (s3://, gs://, azure://, pvc://)
+      storageUri: "s3://mlops-models/model-name/v1.0.0"
+
+      # Container runtime settings
+      runtimeVersion: "latest"
+      protocolVersion: v2  # v1 or v2
+
+      # Resource allocation
+      resources:
+        requests:
+          cpu: "1"
+          memory: "2Gi"
+          # nvidia.com/gpu: "1"  # Uncomment for GPU
+        limits:
+          cpu: "4"
+          memory: "8Gi"
+          # nvidia.com/gpu: "1"
+
+      # Environment variables
+      env:
+        - name: STORAGE_URI
+          value: "s3://mlops-models"
+        - name: LOG_LEVEL
+          value: "INFO"
+
+    # Autoscaling configuration
+    minReplicas: 2
+    maxReplicas: 10
+
+    # Scaling metrics
+    scaleTarget: 80  # Target concurrency per pod
+    scaleMetric: concurrency  # concurrency, rps, cpu, memory
+
+    # Traffic management for canary deployment
+    canaryTrafficPercent: 10  # Route 10% traffic to canary
+
+  # Transformer (optional): pre/post-processing
+  # transformer:
+  #   containers:
+  #     - name: transformer
+  #       image: myregistry.io/transformer:v1
+  #       resources:
+  #         requests:
+  #           cpu: "500m"
+  #           memory: "1Gi"
+
+  # Explainer (optional): model interpretability
+  # explainer:
+  #   alibi:
+  #     type: AnchorTabular
+  #     storageUri: s3://mlops-models/explainer/v1.0.0
+
+---
+# Service monitor for Prometheus metrics
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: model-metrics
+  namespace: mlops
+spec:
+  selector:
+    matchLabels:
+      serving.kserve.io/inferenceservice: model-name
+  endpoints:
+    - port: metrics
+      interval: 15s
+      path: /metrics
+
+---
+# HorizontalPodAutoscaler (alternative to KServe autoscaling)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: model-hpa
+  namespace: mlops
+spec:
+  scaleTargetRef:
+    apiVersion: serving.kserve.io/v1beta1
+    kind: InferenceService
+    name: model-name
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Pods
+      pods:
+        metric:
+          name: inference_latency_milliseconds
+        target:
+          type: AverageValue
+          averageValue: "200"

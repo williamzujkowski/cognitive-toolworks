@@ -1,0 +1,29 @@
+EXAMPLE: Design System WCAG 2.2 Validation (T2 Comprehensive)
+
+INPUT:
+{
+  "design_tokens": "./tokens.json",
+  "component_library": "./components/",
+  "target_wcag_level": "AA",
+  "platforms": ["web", "iOS"]
+}
+
+VALIDATION FINDINGS:
+
+1. WCAG Violations (8):
+   - Primary CTA contrast 3.9:1 (need 4.5:1) [CRITICAL]
+   - Modal missing ESC handler [HIGH]
+   - Icon buttons 20x20px (need 24x24) [HIGH]
+
+2. Token Inconsistencies (3):
+   - color.brand.primary: #0066CC vs #0066CD
+
+3. Responsive Issues (2):
+   - Missing 768px breakpoint
+
+REMEDIATION PLAN:
+  [CRITICAL] Fix CTA contrast to 4.5:1 (2hr)
+  [HIGH] Add modal ESC handler (1hr)
+  [HIGH] Increase icon targets to 24x24 (4hr)
+
+COMPLIANCE SCORE: 68/100

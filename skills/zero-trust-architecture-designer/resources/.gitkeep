@@ -1,0 +1,8 @@
+# Resources directory for zero-trust-architecture-designer
+
+This directory contains:
+- policy-library/ - ABAC policy templates (JSON)
+- architecture-diagrams/ - ZTA reference architectures (PNG/SVG)
+- compliance-mapping.csv - Control mappings (NIST 800-53, CMMC, PCI-DSS)
+- ztmm-assessment-template.xlsx - CISA ZTMM pillar assessment worksheet
+- metrics-dashboard.json - Grafana/Datadog dashboard spec for ZTA metrics
