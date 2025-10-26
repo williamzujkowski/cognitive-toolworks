@@ -1,0 +1,29 @@
+# E-commerce Checkout Accessibility Audit (WCAG 2.2 Level AA)
+
+INPUT: pages: [checkout, payment, confirmation], wcag_level: AA, tools: [axe-core, Pa11y], manual: true
+
+OUTPUT (T2 Audit):
+
+WCAG 2.2 AA COMPLIANCE: 78% (45/58 criteria passing), 13 failures (8 A, 5 AA)
+
+AUTOMATED TESTS: axe-core (12 violations, 3 incomplete, 87 passes, 57% detection), Pa11y (15 errors, 8 warnings, axe engine), Lighthouse (72/100, target 90+)
+
+TOP VIOLATIONS (by severity):
+1. Color Contrast (1.4.3 AA): 8 text failures (3.1:1, need 4.5:1) - CRITICAL
+2. Form Labels (3.3.2 A): 3 inputs missing <label> or aria-label - CRITICAL
+3. Focus Visible (2.4.7 AA): Focus indicator 2.2:1 contrast (need 3:1) - SERIOUS
+4. Accessible Auth (3.3.8 AA, NEW 2.2): CAPTCHA no alternative (audio/SMS) - SERIOUS
+5. Target Size (2.5.8 AA, NEW 2.2): Edit buttons 20×20px (need 24×24px) - MODERATE
+6. Focus Not Obscured (2.4.11 AA, NEW 2.2): Sticky header hides focused elements - MODERATE
+
+MANUAL KEYBOARD TESTS: Tab order ✅ logical, Skip link ✅ present, Modals ⚠️ no Esc close, Focus trap ✅ works
+
+SCREEN READER (NVDA): Form errors not announced (missing aria-live), fieldset legends ✅ correct, Alt text ⚠️ 2 decorative images have verbose alt
+
+ARIA ISSUES: 3 buttons missing aria-label, 1 live region missing role, 2 aria-describedby point to non-existent IDs
+
+COLOR CONTRAST: 8 failures (text #777 on #FFF = 3.1:1), 2 warnings (large text #999 on #FFF = 2.8:1, need 3:1), Focus indicators 2.2:1 (need 3:1)
+
+REMEDIATION PLAN:
+Phase 1 (7 days): Fix Level A (form labels, keyboard traps, missing alt text) - 8 items, 12h effort
+Phase 2 (14 days): Fix AA (contrast to 4.6:1, focus indicators 3.5:1, CAPTCHA alternative, target size 24×24px) - 5 items, 20h effort

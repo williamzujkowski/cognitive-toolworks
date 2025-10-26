@@ -1,0 +1,306 @@
+scenarios:
+  - name: quick-automated-scan-single-page
+    description: "Quick axe-core scan on homepage for common issues (T1 fast path)"
+    input:
+      web_pages:
+        - "https://example.com"
+      wcag_level: "AA"
+      automated_tools: ["axe-core"]
+      manual_checks: false
+    expected_recommendations:
+      automated_tool: "axe-core (57% detection rate, zero false positives)"
+      violation_categories:
+        - "Missing alt text on images (1.1.1 Level A)"
+        - "Insufficient color contrast <4.5:1 (1.4.3 Level AA)"
+        - "Missing form labels (3.3.2 Level A)"
+        - "Focus not visible (2.4.7 Level AA)"
+      severity_levels: ["critical", "serious", "moderate", "minor"]
+      output_format:
+        violations: "Array of {id, wcag_criterion, severity, element, remediation}"
+        incomplete: "Items needing manual review"
+        passes: "Successfully validated checks"
+      note: "Automated tools detect ~57% of WCAG issues. Manual testing required for full compliance."
+    token_tier: T1
+
+  - name: ecommerce-checkout-wcag-22-audit
+    description: "Multi-page checkout flow with WCAG 2.2 new criteria validation"
+    input:
+      web_pages:
+        - "https://shop.example.com/checkout"
+        - "https://shop.example.com/payment"
+        - "https://shop.example.com/confirmation"
+      wcag_level: "AA"
+      automated_tools: ["axe-core", "Pa11y", "Lighthouse"]
+      manual_checks: true
+    expected_recommendations:
+      wcag_22_new_criteria:
+        - "2.4.11 Focus Not Obscured (Minimum) - AA: Check sticky headers don't hide focus"
+        - "2.4.13 Focus Appearance - AAA: Focus ≥3:1 contrast, size ≥ element perimeter"
+        - "2.5.7 Dragging Movements - AA: Provide alternatives to drag-and-drop"
+        - "2.5.8 Target Size (Minimum) - AA: Touch targets ≥24×24 CSS pixels"
+        - "3.2.6 Consistent Help - A: Help mechanisms in consistent order"
+        - "3.3.7 Redundant Entry - A: Auto-populate previously entered data"
+        - "3.3.8 Accessible Authentication (Minimum) - AA: No cognitive tests (CAPTCHA alternatives)"
+        - "3.3.9 Accessible Authentication (Enhanced) - AAA: No cognitive tests at all"
+      automated_tests:
+        axe_core: "12 violations, 3 incomplete, 87 passes"
+        pa11y: "15 errors, 8 warnings (using axe engine)"
+        lighthouse: "Score 72/100 (needs improvement, target 90+)"
+      manual_tests:
+        keyboard_navigation: "Tab order, skip links, modal focus traps, Esc to close"
+        screen_reader: "NVDA on Windows (test 1 critical page minimum)"
+        color_contrast: "Check all text/background pairs with WebAIM Contrast Checker"
+      top_violations:
+        - "Color Contrast (1.4.3 AA): 8 failures (3.1:1, need 4.5:1) - CRITICAL"
+        - "Form Labels (3.3.2 A): 3 inputs missing labels - CRITICAL"
+        - "Focus Visible (2.4.7 AA): Focus indicator contrast 2.2:1 (need 3:1) - SERIOUS"
+        - "Accessible Auth (3.3.8 AA): CAPTCHA no alternative - SERIOUS"
+        - "Target Size (2.5.8 AA): Buttons 20×20px (need 24×24px) - MODERATE"
+      remediation_phases:
+        phase_1: "0-7 days: Fix Level A violations (form labels, keyboard traps)"
+        phase_2: "7-14 days: Fix AA violations (contrast, focus indicators, CAPTCHA)"
+    token_tier: T2
+
+  - name: color-contrast-analysis
+    description: "Comprehensive color contrast validation for text and UI components"
+    input:
+      web_pages:
+        - "https://example.com/products"
+      wcag_level: "AAA"
+      manual_checks: true
+    expected_recommendations:
+      contrast_requirements:
+        aa_normal_text: "≥4.5:1"
+        aa_large_text: "≥3:1 (18pt or 14pt bold)"
+        aa_ui_components: "≥3:1 (buttons, form borders, focus indicators)"
+        aaa_normal_text: "≥7:1"
+        aaa_large_text: "≥4.5:1"
+      tools:
+        - "WebAIM Contrast Checker"
+        - "Chrome DevTools Contrast Ratio"
+        - "axe-core automated check"
+      common_failures:
+        - "Gray text on white background: #777/#FFF = 3.1:1 (need 4.5:1 for AA)"
+        - "Light blue links: #6699FF/#FFF = 3.8:1 (fail AA, need 4.5:1)"
+        - "Focus indicator: 2px #999 outline = 2.2:1 (need 3:1 for AA)"
+      remediation:
+        - "Darken text to #555 for 4.6:1 ratio"
+        - "Darken links to #0066CC for 4.7:1 ratio"
+        - "Use 2px #000 or 3px #666 outline for 3.1:1+ focus contrast"
+    token_tier: T2
+
+  - name: aria-validation-complex-widgets
+    description: "ARIA attributes and roles validation for custom widgets"
+    input:
+      web_pages:
+        - "https://app.example.com/dashboard"
+      wcag_level: "AA"
+      manual_checks: true
+    expected_recommendations:
+      aria_patterns:
+        landmarks:
+          - "role='main', role='navigation', role='complementary', role='contentinfo'"
+          - "Or use semantic HTML: <main>, <nav>, <aside>, <footer>"
+        widgets:
+          - "role='button' with aria-pressed or aria-expanded"
+          - "role='tab', role='tabpanel' with aria-selected"
+          - "role='dialog' with aria-labelledby, aria-describedby"
+        live_regions:
+          - "aria-live='polite' for status messages"
+          - "aria-live='assertive' for errors/alerts"
+        labels:
+          - "aria-label or aria-labelledby for all interactive elements"
+      common_errors:
+        - "Missing aria-label on icon-only button"
+        - "aria-expanded not toggling (always true or false)"
+        - "aria-describedby pointing to non-existent ID"
+        - "Using role='button' instead of <button> (violates First Rule of ARIA)"
+      first_rule_of_aria: "Use semantic HTML first (<button>, <nav>) before ARIA roles"
+      validation_tools:
+        - "axe-core (detects invalid ARIA)"
+        - "Chrome DevTools Accessibility Tree"
+        - "Manual screen reader testing (NVDA, JAWS)"
+    token_tier: T2
+
+  - name: keyboard-navigation-testing
+    description: "Comprehensive keyboard navigation and focus management validation"
+    input:
+      web_pages:
+        - "https://example.com/signup"
+      wcag_level: "AA"
+      manual_checks: true
+    expected_recommendations:
+      keyboard_tests:
+        tab_order:
+          - "Logical: follows visual flow (top-to-bottom, left-to-right)"
+          - "No keyboard traps (can tab in and out of all components)"
+          - "Skip links present ('Skip to main content' as first focusable element)"
+        focus_indicators:
+          - "Visible: not outline:0 or outline:none"
+          - "Contrast: ≥3:1 against adjacent colors (WCAG 2.4.11 AA)"
+          - "Size: ≥2px outline or equivalent area"
+        interactive_elements:
+          - "Buttons: Space and Enter activate"
+          - "Links: Enter activates"
+          - "Dropdowns: Arrow keys navigate, Enter/Space select, Esc closes"
+          - "Modals: Focus trapped, Esc closes, focus returns to trigger on close"
+        wcag_criteria:
+          - "2.1.1 Keyboard (A): All functionality available via keyboard"
+          - "2.1.2 No Keyboard Trap (A): Can navigate away from all components"
+          - "2.4.3 Focus Order (A): Logical tab order"
+          - "2.4.7 Focus Visible (AA): Focus indicator visible"
+          - "2.4.11 Focus Not Obscured (Minimum) (AA): Focus not hidden by sticky headers"
+          - "2.4.13 Focus Appearance (AAA): Focus ≥3:1 contrast, adequate size"
+      automated_vs_manual: "Automated tools can't test keyboard navigation; manual testing required"
+    token_tier: T2
+
+  - name: screen-reader-compatibility
+    description: "Screen reader testing across NVDA, JAWS, VoiceOver"
+    input:
+      web_pages:
+        - "https://example.com/contact"
+      wcag_level: "AA"
+      screen_readers: ["NVDA", "JAWS", "VoiceOver"]
+      manual_checks: true
+    expected_recommendations:
+      screen_reader_matrix:
+        nvda_windows_chrome:
+          - "Test landmark navigation (D key for landmarks, H for headings)"
+          - "Test form filling (F for forms, B for buttons)"
+          - "Test error announcements (aria-live regions)"
+        jaws_windows_edge:
+          - "Test table navigation (T for tables, Ctrl+Alt+arrows for cells)"
+          - "Test list navigation (L for lists, I for list items)"
+        voiceover_macos_safari:
+          - "Test rotor navigation (Cmd+Opt+U for rotor, arrow keys to navigate)"
+          - "Test form controls (Cmd+Opt+J to jump between controls)"
+      common_issues:
+        - "Error messages not announced (missing aria-live='assertive')"
+        - "Form fieldsets missing <legend> (radio/checkbox groups not grouped)"
+        - "Decorative images have verbose alt text (should be alt='')"
+        - "Links with 'click here' text (not descriptive out of context)"
+        - "Headings out of order (h1 → h3, skipping h2)"
+      wcag_criteria:
+        - "1.1.1 Non-text Content (A): All images have alt text"
+        - "1.3.1 Info and Relationships (A): Semantic HTML (headings, lists, tables)"
+        - "2.4.4 Link Purpose (In Context) (A): Link text describes destination"
+        - "3.3.1 Error Identification (A): Errors announced to screen readers"
+        - "4.1.3 Status Messages (AA): Status updates announced with aria-live"
+      testing_time: "15-30 minutes per page with screen reader"
+    token_tier: T2
+
+  - name: form-accessibility-deep-dive
+    description: "Comprehensive form accessibility validation (labels, fieldsets, errors, autocomplete)"
+    input:
+      web_pages:
+        - "https://example.com/registration"
+      wcag_level: "AA"
+      manual_checks: true
+    expected_recommendations:
+      form_requirements:
+        labels:
+          - "Explicit <label for='id'> for every input"
+          - "Or aria-label/aria-labelledby if visual label not desired"
+          - "Never use placeholder-only labels (disappear on focus)"
+        fieldsets:
+          - "<fieldset> + <legend> for radio/checkbox groups"
+          - "E.g., <fieldset><legend>Shipping method</legend><input type='radio'...>"
+        error_messages:
+          - "aria-invalid='true' on invalid inputs"
+          - "aria-describedby linking to error message ID"
+          - "Inline errors (next to field) + summary (top of form)"
+          - "Errors announced with aria-live='assertive'"
+        required_fields:
+          - "required attribute + aria-required='true'"
+          - "Visual indicator (*, 'Required') not color-only"
+        autocomplete:
+          - "autocomplete='name', 'email', 'tel', 'address-line1', etc."
+          - "Helps password managers and autofill (WCAG 1.3.5 AA)"
+      wcag_criteria:
+        - "1.3.5 Identify Input Purpose (AA): Use autocomplete attributes"
+        - "3.2.2 On Input (A): Changing input doesn't auto-submit (unless warned)"
+        - "3.3.1 Error Identification (A): Errors identified in text"
+        - "3.3.2 Labels or Instructions (A): All inputs have labels"
+        - "3.3.3 Error Suggestion (AA): Provide fix suggestions for errors"
+        - "3.3.7 Redundant Entry (A): Auto-populate repeated data"
+        - "4.1.3 Status Messages (AA): Form submission status announced"
+      validation_tools:
+        - "axe-core (detects missing labels, autocomplete)"
+        - "Manual screen reader test (NVDA, JAWS)"
+        - "Keyboard-only test (fill form without mouse)"
+    token_tier: T2
+
+  - name: enterprise-ci-cd-integration
+    description: "Set up automated accessibility testing in CI/CD pipeline"
+    input:
+      web_pages:
+        - "http://localhost:3000"
+        - "http://localhost:3000/products"
+        - "http://localhost:3000/checkout"
+      wcag_level: "AA"
+      automated_tools: ["axe-core", "Pa11y-ci", "Lighthouse-CI"]
+      manual_checks: false
+    expected_recommendations:
+      axe_core_jest:
+        setup: "npm install --save-dev jest-axe @axe-core/react"
+        test_example: |
+          import { axe, toHaveNoViolations } from 'jest-axe';
+          expect.extend(toHaveNoViolations);
+          it('should have no a11y violations', async () => {
+            const { container } = render(<MyComponent />);
+            const results = await axe(container);
+            expect(results).toHaveNoViolations();
+          });
+      pa11y_ci:
+        setup: "npm install --save-dev pa11y-ci"
+        config: ".pa11yci.json with URLs, runners: ['axe'], threshold: 0"
+        ci_command: "npx pa11y-ci"
+      lighthouse_ci:
+        setup: "npm install --save-dev @lhci/cli"
+        config: "lighthouserc.json with accessibility score ≥95"
+        ci_command: "lhci autorun --collect.url=http://localhost:3000 --assert.assertions.accessibility=0.95"
+      ci_integration:
+        github_actions: "Run tests on every PR"
+        failure_threshold: "0 violations for critical (Level A), <5 for AA"
+        reporting: "Upload axe/Pa11y JSON reports as artifacts"
+      benefits:
+        - "Catch 57% of accessibility issues before production"
+        - "Prevent regressions (existing violations don't increase)"
+        - "Shift-left accessibility testing (developers fix issues early)"
+    token_tier: T3
+
+  - name: mobile-touch-target-sizing
+    description: "Validate touch target sizing for mobile accessibility (WCAG 2.5.8)"
+    input:
+      web_pages:
+        - "https://m.example.com"
+      wcag_level: "AA"
+      manual_checks: true
+    expected_recommendations:
+      wcag_258_target_size:
+        requirement: "Touch targets ≥24×24 CSS pixels (WCAG 2.5.8 AA, new in 2.2)"
+        exceptions:
+          - "Inline text links (within paragraph)"
+          - "Controlled by user agent (browser default controls)"
+          - "Essential (e.g., map pins where spacing matters)"
+        recommended_size: "≥44×44 pixels (iOS HIG, Material Design)"
+      common_violations:
+        - "Mobile menu hamburger icon: 18×18px (need 24×24px)"
+        - "Close button in modal: 20×20px (need 24×24px)"
+        - "Social media icons in footer: 16×16px (need 24×24px)"
+      remediation:
+        - "Increase icon size to 24×24px minimum"
+        - "Or add padding to make clickable area 24×24px"
+        - "Use CSS: .icon { width: 24px; height: 24px; }"
+      validation:
+        - "Manual inspection with browser DevTools (measure element size)"
+        - "Test on actual mobile device (touch with finger, not stylus)"
+        - "axe-core can't detect this (manual check required)"
+    token_tier: T2
+
+  - name: insufficient-data-error
+    description: "Error case: no web pages provided"
+    input:
+      wcag_level: "AA"
+    expected_error: "Insufficient data: missing 'web_pages'. Cannot validate accessibility without URLs or HTML files to test. Please provide: (1) At least one URL (e.g., https://example.com) or HTML file path, (2) WCAG level (A, AA, or AAA), (3) Optional: automated_tools (axe-core, Pa11y, Lighthouse)."
+    token_tier: T1
