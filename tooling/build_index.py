@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import subprocess
 from pathlib import Path
 from typing import Any, Dict, List
 import re
@@ -59,6 +60,11 @@ def main() -> int:
         default=None,
         help="Output path (default: <root>/index/skills-index.json)",
     )
+    ap.add_argument(
+        "--with-embeddings",
+        action="store_true",
+        help="Also rebuild embeddings after building index"
+    )
     args = ap.parse_args()
 
     root: Path = args.root.resolve()
@@ -100,6 +106,16 @@ def main() -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(entries, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {out} with {len(entries)} entr(y/ies)")
+
+    # Optionally rebuild embeddings
+    if args.with_embeddings:
+        print("\nRebuilding embeddings...")
+        embeddings_script = Path(__file__).parent / "build_embeddings.py"
+        result = subprocess.run([sys.executable, str(embeddings_script)], cwd=root)
+        if result.returncode != 0:
+            print("ERROR: Failed to build embeddings", file=sys.stderr)
+            return result.returncode
+
     return 0
 
 

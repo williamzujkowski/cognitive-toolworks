@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+"""
+Skill routing using embeddings
+Find most relevant skills for a given task description
+"""
+
+import json
+import pickle
+from pathlib import Path
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+
+class SkillRouter:
+    """Route tasks to relevant skills using embeddings"""
+
+    def __init__(self, embeddings_dir=None):
+        if embeddings_dir is None:
+            embeddings_dir = Path(__file__).parent.parent / "index" / "embeddings"
+        self.embeddings_dir = Path(embeddings_dir)
+
+        # Load embeddings
+        self._load_embeddings()
+
+    def _load_embeddings(self):
+        """Load pre-built embeddings from disk"""
+        with open(self.embeddings_dir / 'vectorizer.pkl', 'rb') as f:
+            self.vectorizer = pickle.load(f)
+
+        with open(self.embeddings_dir / 'vectors.pkl', 'rb') as f:
+            self.vectors = pickle.load(f)
+
+        with open(self.embeddings_dir / 'slugs.json') as f:
+            self.slugs = json.load(f)
+
+        with open(self.embeddings_dir / 'metadata.json') as f:
+            self.metadata = json.load(f)
+
+    def route(self, query, top_k=2, min_score=0.1):
+        """
+        Find most relevant skills for a query
+
+        Args:
+            query: Task description string
+            top_k: Number of skills to return (default: 2, per CLAUDE.md)
+            min_score: Minimum similarity score (0-1)
+
+        Returns:
+            List of (slug, score) tuples, sorted by relevance
+        """
+        # Transform query using same vectorizer
+        query_vec = self.vectorizer.transform([query])
+
+        # Compute cosine similarity
+        similarities = cosine_similarity(query_vec, self.vectors)[0]
+
+        # Get top-k indices
+        top_indices = np.argsort(similarities)[::-1][:top_k]
+
+        # Filter by min_score and return results
+        results = []
+        for idx in top_indices:
+            score = similarities[idx]
+            if score >= min_score:
+                results.append({
+                    'slug': self.slugs[idx],
+                    'score': float(score),
+                    'rank': len(results) + 1
+                })
+
+        return results
+
+    def route_with_explanation(self, query, top_k=2):
+        """Route with human-readable explanation"""
+        results = self.route(query, top_k)
+
+        output = []
+        output.append(f"Query: {query}")
+        output.append(f"\nTop {len(results)} skill(s):")
+
+        for r in results:
+            output.append(f"  {r['rank']}. {r['slug']} (score: {r['score']:.3f})")
+
+        return '\n'.join(output)
+
+def main():
+    """CLI demo of skill routing"""
+    import sys
+
+    if len(sys.argv) < 2:
+        print("Usage: python route_skills.py '<task description>'")
+        print("\nExample:")
+        print("  python route_skills.py 'validate kubernetes security'")
+        sys.exit(1)
+
+    query = ' '.join(sys.argv[1:])
+
+    try:
+        router = SkillRouter()
+        print(router.route_with_explanation(query, top_k=3))
+
+        # Also show raw results
+        results = router.route(query, top_k=3)
+        print("\nRaw results (JSON):")
+        print(json.dumps(results, indent=2))
+
+    except FileNotFoundError as e:
+        print(f"Error: Embeddings not found. Run build_embeddings.py first.")
+        print(f"Details: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
