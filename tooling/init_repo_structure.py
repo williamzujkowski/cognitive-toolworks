@@ -44,16 +44,19 @@ def _safe_join(root: Path, rel: str) -> Path:
     Join a relative path safely under root, preventing escape via '..' or absolute paths.
     """
     if rel.strip() == "":
-        raise ValueError("Empty relative path is not allowed.")
+        msg = "Empty relative path is not allowed."
+        raise ValueError(msg)
     p = Path(rel)
     if p.is_absolute():
-        raise ValueError(f"Absolute paths are not allowed: {rel}")
+        msg = f"Absolute paths are not allowed: {rel}"
+        raise ValueError(msg)
     # Normalize and ensure it's within root
     target = (root / p).resolve()
     root_resolved = root.resolve()
     if root_resolved not in target.parents and target != root_resolved:
         # If target isn't the root or inside it, reject.
-        raise ValueError(f"Unsafe path outside repo root: {rel}")
+        msg = f"Unsafe path outside repo root: {rel}"
+        raise ValueError(msg)
     return target
 
 
@@ -77,9 +80,11 @@ def _create_skill_skeleton(root: Path, slug: str, dry_run: bool) -> None:
     Only structure; does not create SKILL.md (separate generator handles that).
     """
     if not slug or slug.strip() == "":
-        raise ValueError("Skill slug cannot be empty.")
+        msg = "Skill slug cannot be empty."
+        raise ValueError(msg)
     if any(c in slug for c in r"\/:<>|*?\""):
-        raise ValueError(f"Skill slug contains invalid characters: {slug}")
+        msg = f"Skill slug contains invalid characters: {slug}"
+        raise ValueError(msg)
 
     base = _safe_join(root, f"skills/{slug}")
     _ensure_dir(base, dry_run)
@@ -165,7 +170,7 @@ def main(argv: list[str]) -> int:
     skills_list: list[str] = [s.strip() for s in args.skills.split(",") if s.strip()]
 
     # Always ensure top-level root gets a .gitkeep if requested structure is empty
-    # (We won’t create .gitkeep directly under root to avoid clutter; only inside directories.)
+    # (We will not create .gitkeep directly under root to avoid clutter; only inside directories.)
 
     try:
         _create_structure(root, dirs, skills_list, args.dry_run)

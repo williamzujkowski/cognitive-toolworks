@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 try:
-    import yaml  # type: ignore
+    import yaml
 except Exception:  # pragma: no cover
     yaml = None
 
@@ -33,21 +33,25 @@ def read_text(p: Path) -> str:
 def extract_front_matter(md_text: str) -> dict[str, Any]:
     lines = md_text.splitlines()
     if not lines or not FRONT_MATTER_DELIM.match(lines[0]):
-        raise ValueError("Missing starting '---' for front matter")
+        msg = "Missing starting '---' for front matter"
+        raise ValueError(msg)
     end_idx = None
     for i in range(1, len(lines)):
         if FRONT_MATTER_DELIM.match(lines[i]):
             end_idx = i
             break
     if end_idx is None:
-        raise ValueError("Missing closing '---' for front matter")
+        msg = "Missing closing '---' for front matter"
+        raise ValueError(msg)
 
     fm_text = "\n".join(lines[1:end_idx])
     if yaml is None:
-        raise RuntimeError("PyYAML not installed. Please add 'pyyaml'.")
+        msg = "PyYAML not installed. Please add 'pyyaml'."
+        raise RuntimeError(msg)
     meta = yaml.safe_load(fm_text) or {}
     if not isinstance(meta, dict):
-        raise ValueError("Front matter must be a YAML mapping")
+        msg = "Front matter must be a YAML mapping"
+        raise ValueError(msg)
     return meta
 
 
@@ -111,9 +115,13 @@ def main() -> int:
     if args.with_embeddings:
         print("\nRebuilding embeddings...")
         embeddings_script = Path(__file__).parent / "build_embeddings.py"
-        result = subprocess.run([sys.executable, str(embeddings_script)], cwd=root, check=False)
+        # S603: Subprocess call is safe - controlled script path and executable
+        result = subprocess.run(  # noqa: S603
+            [sys.executable, str(embeddings_script)], cwd=root, check=False
+        )
         if result.returncode != 0:
-            print("ERROR: Failed to build embeddings", file=sys.stderr)
+            msg = "Failed to build embeddings"
+            print(f"ERROR: {msg}", file=sys.stderr)
             return result.returncode
 
     return 0

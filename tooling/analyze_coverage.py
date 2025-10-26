@@ -39,11 +39,8 @@ def categorize_skill(slug):
             "slo",
             "e2e",
         }
-        if domain in tech_specific or parts[1] in tech_specific:
-            tier = "Specialized"
-        else:
-            # Tier 2: Domain skills
-            tier = "Domain"
+        # Tier 3: Specialized technical skills / Tier 2: Domain skills
+        tier = "Specialized" if domain in tech_specific or parts[1] in tech_specific else "Domain"
 
         return tier, domain.capitalize()
 

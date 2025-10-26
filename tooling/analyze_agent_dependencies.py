@@ -169,7 +169,7 @@ def generate_markdown_report(dependencies, skill_usage):
     md.append("")
 
     # Orphaned skills (not referenced by any agent)
-    all_skills = set(s["slug"] for s in load_skills_index())
+    all_skills = {s["slug"] for s in load_skills_index()}
     orphaned_skills = all_skills - skill_usage.keys()
 
     md.append(f"### Orphaned Skills ({len(orphaned_skills)})")
@@ -234,7 +234,7 @@ def main():
     print(f"  Total agents: {len(dependencies)}")
     print(f"  Skills referenced: {len(skill_usage)}")
     print(
-        f"  Orphaned skills: {len(set(s['slug'] for s in load_skills_index()) - skill_usage.keys())}"
+        f"  Orphaned skills: {len({s['slug'] for s in load_skills_index()} - skill_usage.keys())}"
     )
 
 

@@ -3,7 +3,7 @@ Production-ready Airflow DAG template for batch ELT pipelines.
 Includes: TaskGroups, SLAs, data quality checks, error handling.
 """
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -28,7 +28,7 @@ with DAG(
     default_args=default_args,
     description="Production ELT with quality gates",
     schedule_interval="0 2 * * *",  # Daily at 2 AM
-    start_date=datetime(2025, 10, 1),
+    start_date=datetime(2025, 10, 1, tzinfo=UTC),
     catchup=False,
     tags=["production", "elt", "daily"],
 ) as dag:
@@ -88,9 +88,15 @@ def run_dbt_models(models):
     """Execute dbt models with logging."""
     import subprocess
 
-    result = subprocess.run(["dbt", "run", "--models"] + models, capture_output=True, check=False)
+    # S603/S607: Controlled command - dbt with specific model names (safe in this context)
+    result = subprocess.run(  # noqa: S603
+        ["dbt", "run", "--models", *models],  # noqa: S607
+        capture_output=True,
+        check=False,
+    )
     if result.returncode != 0:
-        raise Exception(f"dbt run failed: {result.stderr}")
+        error_msg = f"dbt run failed: {result.stderr}"
+        raise Exception(error_msg)
     return result.stdout
 
 

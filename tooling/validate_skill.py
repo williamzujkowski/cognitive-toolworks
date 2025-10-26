@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 try:
-    import yaml  # type: ignore
+    import yaml
 except Exception:  # pragma: no cover
     yaml = None
 
@@ -69,7 +69,8 @@ def extract_front_matter(md_text: str) -> FrontMatter:
     """Extract YAML front matter delimited by '---' at the top of the file."""
     lines = md_text.splitlines()
     if not lines or not FRONT_MATTER_DELIM.match(lines[0]):
-        raise ValueError("Missing starting '---' for front matter")
+        msg = "Missing starting '---' for front matter"
+        raise ValueError(msg)
     # find closing '---'
     end_idx = None
     for i in range(1, len(lines)):
@@ -77,20 +78,24 @@ def extract_front_matter(md_text: str) -> FrontMatter:
             end_idx = i
             break
     if end_idx is None:
-        raise ValueError("Missing closing '---' for front matter")
+        msg = "Missing closing '---' for front matter"
+        raise ValueError(msg)
 
     fm_text = "\n".join(lines[1:end_idx])
     body = "\n".join(lines[end_idx + 1 :])
 
     if yaml is None:
-        raise RuntimeError("PyYAML not installed. Please add 'pyyaml' and re-run validator.")
+        msg = "PyYAML not installed. Please add 'pyyaml' and re-run validator."
+        raise RuntimeError(msg)
     try:
         meta = yaml.safe_load(fm_text) or {}
     except Exception as e:  # pragma: no cover
-        raise ValueError(f"Failed to parse front matter YAML: {e}")
+        msg = f"Failed to parse front matter YAML: {e}"
+        raise ValueError(msg) from e
 
     if not isinstance(meta, dict):
-        raise ValueError("Front matter must be a YAML mapping (object)")
+        msg = "Front matter must be a YAML mapping (object)"
+        raise ValueError(msg)
 
     return FrontMatter(meta=meta, body=body)
 

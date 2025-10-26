@@ -18,7 +18,7 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 try:
-    import yaml  # type: ignore
+    import yaml
 except Exception:  # pragma: no cover
     yaml = None
 
@@ -117,10 +117,7 @@ def check_code_fences(body: str, path: Path) -> list[LintIssue]:
     open_line: int | None = None
     for i, line in enumerate(lines, start=1):
         if fence_pattern.match(line):
-            if open_line is None:
-                open_line = i
-            else:
-                open_line = None  # Close the fence
+            open_line = i if open_line is None else None
 
     if open_line is not None:
         issues.append(
@@ -167,14 +164,14 @@ def check_link_validity(url: str, timeout: int = 5) -> tuple[bool, str | None]:
             return True, None
 
         # Make HEAD request to check accessibility
-        req = Request(url, method="HEAD")
+        # S310: URL validation is intentional for link checking; URLs from skill docs
+        req = Request(url, method="HEAD")  # noqa: S310
         req.add_header("User-Agent", "SkillLinter/1.0")
 
-        with urlopen(req, timeout=timeout) as response:
+        with urlopen(req, timeout=timeout) as response:  # noqa: S310
             if response.status < 400:
                 return True, None
-            else:
-                return False, f"HTTP {response.status}"
+            return False, f"HTTP {response.status}"
 
     except HTTPError as e:
         return False, f"HTTP {e.code}"
