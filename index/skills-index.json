@@ -932,6 +932,25 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/security-appsec-validator/SKILL.md"
   },
   {
+    "slug": "security-assessment-orchestrator",
+    "name": "Security Assessment Orchestrator",
+    "summary": "Comprehensive security assessment across application, cloud, container, IAM, network, OS, supply chain, and zero trust using NIST CSF 2.0.",
+    "keywords": [
+      "security assessment",
+      "nist csf",
+      "security orchestration",
+      "risk scoring",
+      "cvss",
+      "security posture",
+      "vulnerability management",
+      "compliance",
+      "security maturity"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/security-assessment-orchestrator/SKILL.md"
+  },
+  {
     "slug": "security-cloud-analyzer",
     "name": "Cloud Security Posture Analyzer",
     "summary": "Evaluate cloud security posture across AWS, Azure, and GCP with storage exposure checks, IAM policy review, and encryption validation.",
