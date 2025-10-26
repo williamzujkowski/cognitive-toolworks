@@ -1,0 +1,154 @@
+{
+  "universal": {
+    "DRY-001": {
+      "name": "Duplicate Code Block",
+      "severity": "warning",
+      "description": "Code block repeated in multiple locations (>5 lines)"
+    },
+    "SOLID-001": {
+      "name": "Single Responsibility Violation",
+      "severity": "warning",
+      "description": "Function exceeds 50 lines, likely doing too much"
+    },
+    "MAGIC-001": {
+      "name": "Magic Number",
+      "severity": "info",
+      "description": "Hardcoded number without named constant"
+    },
+    "DOC-001": {
+      "name": "Missing Documentation",
+      "severity": "warning",
+      "description": "Public API lacks docstring or comment"
+    }
+  },
+  "python": {
+    "PEP8-E501": {
+      "name": "Line Too Long",
+      "severity": "warning",
+      "description": "Line exceeds 79 characters",
+      "autofix": true
+    },
+    "PEP8-N806": {
+      "name": "Variable Naming",
+      "severity": "error",
+      "description": "Variable should be lowercase with underscores",
+      "autofix": false
+    },
+    "PEP8-E402": {
+      "name": "Module Import Position",
+      "severity": "error",
+      "description": "Module imports should be at top of file",
+      "autofix": true
+    }
+  },
+  "go": {
+    "GO-ERR-001": {
+      "name": "Unchecked Error",
+      "severity": "error",
+      "description": "Error return value not checked",
+      "autofix": false
+    },
+    "GO-NAME-001": {
+      "name": "Receiver Name",
+      "severity": "warning",
+      "description": "Receiver name should be 1-2 chars reflecting type",
+      "autofix": true
+    },
+    "GO-DOC-001": {
+      "name": "Package Comment",
+      "severity": "warning",
+      "description": "Package should have doc comment",
+      "autofix": false
+    }
+  },
+  "javascript": {
+    "AIRBNB-VAR-001": {
+      "name": "Use const/let",
+      "severity": "error",
+      "description": "Prefer const or let over var",
+      "autofix": true
+    },
+    "AIRBNB-ARROW-001": {
+      "name": "Arrow Function Preferred",
+      "severity": "warning",
+      "description": "Use arrow functions for callbacks",
+      "autofix": true
+    },
+    "AIRBNB-TEMPLATE-001": {
+      "name": "Template Literals",
+      "severity": "warning",
+      "description": "Use template literals instead of concatenation",
+      "autofix": true
+    }
+  },
+  "typescript": {
+    "TS-TYPE-001": {
+      "name": "Explicit Return Type",
+      "severity": "warning",
+      "description": "Public functions should have explicit return types",
+      "autofix": false
+    },
+    "TS-ANY-001": {
+      "name": "Avoid Any",
+      "severity": "error",
+      "description": "Avoid using 'any' type; use specific types",
+      "autofix": false
+    }
+  },
+  "kotlin": {
+    "KT-PROP-001": {
+      "name": "Property Declaration",
+      "severity": "warning",
+      "description": "Prefer val over var when possible",
+      "autofix": false
+    },
+    "KT-LAMBDA-001": {
+      "name": "Lambda Syntax",
+      "severity": "info",
+      "description": "Use trailing lambda syntax when possible",
+      "autofix": true
+    }
+  },
+  "rust": {
+    "RUST-NAME-001": {
+      "name": "Method Naming",
+      "severity": "warning",
+      "description": "Methods should use snake_case",
+      "autofix": false
+    },
+    "RUST-ERROR-001": {
+      "name": "Error Type",
+      "severity": "error",
+      "description": "Use Result<T, E> for fallible operations",
+      "autofix": false
+    }
+  },
+  "swift": {
+    "SWIFT-ACCESS-001": {
+      "name": "Access Control",
+      "severity": "warning",
+      "description": "Specify access level explicitly",
+      "autofix": false
+    },
+    "SWIFT-GUARD-001": {
+      "name": "Guard Clause",
+      "severity": "info",
+      "description": "Prefer guard for early returns",
+      "autofix": false
+    }
+  },
+  "shell": {
+    "SHELL-QUOTE-001": {
+      "name": "Variable Quoting",
+      "severity": "error",
+      "description": "Quote variables to prevent word splitting",
+      "autofix": true
+    },
+    "SHELL-FUNC-001": {
+      "name": "Function Naming",
+      "severity": "warning",
+      "description": "Use lowercase with underscores for function names",
+      "autofix": false
+    }
+  }
+}

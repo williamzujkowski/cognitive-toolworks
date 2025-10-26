@@ -1,0 +1,197 @@
+# Evaluation Scenarios for Testing Strategy Composer
+# Skill: testing-strategy-composer
+# Version: 1.0.0
+# Date: 2025-10-25
+
+scenarios:
+  - id: eval-001
+    name: "Microservices Happy Path"
+    description: "Standard microservices architecture with multiple services and databases"
+    tier: T2
+    input:
+      system_description: "Microservices: UserService (PostgreSQL), OrderService (MongoDB), NotificationService (Kafka), API Gateway"
+      tech_stack:
+        - "node.js"
+        - "jest"
+        - "supertest"
+        - "testcontainers"
+        - "k6"
+      constraints:
+        time: "6 weeks"
+        team_size: 3
+        budget: "moderate"
+      existing_coverage:
+        unit: 40
+        integration: 15
+        e2e: 5
+    expected_output:
+      test_distribution:
+        unit: 60
+        integration: 30
+        e2e: 10
+      priority_areas:
+        - "OrderService"
+        - "API Gateway routing"
+        - "Kafka message contracts"
+      estimated_effort_hours_min: 80
+      estimated_effort_hours_max: 150
+    pass_criteria:
+      - "Integration tests percentage ≥25% (microservices need contract testing)"
+      - "Unit tests percentage ≤70% (avoid over-mocking service boundaries)"
+      - "Scaffolding includes TestContainers example for DB tests"
+      - "Coverage gaps identify cross-service communication risks"
+      - "Execution plan spans 4-6 weeks with phased rollout"
+
+  - id: eval-002
+    name: "Monolith with Legacy Constraints"
+    description: "Single monolithic application with tight budget and time"
+    tier: T1
+    input:
+      system_description: "Monolithic Java Spring Boot app with MySQL, REST API, admin UI"
+      tech_stack:
+        - "java"
+        - "spring-boot"
+        - "junit"
+        - "mockito"
+      constraints:
+        time: "2 weeks"
+        budget: "low"
+      existing_coverage:
+        unit: 20
+        integration: 0
+        e2e: 0
+    expected_output:
+      test_distribution:
+        unit: 80
+        integration: 15
+        e2e: 5
+      priority_areas:
+        - "Business logic layer"
+        - "Critical API endpoints"
+      estimated_effort_hours_min: 30
+      estimated_effort_hours_max: 50
+    pass_criteria:
+      - "Unit tests dominate (≥75%) due to budget constraints"
+      - "E2E tests minimal (≤10%) - only smoke tests"
+      - "Execution plan fits within 2-week constraint"
+      - "Scaffolding includes JUnit5 and Mockito examples"
+      - "Coverage gaps prioritize high-risk business logic over infrastructure"
+
+  - id: eval-003
+    name: "API-Only System"
+    description: "Pure REST API without UI, focus on contract and integration testing"
+    tier: T2
+    input:
+      system_description: "GraphQL API with PostgreSQL, Redis cache, external payment gateway (Stripe)"
+      tech_stack:
+        - "python"
+        - "graphql"
+        - "pytest"
+        - "requests"
+        - "locust"
+      constraints:
+        time: "4 weeks"
+        team_size: 2
+      existing_coverage:
+        unit: 50
+        integration: 20
+        e2e: 0
+    expected_output:
+      test_distribution:
+        unit: 55
+        integration: 35
+        e2e: 10
+      priority_areas:
+        - "GraphQL resolvers"
+        - "Stripe integration"
+        - "Redis caching logic"
+      estimated_effort_hours_min: 60
+      estimated_effort_hours_max: 90
+    pass_criteria:
+      - "Integration tests elevated (≥30%) for API contract validation"
+      - "E2E tests target critical API flows (auth → query → mutation)"
+      - "Scaffolding includes pytest fixtures for DB/Redis setup"
+      - "Coverage gaps identify untested payment edge cases"
+      - "Performance tests mentioned (Locust templates for load testing)"
+
+  - id: eval-004
+    name: "Mobile App Testing"
+    description: "React Native mobile app with backend API"
+    tier: T2
+    input:
+      system_description: "React Native app (iOS/Android), Node.js backend API, Firebase auth"
+      tech_stack:
+        - "react-native"
+        - "jest"
+        - "detox"
+        - "supertest"
+      constraints:
+        time: "5 weeks"
+        team_size: 2
+      existing_coverage:
+        unit: 30
+        integration: 10
+        e2e: 0
+    expected_output:
+      test_distribution:
+        unit: 60
+        integration: 20
+        e2e: 20
+      priority_areas:
+        - "UI components"
+        - "Navigation flows"
+        - "Offline sync"
+      estimated_effort_hours_min: 70
+      estimated_effort_hours_max: 110
+    pass_criteria:
+      - "E2E tests increased (≥15%) due to UI-critical nature of mobile apps"
+      - "Integration tests cover backend API contracts"
+      - "Scaffolding includes Detox examples for iOS/Android E2E"
+      - "Coverage gaps identify untested offline/sync scenarios"
+      - "Execution plan accounts for simulator/emulator setup time"
+
+  - id: eval-005
+    name: "ML Pipeline Testing"
+    description: "Machine learning data pipeline with training and inference services"
+    tier: T2
+    input:
+      system_description: "ML pipeline: data ingestion (S3), feature engineering (Spark), model training (PyTorch), inference API (FastAPI)"
+      tech_stack:
+        - "python"
+        - "pytest"
+        - "great-expectations"
+        - "mlflow"
+        - "locust"
+      constraints:
+        time: "6 weeks"
+        team_size: 3
+      existing_coverage:
+        unit: 25
+        integration: 5
+        e2e: 0
+    expected_output:
+      test_distribution:
+        unit: 55
+        integration: 25
+        e2e: 10
+        performance: 10
+      priority_areas:
+        - "Data validation (schema drift)"
+        - "Model accuracy regression"
+        - "Inference latency"
+      estimated_effort_hours_min: 100
+      estimated_effort_hours_max: 160
+    pass_criteria:
+      - "Performance tests explicitly included (≥10%) for inference latency"
+      - "Integration tests cover data pipeline end-to-end (S3 → Spark → model)"
+      - "Scaffolding includes Great Expectations for data validation"
+      - "Coverage gaps identify model accuracy/drift monitoring"
+      - "Execution plan includes model versioning and A/B test considerations"
+      - "Decision rules mention ML-specific testing (data validation, model regression)"
+
+# Evaluation Notes:
+# - All scenarios must complete within stated time constraints
+# - Token budgets enforced: T1 ≤2k, T2 ≤6k
+# - Pass criteria require ≥80% match on expected outputs
+# - Effort estimates validated against decision rules (4-8h per 1000 LOC for unit tests)
+# - Sources must be cited with NOW_ET timestamps

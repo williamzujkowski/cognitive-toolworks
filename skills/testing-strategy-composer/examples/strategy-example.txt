@@ -1,0 +1,26 @@
+INPUT:
+{"system_description": "E-commerce API: catalog, cart, checkout",
+ "tech_stack": ["python", "pytest"], "constraints": {"time": "3 weeks"},
+ "existing_coverage": {"unit": 30, "integration": 5, "e2e": 0}}
+
+T1: Distribution = 70% unit / 20% integration / 10% e2e
+
+T2 SCAFFOLDING (pytest):
+# Unit
+def test_cart_total():
+    assert Cart([Item(10, 2)]).total() == 20.0
+
+# Integration
+def test_stripe_payment(db):
+    payment = PaymentService.charge(100, "tok_visa")
+    assert payment.status == "succeeded"
+
+# E2E
+def test_checkout(browser):
+    browser.get("/cart").find("#checkout").click()
+    assert "confirmed" in browser.page_source
+
+OUTPUT:
+{"coverage_gaps": [{"module": "PaymentService", "risk": "high", "hours": 12}],
+ "execution_plan": "Week 1: unit, Week 2: integration, Week 3: e2e",
+ "estimated_effort": 64}

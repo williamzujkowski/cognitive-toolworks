@@ -1,0 +1,38 @@
+{
+  "slug": "coding-standards-polyglot",
+  "name": "Polyglot Coding Standards Analyzer",
+  "summary": "Evaluate code quality across 8+ languages using language-agnostic principles and language-specific best practices.",
+  "keywords": [
+    "code-quality",
+    "linting",
+    "style-guide",
+    "polyglot",
+    "static-analysis",
+    "best-practices",
+    "python",
+    "go",
+    "javascript",
+    "typescript",
+    "kotlin",
+    "rust",
+    "swift",
+    "shell"
+  ],
+  "owner": "cognitive-toolworks",
+  "version": "1.0.0",
+  "entry": "skills/coding-standards-polyglot/SKILL.md",
+  "tier": "T2",
+  "token_budget": 6000,
+  "languages_supported": [
+    "go",
+    "javascript",
+    "kotlin",
+    "python",
+    "rust",
+    "shell",
+    "swift",
+    "typescript"
+  ],
+  "dependencies": [],
+  "priority": "P0"
+}
