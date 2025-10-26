@@ -1,0 +1,42 @@
+{
+  "request_type": "multi_region_deployment",
+  "cloud_provider": "aws",
+  "application": {
+    "name": "global-api-service",
+    "type": "stateful",
+    "tech_stack": {
+      "runtime": "nodejs",
+      "container": "docker",
+      "orchestration": "kubernetes",
+      "database": "postgresql"
+    }
+  },
+  "regions": {
+    "target_count": 3,
+    "preferences": ["us-east-1", "eu-west-1", "ap-southeast-1"],
+    "selection_criteria": {
+      "latency_sla": "<200ms for 90% of global users",
+      "compliance": ["GDPR", "data-residency-EU"],
+      "budget_constraint": "max 2.5x single-region cost"
+    }
+  },
+  "data_strategy": {
+    "type": "active-passive",
+    "primary_region": "us-east-1",
+    "consistency_model": "strong",
+    "rpo_seconds": 300,
+    "rto_seconds": 600,
+    "failover": "automated"
+  },
+  "traffic_routing": {
+    "strategy": "latency-based",
+    "health_check_interval": 30,
+    "failover_threshold": 3
+  },
+  "requirements": {
+    "high_availability": true,
+    "disaster_recovery": true,
+    "auto_scaling": true,
+    "observability": "cloudwatch"
+  }
+}

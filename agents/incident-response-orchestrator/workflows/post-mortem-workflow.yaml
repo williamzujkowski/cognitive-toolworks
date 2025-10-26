@@ -1,0 +1,177 @@
+# Post-Mortem Workflow Template (Step 4)
+# Generates comprehensive post-incident analysis and action items
+
+workflow_name: "post-mortem-workflow"
+version: "1.0.0"
+nist_phases: ["Post-Incident Activity"]
+token_budget: "≤1.5k tokens"
+
+# Step 4: Post-Mortem & Lessons Learned
+step4_post_mortem:
+  inputs:
+    - incident_timeline (from Step 3)
+    - activated_playbook (from Step 2)
+    - incident_classification (from Step 1)
+  actions:
+    - name: "generate_incident_summary"
+      inputs:
+        - incident_type
+        - severity
+        - affected_service
+        - timeline
+      outputs:
+        incident_summary:
+          incident_id: "auto-generated UUID"
+          type: "from incident_classification"
+          severity: "from incident_classification"
+          start_time: "from timeline[0].timestamp"
+          end_time: "from timeline[-1].timestamp"
+          duration: "calculated"
+    - name: "compute_metrics"
+      formulas:
+        MTTD: "timeline[detection] - timeline[incident_start]"
+        MTTR: "timeline[resolution] - timeline[detection]"
+        customer_impact: "% of users affected * duration"
+      outputs:
+        metrics:
+          MTTD: string
+          MTTR: string
+          customers_affected: number
+          blast_radius: string
+          revenue_impact: string
+    - name: "perform_root_cause_analysis"
+      method: "5 Whys"
+      logic: |
+        Start with symptom and ask "why?" 5 times to reach root cause
+        Alternative: Fishbone diagram for complex incidents
+      template:
+        why1: "Why did the incident occur?"
+        why2: "Why did that happen?"
+        why3: "Why did that condition exist?"
+        why4: "Why wasn't it prevented?"
+        why5: "Why don't we have controls for this?"
+      outputs:
+        root_cause: string
+        root_cause_analysis: object
+    - name: "extract_action_items"
+      categories:
+        immediate: "Fix the immediate issue (due within 7 days)"
+        short_term: "Prevent recurrence (due within 30 days)"
+        long_term: "Systemic improvements (due within 90 days)"
+      priority_rules:
+        P0_incident: "All action items are P0 or P1"
+        P1_incident: "Critical items are P1, others P2"
+        P2_incident: "Critical items are P2, others P3"
+      outputs:
+        action_items:
+          - owner: string
+            description: string
+            category: immediate | short_term | long_term
+            due_date: ISO-8601 date
+            priority: P0 | P1 | P2 | P3
+            status: pending | in_progress | completed
+    - name: "generate_compliance_reports"
+      condition: "compliance_requirements exists"
+      frameworks:
+        HIPAA:
+          report_type: "breach-notification"
+          deadline: "60 days from incident"
+          recipients: ["HHS", "affected individuals"]
+          template: |
+            HIPAA Breach Notification Report
+            Incident ID: {incident_id}
+            Date of Breach: {start_time}
+            Date Discovered: {detection_time}
+            Affected Individuals: {customer_count}
+            PHI Exposed: {data_types}
+            Remediation: {action_items}
+        PCI_DSS:
+          report_type: "forensic-investigation"
+          deadline: "72 hours from incident"
+          recipients: ["PCI QSA", "acquiring banks"]
+          requirements: ["12.10.1 incident response plan", "12.10.2 alert monitoring"]
+        SOC2:
+          report_type: "CC7.3-communication-log"
+          content: "All stakeholder communications documented"
+        FedRAMP:
+          report_type: "IR-6-incident-report"
+          deadline: "1 hour for P0/P1 to Agency"
+          requirements: ["IR-4 incident handling", "IR-6 incident reporting"]
+      outputs:
+        compliance_reports:
+          - framework: string
+            report_type: string
+            submission_deadline: ISO-8601 date
+            content: string
+            status: pending | submitted
+    - name: "archive_artifacts"
+      artifacts:
+        - playbook: "from Step 2 (activated_playbook)"
+        - timeline: "from Step 3 (incident_timeline)"
+        - post_mortem: "generated in this step"
+        - forensics: "logs, memory dumps, network captures (if security incident)"
+        - communications: "Slack logs, status page updates, emails"
+      storage:
+        location: "/incidents/{incident_id}/"
+        retention: "7 years (compliance requirement)"
+        encryption: "at-rest and in-transit"
+        access_control: "security-team, compliance-team, management"
+      outputs:
+        archived_artifacts: array[string]
+  outputs:
+    post_mortem_report:
+      incident_summary: object
+      timeline: array
+      root_cause: string
+      root_cause_analysis: object
+      impact: object
+      action_items: array
+      lessons_learned: array
+    compliance_reports: array
+    archived_artifacts: array
+
+# Post-mortem quality gates
+quality_gates:
+  required_sections:
+    - incident_summary
+    - timeline (minimum 3 events)
+    - root_cause (non-empty)
+    - impact.MTTD
+    - impact.MTTR
+    - action_items (minimum 1)
+  validation:
+    - "All action items have owners and due dates"
+    - "Root cause is specific and actionable"
+    - "Timeline is chronological and complete"
+    - "Compliance reports generated if required"
+  distribution:
+    - Engineering team (within 24 hours)
+    - Management (within 48 hours)
+    - Compliance team (if compliance incident)
+
+# 5 Whys example template
+five_whys_example:
+  incident: "Database credentials exposed in logs"
+  why1:
+    question: "Why were credentials exposed?"
+    answer: "They were logged to application logs"
+  why2:
+    question: "Why were they logged?"
+    answer: "Debug logging was enabled in production"
+  why3:
+    question: "Why was debug logging enabled in prod?"
+    answer: "Configuration was not validated during deployment"
+  why4:
+    question: "Why wasn't configuration validated?"
+    answer: "No automated config checks in CI/CD pipeline"
+  why5:
+    question: "Why no automated checks?"
+    answer: "Security checks not integrated into development workflow"
+  root_cause: "Lack of security validation in CI/CD pipeline"
+  action_items:
+    - description: "Add secret scanning to CI/CD pipeline"
+      priority: P0
+    - description: "Disable debug logging in production configs"
+      priority: P0
+    - description: "Implement config validation pre-deployment"
+      priority: P1

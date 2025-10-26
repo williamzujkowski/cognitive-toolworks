@@ -56,5 +56,104 @@
     "owner": "cognitive-toolworks",
     "entry": "agents/cloud-native-orchestrator/AGENT.md",
     "replaces": "skills/cloud-native-deployment-orchestrator"
+  },
+  {
+    "slug": "database-migration-orchestrator",
+    "name": "Database Migration Orchestrator",
+    "description": "Orchestrates database migration workflows by coordinating assessment, planning, execution, and validation across SQL/NoSQL databases.",
+    "keywords": ["database-migration", "schema-migration", "data-migration", "orchestration", "postgresql", "mysql", "mongodb", "database-optimization"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/database-migration-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "cost-optimization-orchestrator",
+    "name": "Cost Optimization Orchestrator",
+    "description": "Orchestrates end-to-end cloud cost optimization by coordinating discovery, analysis, recommendations, and implementation across AWS, Azure, and GCP.",
+    "keywords": ["cost-optimization", "finops", "orchestration", "multi-cloud", "rightsizing", "waste-detection", "commitment-planning"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/cost-optimization-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "observability-orchestrator",
+    "name": "Observability Orchestrator",
+    "description": "Orchestrates end-to-end observability strategy from requirements to SLO monitoring using stack configuration, SRE principles, and incident response.",
+    "keywords": ["observability-orchestration", "sre", "slo", "incident-response", "metrics", "tracing", "logging", "performance-monitoring"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "william@cognitive-toolworks",
+    "entry": "agents/observability-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "performance-orchestrator",
+    "name": "Performance Orchestrator",
+    "description": "Orchestrates end-to-end performance optimization by coordinating profiling, analysis, optimization, and validation across application and infrastructure layers.",
+    "keywords": ["performance-orchestration", "profiling", "optimization", "database-tuning", "caching", "observability", "load-testing", "scalability"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/performance-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "multi-region-orchestrator",
+    "name": "Multi-Region Deployment Orchestrator",
+    "description": "Orchestrates global and multi-region deployments by coordinating topology design, regional deployment, data replication, and validation workflows.",
+    "keywords": ["multi-region", "global-deployment", "cross-region", "geo-distribution", "data-replication", "regional-failover", "topology-design", "orchestration"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/multi-region-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "disaster-recovery-orchestrator",
+    "name": "Disaster Recovery Orchestrator",
+    "description": "Orchestrates disaster recovery planning by coordinating risk assessment, DR strategy design, implementation planning, and testing validation workflows.",
+    "keywords": ["disaster-recovery", "business-continuity", "resilience", "rto", "rpo", "backup", "failover", "incident-response", "chaos-engineering", "sre"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/disaster-recovery-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "incident-response-orchestrator",
+    "name": "Incident Response Orchestrator",
+    "description": "Orchestrates end-to-end incident response lifecycle from detection through post-mortem by coordinating playbook generation, security assessment, monitoring, and compliance reporting.",
+    "keywords": ["incident-orchestration", "incident-response", "security-incident", "playbook-coordination", "post-mortem", "nist-800-61", "siem", "forensics", "escalation"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/incident-response-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "architecture-decision-orchestrator",
+    "name": "Architecture Decision Orchestrator",
+    "description": "Orchestrates architecture decision workflows by coordinating requirements analysis, pattern evaluation, ADR generation, and C4 diagram creation.",
+    "keywords": ["architecture", "orchestration", "ADR", "trade-off-analysis", "C4-model", "decision-making", "pattern-selection"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/architecture-decision-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "aws-cloud-architect",
+    "name": "AWS Cloud Architect",
+    "description": "Orchestrates AWS solution delivery by coordinating requirements, architecture design, cost optimization, and deployment planning.",
+    "keywords": ["aws-orchestration", "solution-architecture", "workflow-coordination", "requirements-discovery", "architecture-decisions", "deployment-planning"],
+    "model": "inherit",
+    "tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "agents/aws-cloud-architect/AGENT.md"
   }
 ]

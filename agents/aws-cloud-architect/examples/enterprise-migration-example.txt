@@ -1,0 +1,44 @@
+# Example: Enterprise E-Commerce Platform Migration to AWS
+
+## Input Request
+"Migrate our legacy e-commerce platform to AWS. Current: 4 web servers (NGINX), 2 app servers (Java),
+PostgreSQL primary+replica, Redis cache, NFS file storage. Requirements: 99.95% uptime, PCI-DSS Level 1,
+$10k/month budget, 4-month migration timeline."
+
+## Agent Orchestration Plan
+
+Phase 1 Discovery (Requirements):
+  - Workload: web-app (e-commerce)
+  - Constraints: 99.95% SLA (Multi-AZ required), PCI-DSS, $10k budget
+  - Complexity: MODERATE (compliance + migration)
+  - Major decisions: compute (containers vs VMs), database (RDS vs self-managed), storage
+
+Phase 2 Design:
+  Skill: aws-multi-service-architect (T2)
+    Input: {requirements: {availability: 99.95%, compliance: PCI-DSS}, workload_type: web-app,
+           deployment_tier: T2, current_architecture: "4-tier LAMP stack"}
+    Output: ALB + ECS Fargate + RDS PostgreSQL Multi-AZ + ElastiCache Redis + EFS
+
+  Skill: architecture-decision-framework (3 ADRs)
+    ADR-001: Compute - EC2 vs ECS Fargate (chose Fargate: managed, scalable, PCI-compliant)
+    ADR-002: Database - RDS vs Aurora (chose RDS PostgreSQL: compatibility, Multi-AZ HA)
+    ADR-003: Storage - EFS vs S3 (chose EFS: NFS compatibility, shared storage)
+
+Phase 3 Validation:
+  Skill: cost-optimization-analyzer
+    Input: architecture from Phase 2, budget: $10k
+    Output: $9200/month (RDS RI saves $1200/month, Fargate Savings Plan saves $600/month)
+
+  Skill: deployment-strategy-designer
+    Input: migration scenario, RTO/RPO: 1 hour
+    Output: 3-wave migration (Database DMS → App containerization → Cutover with Route53)
+
+Phase 4 Delivery:
+  - Architecture: 9 AWS services (VPC, ALB, ECS, RDS, ElastiCache, EFS, Route53, WAF, Config)
+  - 3 ADRs documenting major decisions with PCI-DSS compliance rationale
+  - CDK TypeScript: 5 stacks (network, compute, database, cache/storage, security)
+  - Cost: $9200/month optimized (vs $10k budget)
+  - Migration: 3 waves over 12 weeks with rollback procedures
+  - PCI-DSS: AWS Config rules + Security Hub PCI-DSS standard enabled
+
+## Token Usage: ~13k (discovery 3k + design 5k + validation 3k + delivery 2k)

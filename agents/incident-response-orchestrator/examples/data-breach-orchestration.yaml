@@ -1,0 +1,133 @@
+# Example: Data Breach Incident Orchestration (P0 severity)
+# Demonstrates full 4-step workflow with HIPAA compliance
+
+incident_signal:
+  description: "Unauthorized database access detected via SIEM alert - potential PHI exposure"
+  source: "siem-alert"
+  affected_service: "patient-records-db"
+  timestamp: "2025-10-26T01:45:00-04:00"
+  service_context:
+    service_name: "patient-records-db"
+    team_owner: "platform-engineering"
+    dependencies: ["auth-service", "api-gateway", "backup-service"]
+    architecture: "PostgreSQL 15 on AWS RDS, encrypted at rest"
+  compliance_requirements: ["HIPAA", "SOC2"]
+
+# Step 1: Detection & Classification (≤500 tokens)
+step1_output:
+  incident_classification:
+    type: "data-breach"
+    severity: "P0"
+    compliance_requirements: ["HIPAA", "SOC2"]
+  skill_routing_plan:
+    - "incident-response-playbook-generator"
+    - "security-assessment-framework"
+  escalation_initiated: true
+  escalation_targets:
+    - role: "CISO"
+      threshold: "15min"
+    - role: "VP Engineering"
+      threshold: "15min"
+
+# Step 2: Triage & Playbook Activation (≤2k tokens)
+step2_output:
+  activated_playbook:  # From incident-response-playbook-generator (T2 tier)
+    incident_type: "data-breach"
+    severity: "P0"
+    nist_phases: [...] # Full NIST SP 800-61 playbook
+    escalation_matrix: [...]
+  escalation_status:
+    notified_stakeholders:
+      - "CISO (via PagerDuty)"
+      - "VP Engineering (via Slack + SMS)"
+      - "Security Lead (via PagerDuty)"
+    channels_created:
+      - "Slack: #incident-2025-1026-001"
+      - "Zoom bridge: incident.zoom.us/12345"
+  security_context:  # From security-assessment-framework
+    threat_model: "Credential exposure - application logs contained DB credentials"
+    attack_vector: "Logs exposed via misconfigured S3 bucket"
+    IOCs: ["s3://app-logs-bucket/2025-10-25/*.log"]
+
+# Step 3: Response Execution & Timeline (≤2k tokens)
+step3_output:
+  incident_timeline:
+    - timestamp: "2025-10-26T01:45:00-04:00"
+      event: "detection"
+      actor: "SIEM"
+      action: "Unauthorized DB query alert fired"
+      outcome: "success"
+    - timestamp: "2025-10-26T01:48:00-04:00"
+      event: "escalation"
+      actor: "on-call-engineer"
+      action: "Paged CISO and security team"
+      outcome: "success"
+    - timestamp: "2025-10-26T01:52:00-04:00"
+      event: "containment"
+      actor: "security-team"
+      action: "Isolated database server, revoked app credentials"
+      outcome: "success"
+    - timestamp: "2025-10-26T02:10:00-04:00"
+      event: "eradication"
+      actor: "security-team"
+      action: "Rotated all DB credentials, secured S3 bucket"
+      outcome: "success"
+    - timestamp: "2025-10-26T02:30:00-04:00"
+      event: "recovery"
+      actor: "platform-engineering"
+      action: "Restored service with new credentials, validated health"
+      outcome: "success"
+  phase_completion_status:
+    preparation: true
+    detection: true
+    containment: true
+    eradication: true
+    recovery: true
+    post_incident: false  # Step 4
+
+# Step 4: Post-Mortem & Compliance (≤1.5k tokens)
+step4_output:
+  post_mortem_report:
+    incident_id: "INC-2025-1026-001"
+    summary: "Unauthorized database access due to exposed credentials in application logs"
+    timeline: [...] # Full incident_timeline from Step 3
+    root_cause: "DB credentials inadvertently logged and exposed via misconfigured S3 bucket"
+    root_cause_analysis:
+      why1: "Why were credentials exposed? Logged to application logs"
+      why2: "Why were credentials logged? Debug logging enabled in production"
+      why3: "Why debug logging in prod? Configuration oversight during deployment"
+      why4: "Why config oversight? Lack of config validation in CI/CD pipeline"
+      why5: "Why no validation? Security checks not integrated into pipeline"
+    impact:
+      customers_affected: 1500  # 1500 patient records accessed
+      MTTD: "5min"  # SIEM alert to engineer acknowledgment
+      MTTR: "45min"  # Detection to service restoration
+      duration: "45min"
+      revenue_impact: "minimal"
+      blast_radius: "patient-records-db only"
+    action_items:
+      - owner: "security-team"
+        description: "Rotate all production DB credentials"
+        due_date: "2025-10-27"
+        priority: "P0"
+      - owner: "platform-engineering"
+        description: "Remove debug logging from production configs"
+        due_date: "2025-10-28"
+        priority: "P0"
+      - owner: "devops"
+        description: "Add secret scanning to CI/CD pipeline"
+        due_date: "2025-11-02"
+        priority: "P1"
+  compliance_reports:
+    - framework: "HIPAA"
+      report_type: "breach-notification"
+      submission_deadline: "2025-12-25"  # 60 days from incident
+      content: "Breach Notification to HHS and affected individuals per 45 CFR 164.408"
+    - framework: "SOC2"
+      report_type: "CC7.3-communication-log"
+      content: "Incident communications documented per Trust Services Criteria"
+  archived_artifacts:
+    - "/incidents/INC-2025-1026-001/playbook.yaml"
+    - "/incidents/INC-2025-1026-001/timeline.json"
+    - "/incidents/INC-2025-1026-001/post-mortem.md"
+    - "/incidents/INC-2025-1026-001/forensics/s3-logs.tar.gz"

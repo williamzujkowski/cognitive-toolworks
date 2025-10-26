@@ -1,0 +1,71 @@
+# Example: API Gateway Pattern Decision (T2 Tier)
+# Demonstrates architecture-decision-orchestrator workflow
+
+input:
+  decision_context: "E-commerce platform migrating from monolith to microservices, requires unified API entry point"
+  constraints:
+    performance: "< 200ms latency for 95th percentile"
+    scalability: "Handle 50k concurrent users"
+    maintainability: "Independent team deployment"
+    security: "Centralized authentication and rate limiting"
+  current_architecture: "Monolithic Ruby on Rails application with PostgreSQL"
+  stakeholders:
+    - role: "CTO"
+      concern: "Infrastructure cost and operational complexity"
+    - role: "Dev Lead"
+      concern: "Team autonomy and deployment independence"
+    - role: "Security Lead"
+      concern: "Consistent auth/authz across services"
+
+expected_workflow:
+  step_1_discovery:
+    quality_attributes: ["performance", "scalability", "maintainability", "security"]
+    tier_selection: "T2"
+    reason: "Multiple quality attributes with trade-offs, cross-team impact"
+
+  step_2_analysis:
+    patterns_evaluated: ["hexagonal", "event-driven", "cqrs", "layered"]
+    atam_scenarios:
+      - "System handles 50k concurrent users with <200ms p95 latency"
+      - "New service deployed without impacting existing services"
+      - "API gateway becomes unavailable (failure scenario)"
+    sensitivity_points:
+      - "API Gateway HA design (impacts availability)"
+      - "Service discovery mechanism (impacts scalability)"
+    trade_off_points:
+      - "Performance vs Maintainability: Event async adds latency but improves decoupling"
+
+  step_3_synthesis:
+    adr_format: "y-statement"
+    adr_excerpt: |
+      In the context of migrating monolithic e-commerce to microservices,
+      facing the need for unified API entry point with <200ms latency,
+      we decided for API Gateway pattern with event-driven backend
+      and neglected direct client-to-service calls, service mesh only,
+      to achieve centralized auth/rate-limiting and loose coupling,
+      accepting that gateway becomes potential bottleneck requiring HA design.
+
+    c4_diagrams_generated:
+      - level: 1
+        type: "context"
+        elements: ["E-commerce System", "Customer", "Payment Gateway", "Inventory System"]
+      - level: 2
+        type: "container"
+        elements: ["API Gateway", "Order Service", "Catalog Service", "Message Bus (Kafka)"]
+
+    pattern_recommendation:
+      primary: "Hexagonal services with Event-Driven inter-service communication"
+      alternatives: ["Pure Event-Driven", "Service Mesh only", "CQRS"]
+      migration_strategy: "strangler"
+
+  step_4_documentation:
+    artifacts:
+      - path: "/architecture/decisions/ADR-001-api-gateway-pattern.md"
+        format: "y-statement"
+        word_count: 432
+      - path: "/architecture/diagrams/c4-context.puml"
+        format: "plantuml"
+      - path: "/architecture/diagrams/c4-container.puml"
+        format: "plantuml"
+      - path: "/architecture/analysis/trade-off-matrix.json"
+        format: "json"
