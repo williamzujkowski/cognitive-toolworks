@@ -427,6 +427,27 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/database-migration-generator/SKILL.md"
   },
   {
+    "slug": "database-mongodb-architect",
+    "name": "MongoDB Database Architect",
+    "summary": "Design MongoDB architectures with document modeling, indexing (ESR rule), sharding, aggregation pipelines, replica sets, and WiredTiger tuning.",
+    "keywords": [
+      "mongodb",
+      "nosql",
+      "document-database",
+      "schema-design",
+      "indexing",
+      "sharding",
+      "aggregation",
+      "replica-set",
+      "wiredtiger",
+      "performance-tuning",
+      "mongodb-8"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/database-mongodb-architect/SKILL.md"
+  },
+  {
     "slug": "database-optimization-analyzer",
     "name": "Database Optimization Analyzer",
     "summary": "Optimize SQL and NoSQL databases with schema design, query performance tuning, and indexing strategies.",

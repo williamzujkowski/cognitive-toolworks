@@ -1,0 +1,26 @@
+# Content Management System MongoDB Architecture
+
+INPUT: workload: oltp+content, data: 200GB (1M articles, 5M comments), qps: 2000, sla: 99.9%
+
+OUTPUT (T2 Architecture):
+
+SCHEMA (Embedding + Referencing Hybrid):
+articles: {_id, title, content, author_id, tags[], metadata: {views, likes}, comments_summary: {count, recent: []}}
+  → Embed recent 5 comments, reference users/comments collections for full data
+users: {_id, email, name}, comments: {_id, article_id, user_id, text, created_at}
+
+INDEXES (ESR Rule Applied):
+1. articles: {status: 1, published_at: -1, views: 1} → ESR: status (E), published_at (S), views (R)
+2. articles: {tags: 1} → multikey index for tag-based search
+3. articles: {content: "text"} → full-text search
+4. comments: {article_id: 1, created_at: -1} → fetch article comments sorted by date
+5. users: {email: 1} UNIQUE → login queries 100x faster
+
+AGGREGATION (Top Articles):
+[{$match: {tags: "tech", status: "published"}}, {$sort: {views: -1}},
+ {$lookup: {from: "users", localField: "author_id", foreignField: "_id", as: "author"}},
+ {$project: {title: 1, views: 1, "author.name": 1}}, {$limit: 10}]
+
+REPLICA SET: 1 primary + 2 secondaries, readPref: primaryPreferred, writeConcern: {w: "majority"}
+TUNING (32GB RAM): wiredTiger.cacheSizeGB: 16 (50%), maxPoolSize: 100, profileSlowOps: >50ms
+SHARDING: Not needed (200GB < 500GB threshold), plan to shard articles by {_id: "hashed"} at 500GB
