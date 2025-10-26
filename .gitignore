@@ -88,6 +88,9 @@ temp/
 *.bak
 *.orig
 
+# Accidental pip output files (from unquoted version specs like >=3.6)
+=*
+
 # AI/LLM working files
 .claude-flow/
 .hive-mind/
