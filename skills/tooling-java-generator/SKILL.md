@@ -308,34 +308,43 @@ links:
 
 ## Examples
 
-**Example: Spring Boot Microservice with Maven**
+**Quick Start: Java Library** (30 lines)
 
-```yaml
-INPUT: {project_type: "spring-boot", build_tool: "maven", java_version: "21"}
-OUTPUT:
-structure:
-  - src/main/java/com/example/service/ServiceApplication.java
-  - src/main/java/com/example/service/controller/
-  - src/main/java/com/example/service/service/
-  - src/main/resources/application.yml
-  - src/test/java/com/example/service/
-  - pom.xml
-  - Dockerfile
-pom.xml:
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.0</version>
-  </parent>
-  <dependencies>
-    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>
-    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId></dependency>
-  </dependencies>
-commands:
-  build: "mvn clean install"
-  run: "mvn spring-boot:run"
-  test: "mvn test"
+```java
+// examples/LibraryExample.java
+package com.example.utils;
+
+import java.time.Instant;
+import java.util.*;
+
+public final class StringMetrics {
+    public record Metrics(int length, int wordCount, Instant analyzed) {}
+
+    private final List<String> history = new ArrayList<>();
+
+    public Metrics analyze(String text) {
+        if (text == null || text.isBlank()) {
+            throw new IllegalArgumentException("Text cannot be null or blank");
+        }
+        history.add(text);
+        int wordCount = text.split("\\s+").length;
+        return new Metrics(text.length(), wordCount, Instant.now());
+    }
+
+    public List<String> getHistory() {
+        return Collections.unmodifiableList(history);
+    }
+}
 ```
+
+**Additional Examples:**
+- **CLI Tool**: `examples/CliExample.java` (30 lines) - picocli, file I/O, exit codes
+- **Spring Boot API**: `examples/ApiExample.java` (36 lines) - REST endpoints, records, concurrent storage
+
+**Template Resources** (see `resources/`)
+- Maven: `pom-library.xml` / `pom-cli.xml` / `pom-springboot.xml`
+- Gradle: `build-library.gradle` / `build-cli.gradle` / `build-springboot.gradle`
+- Testing: `ExampleTest.java` - JUnit 5 with modern assertions
 
 ---
 
