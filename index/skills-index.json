@@ -911,6 +911,28 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/messaging-kafka-architect/SKILL.md"
   },
   {
+    "slug": "messaging-rabbitmq-architect",
+    "name": "RabbitMQ Architecture Designer",
+    "summary": "Design RabbitMQ architectures with exchange types (direct, topic, fanout, headers), quorum queues, routing patterns, clustering, dead letter exchanges, and AMQP best practices.",
+    "keywords": [
+      "rabbitmq",
+      "amqp",
+      "message-queue",
+      "exchange",
+      "routing",
+      "quorum-queues",
+      "clustering",
+      "dead-letter-exchange",
+      "publisher-confirms",
+      "consumer-acknowledgments",
+      "message-broker",
+      "event-driven"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/messaging-rabbitmq-architect/SKILL.md"
+  },
+  {
     "slug": "mlops-lifecycle-manager",
     "name": "MLOps Lifecycle Manager",
     "summary": "Manage ML model lifecycle from development to deployment with experiment tracking, versioning, monitoring, and automated retraining workflows.",
