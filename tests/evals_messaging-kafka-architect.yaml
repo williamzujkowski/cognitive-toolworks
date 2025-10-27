@@ -1,0 +1,250 @@
+scenarios:
+  - name: basic-kafka-topology-single-service
+    description: "Simple Kafka topology for single service event streaming (T1 fast path)"
+    input:
+      services:
+        - name: "user-service"
+          events: ["UserCreated", "UserUpdated"]
+      throughput: "100 events/sec"
+      guarantees: "at-least-once"
+    expected_recommendations:
+      topology:
+        topics:
+          - name: "users"
+            partitions: 3
+            replication_factor: 3
+            retention_ms: 604800000  # 7 days
+        partitioning_strategy: "userId hash for ordering per user"
+      producer_config:
+        acks: "all"
+        retries: 2147483647  # Max retries
+        enable_idempotence: true
+        compression_type: "lz4"
+      consumer_config:
+        group_id: "user-indexer-group"
+        auto_offset_reset: "earliest"
+        enable_auto_commit: true
+      monitoring:
+        - "kafka_producer_record_send_total (events/sec)"
+        - "kafka_consumer_lag (alert if >1000)"
+      note: "At-least-once: idempotent producer prevents duplicates within single partition, but consumer may reprocess on failure."
+    token_tier: T1
+
+  - name: ecommerce-exactly-once-transactional
+    description: "Multi-service order processing with exactly-once semantics using transactions"
+    input:
+      services:
+        - name: "order-service"
+          events: ["OrderPlaced", "OrderCancelled"]
+        - name: "inventory-service"
+          events: ["InventoryReserved", "InventoryReleased"]
+        - name: "payment-service"
+          events: ["PaymentProcessed", "PaymentRefunded"]
+      throughput: "5000 orders/sec"
+      guarantees: "exactly-once"
+      schema_registry: true
+    expected_recommendations:
+      topology:
+        topics:
+          - name: "orders"
+            partitions: 6
+            replication_factor: 3
+          - name: "inventory-reservations"
+            partitions: 6
+            replication_factor: 3
+          - name: "payments"
+            partitions: 6
+            replication_factor: 3
+        partitioning: "orderId % 6 ensures ordering per order across all topics"
+      producer_config:
+        transactional_id: "order-producer-{instance-id}"
+        enable_idempotence: true
+        acks: "all"
+        max_in_flight_requests_per_connection: 5
+        batch_size: 32768  # 32KB
+        linger_ms: 10
+        compression_type: "lz4"
+      consumer_config:
+        isolation_level: "read_committed"
+        enable_auto_commit: false
+        max_poll_records: 500
+      exactly_once_pattern: |
+        producer.beginTransaction();
+        producer.send(inventoryRecord);
+        producer.sendOffsetsToTransaction(offsets, consumerGroupMetadata);
+        producer.commitTransaction();  // Atomically commit records + offsets
+      schema_registry:
+        format: "Avro"
+        compatibility: "FORWARD_TRANSITIVE"
+        schemas:
+          - "OrderPlaced v1: {orderId, userId, items, totalAmount, timestamp}"
+          - "InventoryReserved v1: {orderId, reservations, expiresAt}"
+      performance:
+        throughput: "5000 orders/sec = 160MB/sec (32KB avg order)"
+        latency_p95: "<200ms"
+        batch_efficiency: "500+ records/batch with 10ms linger"
+    token_tier: T2
+
+  - name: kafka-streams-windowed-aggregation
+    description: "Kafka Streams for stateful stream processing with windowing and joins"
+    input:
+      use_case: "Real-time analytics: count orders per user per 5-minute window"
+      input_topics:
+        - "orders"
+        - "users"
+      output_topics:
+        - "order-counts"
+      guarantees: "exactly-once"
+    expected_recommendations:
+      kafka_streams_config:
+        application_id: "order-analytics-app"
+        processing_guarantee: "exactly_once_v2"
+        num_stream_threads: 4
+        state_dir: "/var/kafka-streams"
+      topology:
+        - "orders.groupByKey().windowedBy(TimeWindows.of(Duration.ofMinutes(5))).count()"
+        - "orders.join(users, (order, user) -> enrichedOrder)"
+      state_stores:
+        - name: "order-counts-store"
+          type: "RocksDB"
+          changelog_topic: "order-analytics-app-order-counts-store-changelog"
+          retention: "7 days"
+      windowing:
+        type: "Tumbling (non-overlapping)"
+        size: "5 minutes"
+        grace_period: "1 minute (late arrivals)"
+      monitoring:
+        - "kafka_streams_task_process_latency_avg (target <100ms)"
+        - "kafka_streams_state_store_bytes_total (RocksDB size)"
+      scaling: "Add instances → Kafka Streams auto-rebalances partitions"
+    token_tier: T2
+
+  - name: schema-registry-avro-evolution
+    description: "Schema Registry with Avro schema evolution and compatibility validation"
+    input:
+      topics:
+        - name: "products"
+          events: ["ProductCreated", "ProductUpdated"]
+      schema_format: "Avro"
+      evolution_scenario: "Add optional field 'tags: [string]' to ProductCreated v2"
+    expected_recommendations:
+      schema_registry:
+        url: "http://schema-registry:8081"
+        compatibility_mode: "FORWARD_TRANSITIVE"
+        compatibility_check: |
+          v1 consumers can read v2 data (new field has default value)
+          v2 producers can write to v1 consumers (forward compatible)
+      avro_schema_v1: |
+        {
+          "type": "record",
+          "name": "ProductCreated",
+          "fields": [
+            {"name": "productId", "type": "string"},
+            {"name": "name", "type": "string"},
+            {"name": "price", "type": "double"}
+          ]
+        }
+      avro_schema_v2: |
+        {
+          "type": "record",
+          "name": "ProductCreated",
+          "fields": [
+            {"name": "productId", "type": "string"},
+            {"name": "name", "type": "string"},
+            {"name": "price", "type": "double"},
+            {"name": "tags", "type": {"type": "array", "items": "string"}, "default": []}
+          ]
+        }
+      avro_vs_protobuf:
+        avro: "Best for Kafka ecosystem, Schema Registry native, dynamic typing"
+        protobuf: "Better for polyglot systems, gRPC compatibility, code generation"
+      producer_code: |
+        ProducerRecord<String, GenericRecord> record = new ProducerRecord<>(
+          "products",
+          productId,
+          avroRecord  // Serializer auto-fetches schema from registry
+        );
+    token_tier: T2
+
+  - name: performance-tuning-throughput-vs-latency
+    description: "Performance tuning comparison: optimize for throughput vs latency"
+    input:
+      use_case: "Compare configurations for high-throughput batch vs low-latency real-time"
+      baseline_throughput: "1000 msgs/sec"
+      baseline_latency_p95: "500ms"
+    expected_recommendations:
+      high_throughput_config:
+        producer:
+          batch_size: 65536  # 64KB
+          linger_ms: 100  # Wait 100ms to fill batch
+          compression_type: "gzip"  # Highest compression
+          buffer_memory: 67108864  # 64MB
+        consumer:
+          fetch_min_bytes: 102400  # 100KB
+          fetch_max_wait_ms: 500
+          max_poll_records: 1000
+        results: "10000 msgs/sec throughput, p95 latency 800ms (batching delay)"
+      low_latency_config:
+        producer:
+          batch_size: 16384  # 16KB (default)
+          linger_ms: 0  # Send immediately
+          compression_type: "lz4"  # Fastest compression
+          buffer_memory: 33554432  # 32MB (default)
+        consumer:
+          fetch_min_bytes: 1  # Return immediately
+          fetch_max_wait_ms: 100
+          max_poll_records: 100
+        results: "2000 msgs/sec throughput, p95 latency 50ms"
+      trade_offs:
+        throughput_optimization: "Batch larger, wait longer, compress more → 10× throughput, 16× latency"
+        latency_optimization: "Send immediately, smaller batches → 10× lower latency, 5× less throughput"
+      monitoring:
+        - "kafka_producer_batch_size_avg (high-throughput: 500+ records, low-latency: 1-10)"
+        - "kafka_producer_record_queue_time_avg (linger.ms impact)"
+    token_tier: T2
+
+  - name: multi-dc-replication-disaster-recovery
+    description: "Multi-datacenter replication with MirrorMaker 2 for disaster recovery"
+    input:
+      datacenters:
+        - name: "us-east-1"
+          role: "primary"
+        - name: "us-west-2"
+          role: "secondary"
+      replication_pattern: "Active-passive (DR)"
+      rpo: "60 seconds"
+      rto: "5 minutes"
+    expected_recommendations:
+      mirrormaker2_config:
+        source_cluster: "us-east-1"
+        target_cluster: "us-west-2"
+        topics_regex: "orders|inventory|payments"
+        replication_factor: 3
+        offset_syncs_topic_replication_factor: 3
+        checkpoints_topic_replication_factor: 3
+      topic_naming:
+        source_topic: "orders"
+        replicated_topic: "us-east-1.orders"  # MirrorMaker 2 prefix
+      consumer_offset_translation: |
+        Automatic offset sync: consumers in us-west-2 can resume from us-east-1 offsets
+        Checkpoints topic: us-east-1.checkpoints.internal
+      failover_procedure:
+        - "Detect us-east-1 failure (health checks)"
+        - "Promote us-west-2 consumers to read from local topics"
+        - "Resume from last synced offset (RPO ≤60s)"
+        - "Redirect producers to us-west-2 (RTO ≤5min)"
+      kraft_quorum:
+        us_east_1: "3 controllers (kafka1, kafka2, kafka3)"
+        us_west_2: "3 controllers (kafka4, kafka5, kafka6)"
+        note: "Separate quorums per DC; no cross-DC consensus latency"
+      monitoring:
+        - "kafka_mirror_source_record_age_ms (replication lag, alert if >60000)"
+        - "kafka_mirror_source_byte_rate (bandwidth utilization)"
+    token_tier: T3
+
+  - name: insufficient-data-error
+    description: "Error case: no services or events provided"
+    input:
+      throughput: "1000 msgs/sec"
+    expected_error: "Insufficient data: missing 'services' or 'events'. Cannot design Kafka architecture without event types and producers/consumers. Please provide: (1) At least one service with event types (e.g., OrderPlaced, UserCreated), (2) Throughput requirements (msgs/sec), (3) Delivery guarantees (at-least-once, at-most-once, exactly-once)."
+    token_tier: T1

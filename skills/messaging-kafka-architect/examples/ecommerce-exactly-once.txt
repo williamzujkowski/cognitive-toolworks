@@ -1,0 +1,34 @@
+# E-commerce Order Processing with Exactly-Once Semantics
+
+INPUT: services: [order-service, inventory-service, payment-service], events: [OrderPlaced, InventoryReserved, PaymentProcessed], throughput: 5000 orders/sec, guarantees: exactly-once
+
+OUTPUT (T2 Kafka Architecture):
+
+TOPOLOGY (3 Topics, 6 Partitions Each, RF=3):
+orders (OrderPlaced events) → inventory-reservations (InventoryReserved) → payments (PaymentProcessed)
+Partitioning: orderId % 6 ensures ordering per order across all topics
+
+PRODUCER CONFIG (Exactly-Once, Transactional):
+transactional.id=order-producer-{instance-id}, enable.idempotence=true, acks=all, max.in.flight.requests=5
+batch.size=32KB, linger.ms=10ms, compression.type=lz4 (20% size reduction, <5ms latency)
+Throughput: 5000 orders/sec = 160MB/sec (32KB avg order) with batching
+
+CONSUMER CONFIG (Exactly-Once Read-Process-Write):
+isolation.level=read_committed, enable.auto.commit=false, max.poll.records=500
+Process: poll orders → reserve inventory → send to inventory-reservations → commit offsets in transaction
+
+SCHEMA REGISTRY (Avro):
+OrderPlaced v1: {orderId, userId, items: [{productId, quantity, price}], totalAmount, timestamp}
+InventoryReserved v1: {orderId, reservations: [{productId, warehouseId, quantity}], expiresAt}
+Evolution: Forward/backward compatible (add fields with defaults only)
+
+KAFKA STREAMS (Saga Orchestration):
+orders.filter(validated) → flatMap(reserveInventory) → join(inventory-reservations, 5min window) → flatMap(processPayment) → to(payments)
+State store: RocksDB-backed (order status, inventory locks), changelog topic for recovery
+
+MONITORING (Prometheus):
+Producer: kafka_producer_record_send_total, kafka_producer_batch_size_avg (target 500+ records/batch)
+Consumer: kafka_consumer_lag (alert if >10k), kafka_consumer_records_consumed_rate
+Streams: kafka_streams_task_process_latency (p95 <100ms)
+
+PERFORMANCE: 5000 orders/sec with p95 <200ms latency, 99.99% success (no duplicates, no lost orders)
