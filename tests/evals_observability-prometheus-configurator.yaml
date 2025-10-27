@@ -1,0 +1,272 @@
+scenarios:
+  - name: basic-static-prometheus-alerting
+    description: "Basic Prometheus setup with static targets and simple alerting (T1 fast path)"
+    input:
+      targets:
+        - "api-service:9090"
+        - "postgres-exporter:9187"
+      prometheus_version: "3.0"
+      alerts:
+        - name: "HighCPU"
+          condition: "node_cpu_usage > 80%"
+          severity: "warning"
+    expected_recommendations:
+      global_config:
+        scrape_interval: "15s"
+        evaluation_interval: "15s"
+      scrape_configs:
+        - job_name: "api-service"
+          static_configs:
+            - targets: ["api-service:9090"]
+        - job_name: "postgres-exporter"
+          static_configs:
+            - targets: ["postgres-exporter:9187"]
+      alerting_rules:
+        - alert: "HighCPU"
+          expr: "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode='idle'}[5m])) * 100) > 80"
+          for: "5m"
+          labels:
+            severity: "warning"
+          annotations:
+            summary: "High CPU usage on {{ $labels.instance }}"
+            description: "CPU usage is {{ $value }}% (threshold: 80%)"
+      alertmanager_integration:
+        static_configs:
+          - targets: ["alertmanager:9093"]
+      note: "T1 configuration with static targets, no recording rules, basic symptom-based alert (CPU saturation)."
+    token_tier: T1
+
+  - name: kubernetes-service-discovery-recording-rules
+    description: "Kubernetes pod discovery with recording rules for API latency optimization"
+    input:
+      service_discovery: "kubernetes"
+      kubernetes_role: "pod"
+      annotation_filter: "prometheus.io/scrape=true"
+      recording_rules:
+        - metric: "http_request_duration_seconds"
+          aggregations: ["p95", "p99"]
+          interval: "30s"
+      prometheus_version: "3.0"
+    expected_recommendations:
+      kubernetes_sd_config:
+        role: "pod"
+        relabel_configs:
+          - source_labels: ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
+            action: "keep"
+            regex: "true"
+          - source_labels: ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
+            action: "replace"
+            target_label: "__metrics_path__"
+            regex: "(.+)"
+          - source_labels: ["__address__", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
+            action: "replace"
+            regex: "([^:]+)(?::\\d+)?;(\\d+)"
+            replacement: "$1:$2"
+            target_label: "__address__"
+          - source_labels: ["__meta_kubernetes_namespace"]
+            action: "replace"
+            target_label: "kubernetes_namespace"
+          - source_labels: ["__meta_kubernetes_pod_name"]
+            action: "replace"
+            target_label: "kubernetes_pod_name"
+      recording_rules:
+        - name: "api_latency_recording"
+          interval: "30s"
+          rules:
+            - record: "job:http_request_duration_seconds:p95"
+              expr: "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (job, le))"
+            - record: "job:http_request_duration_seconds:p99"
+              expr: "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (job, le))"
+      recording_rule_naming: "level:metric:operations (job-level aggregation)"
+      benefits:
+        - "Pre-computes p95/p99 latency for Grafana dashboards (5s query → <100ms)"
+        - "Reduces cardinality from instance-level (1000+ series) to job-level (10-50 series)"
+    token_tier: T2
+
+  - name: multi-window-burn-rate-alerting
+    description: "SLO burn rate alerts with multi-window detection for fast error budget exhaustion"
+    input:
+      slo_target: "99.9% availability (0.1% error budget)"
+      service: "api-gateway"
+      burn_rate_critical: "14.4x (exhaust 30-day budget in 2 days)"
+      burn_rate_warning: "6x (exhaust 30-day budget in 5 days)"
+      prometheus_version: "3.0"
+    expected_recommendations:
+      burn_rate_calculation:
+        critical: "14.4 × 0.001 = 0.0144 (1.44% error rate)"
+        warning: "6 × 0.001 = 0.006 (0.6% error rate)"
+      alerting_rules:
+        - alert: "ErrorBudgetBurn_Critical"
+          expr: |
+            (
+              sum(rate(http_requests_total{job="api-gateway", status=~"5.."}[1h]))
+              /
+              sum(rate(http_requests_total{job="api-gateway"}[1h]))
+            ) > (14.4 * 0.001)
+          for: "2m"
+          labels:
+            severity: "critical"
+          annotations:
+            summary: "Error budget burning 14.4× faster than allowed"
+            description: "api-gateway has {{ $value | humanizePercentage }} error rate (SLO: 99.9%, budget exhausted in 2 days)"
+        - alert: "ErrorBudgetBurn_Warning"
+          expr: |
+            (
+              sum(rate(http_requests_total{job="api-gateway", status=~"5.."}[6h]))
+              /
+              sum(rate(http_requests_total{job="api-gateway"}[6h]))
+            ) > (6 * 0.001)
+          for: "15m"
+          labels:
+            severity: "warning"
+          annotations:
+            summary: "Error budget burning 6× faster than allowed"
+            description: "api-gateway has {{ $value | humanizePercentage }} error rate (SLO: 99.9%, budget exhausted in 5 days)"
+      multi_window_pattern: "1h + 2m for critical (fast detection), 6h + 15m for warning (reduce false positives)"
+      alertmanager_routing:
+        critical: "PagerDuty (page on-call)"
+        warning: "Slack #alerts (notify team)"
+    token_tier: T2
+
+  - name: alertmanager-routing-multiple-receivers
+    description: "Alertmanager routing tree with grouping, inhibition, and multiple receivers"
+    input:
+      receivers:
+        - type: "pagerduty"
+          severity_filter: "critical"
+        - type: "slack"
+          severity_filter: "warning"
+          channel: "#alerts"
+        - type: "email"
+          recipients: ["ops@example.com"]
+      grouping_labels: ["cluster", "alertname"]
+      inhibition_rule: "critical alerts suppress warning alerts"
+    expected_recommendations:
+      alertmanager_config:
+        route:
+          receiver: "default-email"
+          group_by: ["cluster", "alertname"]
+          group_wait: "30s"
+          group_interval: "5m"
+          repeat_interval: "4h"
+          routes:
+            - match:
+                severity: "critical"
+              receiver: "pagerduty"
+            - match:
+                severity: "warning"
+              receiver: "slack"
+        receivers:
+          - name: "pagerduty"
+            pagerduty_configs:
+              - service_key: "<PD_SERVICE_KEY>"
+          - name: "slack"
+            slack_configs:
+              - api_url: "<SLACK_WEBHOOK_URL>"
+                channel: "#alerts"
+                title: "{{ .GroupLabels.alertname }}"
+                text: "{{ range .Alerts }}{{ .Annotations.description }}{{ end }}"
+          - name: "default-email"
+            email_configs:
+              - to: "ops@example.com"
+        inhibit_rules:
+          - source_match:
+              severity: "critical"
+            target_match:
+              severity: "warning"
+            equal: ["cluster", "alertname"]
+      grouping_behavior: "Alerts with same cluster + alertname grouped into single notification, wait 30s for batch"
+      inhibition_behavior: "If HighLatency (critical) fires, suppress HighLatency (warning) for same cluster"
+    token_tier: T2
+
+  - name: cardinality-management-relabeling
+    description: "Reduce cardinality by dropping high-cardinality labels and filtering metrics"
+    input:
+      problem: "user_id label creates 10M+ time series, causing memory issues"
+      metrics:
+        - name: "http_requests_total"
+          labels: ["job", "instance", "status", "user_id", "endpoint"]
+      cardinality_limit: "10M active time series"
+      prometheus_version: "3.0"
+    expected_recommendations:
+      metric_relabel_configs:
+        - action: "labeldrop"
+          source_labels: ["user_id"]
+          regex: ".*"
+          reason: "Drop user_id (10M unique values → 10M time series)"
+        - action: "keep"
+          source_labels: ["status"]
+          regex: "5.."
+          reason: "Only keep 5xx errors (reduce cardinality from 50 status codes to 5)"
+        - action: "drop"
+          source_labels: ["__name__"]
+          regex: "go_.*|process_.*"
+          reason: "Drop Go runtime metrics to save storage (100k+ time series)"
+      cardinality_reduction:
+        before: "10M time series (job × instance × status × user_id × endpoint)"
+        after: "50k time series (job × instance × status × endpoint, no user_id)"
+        reduction: "200× cardinality reduction"
+      alternative_approach: "Use recording rules to pre-aggregate user_id into buckets (e.g., user_type: free|premium)"
+      detection_query: "topk(10, count by (__name__)({__name__=~'.+'}))"
+    token_tier: T2
+
+  - name: hierarchical-federation-multi-dc
+    description: "Multi-datacenter federation for scaling to millions of nodes (T3 enterprise)"
+    input:
+      datacenters:
+        - name: "us-east-1"
+          prometheus_servers: 3
+        - name: "us-west-2"
+          prometheus_servers: 3
+        - name: "eu-west-1"
+          prometheus_servers: 2
+      global_prometheus: true
+      federation_pattern: "hierarchical"
+      prometheus_version: "3.0"
+    expected_recommendations:
+      federation_architecture:
+        pattern: "Per-DC Prometheus (detailed metrics) → Global Prometheus (aggregated metrics)"
+        scaling: "Supports tens of datacenters and millions of nodes"
+      global_prometheus_config:
+        scrape_configs:
+          - job_name: "federate-us-east-1"
+            scrape_interval: "30s"
+            honor_labels: true
+            metrics_path: "/federate"
+            params:
+              match:
+                - '{job="prometheus"}'
+                - '{__name__=~"job:.*"}'
+            static_configs:
+              - targets:
+                - "prometheus-us-east-1-1:9090"
+                - "prometheus-us-east-1-2:9090"
+                - "prometheus-us-east-1-3:9090"
+          - job_name: "federate-us-west-2"
+            scrape_interval: "30s"
+            honor_labels: true
+            metrics_path: "/federate"
+            params:
+              match:
+                - '{job="prometheus"}'
+                - '{__name__=~"job:.*"}'
+            static_configs:
+              - targets:
+                - "prometheus-us-west-2-1:9090"
+                - "prometheus-us-west-2-2:9090"
+                - "prometheus-us-west-2-3:9090"
+      federation_best_practices:
+        - "Only federate aggregated metrics (recording rules with job: prefix)"
+        - "Use honor_labels: true to preserve original labels"
+        - "Set scrape_interval: 30s (longer than per-DC scrape_interval: 15s)"
+        - "Avoid federating raw instance-level metrics (causes cardinality explosion)"
+      per_dc_recording_rules: "Pre-aggregate instance → job → cluster before federation"
+      alternative: "Use Remote Write to long-term storage (Thanos, Cortex, Mimir) if >10 Prometheus servers"
+    token_tier: T3
+
+  - name: insufficient-data-error
+    description: "Error case: no scrape targets provided"
+    input:
+      prometheus_version: "3.0"
+    expected_error: "Insufficient data: missing 'targets' or service discovery configuration. Cannot configure Prometheus without scrape targets. Please provide: (1) At least one scrape target (kubernetes_sd, consul_sd, ec2_sd, static_configs), (2) Alert definitions (optional), (3) Recording rule requirements (optional)."
+    token_tier: T1
