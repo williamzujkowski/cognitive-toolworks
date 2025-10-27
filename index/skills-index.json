@@ -973,6 +973,31 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/observability-slo-calculator/SKILL.md"
   },
   {
+    "slug": "observability-prometheus-configurator",
+    "name": "Prometheus Configuration Specialist",
+    "summary": "Configure Prometheus monitoring with alerting rules, recording rules, service discovery (Kubernetes, Consul, EC2), federation, PromQL optimization, and Alertmanager integration.",
+    "keywords": [
+      "prometheus",
+      "monitoring",
+      "observability",
+      "alerting",
+      "recording-rules",
+      "service-discovery",
+      "kubernetes-sd",
+      "promql",
+      "federation",
+      "alertmanager",
+      "metrics",
+      "relabeling",
+      "cardinality",
+      "burn-rate",
+      "slo"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/observability-prometheus-configurator/SKILL.md"
+  },
+  {
     "slug": "observability-stack-configurator",
     "name": "Observability Stack Configurator",
     "summary": "Configure comprehensive observability with metrics, logging, tracing, and alerting using Prometheus, OpenTelemetry, CloudWatch, and Grafana.",
