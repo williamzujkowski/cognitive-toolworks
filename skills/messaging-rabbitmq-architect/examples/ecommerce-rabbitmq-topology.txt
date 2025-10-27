@@ -1,0 +1,34 @@
+# E-commerce Order Processing with RabbitMQ (Quorum Queues + DLX)
+
+INPUT: services: [order-service, payment-service], events: [OrderCreated, PaymentProcessed], guarantees: at-least-once with DLX error handling
+
+OUTPUT (T2 RabbitMQ Topology):
+
+EXCHANGES (Topic):
+orders-exchange: routes order.created → order-processing-queue, order.# → order-audit-queue
+payments-exchange: routes payment.processed → payment-processing-queue
+dlx-exchange: routes order.processing.failed → dlx-order-queue, payment.processing.failed → dlx-payment-queue
+
+QUEUES (Quorum, Replication=3):
+order-processing-queue: {x-queue-type: quorum, x-quorum-initial-group-size: 3, x-delivery-limit: 20}
+payment-processing-queue: {x-queue-type: quorum, x-quorum-initial-group-size: 3, x-delivery-limit: 20}
+order-audit-queue: {x-queue-type: quorum, x-quorum-initial-group-size: 3}
+dlx-order-queue: {x-queue-type: quorum, manual inspection, no consumers}
+dlx-payment-queue: {x-queue-type: quorum, manual inspection, no consumers}
+
+BINDINGS:
+orders-exchange → order-processing-queue (routing_key: order.created)
+orders-exchange → order-audit-queue (routing_key: order.#)
+payments-exchange → payment-processing-queue (routing_key: payment.processed)
+dlx-exchange → dlx-order-queue (routing_key: order.processing.failed)
+dlx-exchange → dlx-payment-queue (routing_key: payment.processing.failed)
+
+POLICY (DLX):
+order-processing-queue: {dead-letter-exchange: dlx-exchange, dead-letter-routing-key: order.processing.failed, delivery-limit: 20}
+payment-processing-queue: {dead-letter-exchange: dlx-exchange, dead-letter-routing-key: payment.processing.failed, delivery-limit: 20}
+
+PUBLISHER CONFIG: confirms enabled, delivery_mode=2 (persistent), routing_key=order.created
+
+CONSUMER CONFIG: manual ack, prefetch_count=10, nack+requeue=false on permanent errors (→ DLX after 20 redeliveries)
+
+CLUSTERING: 3 nodes (rabbit@node1, rabbit@node2, rabbit@node3), quorum queues replicate across all nodes (Raft), survives 1 node failure
