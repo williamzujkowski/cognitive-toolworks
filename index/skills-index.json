@@ -886,6 +886,31 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/microservices-pattern-architect/SKILL.md"
   },
   {
+    "slug": "messaging-kafka-architect",
+    "name": "Apache Kafka Architecture Designer",
+    "summary": "Design Apache Kafka architectures with exactly-once semantics, producer/consumer patterns, Kafka Streams, Schema Registry, KRaft mode, and performance tuning.",
+    "keywords": [
+      "kafka",
+      "apache-kafka",
+      "event-streaming",
+      "message-broker",
+      "exactly-once",
+      "kafka-streams",
+      "ksqldb",
+      "schema-registry",
+      "avro",
+      "kraft-mode",
+      "performance-tuning",
+      "event-sourcing",
+      "cqrs",
+      "saga-pattern",
+      "distributed-systems"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/messaging-kafka-architect/SKILL.md"
+  },
+  {
     "slug": "mlops-lifecycle-manager",
     "name": "MLOps Lifecycle Manager",
     "summary": "Manage ML model lifecycle from development to deployment with experiment tracking, versioning, monitoring, and automated retraining workflows.",
