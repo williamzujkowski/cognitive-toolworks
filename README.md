@@ -1,240 +1,278 @@
-# cognitive-toolworks
+# 🔧 Cognitive Toolworks
 
-61 production-ready Skills and 14 orchestrator Agents for Claude CLI. No fluff.
+> **AI-Native Skill Forge**: Generate cross-platform agent artifacts using LLM intelligence.
 
-## What This Is
+[![PyPI version](https://badge.fury.io/py/cognitive-toolworks.svg)](https://badge.fury.io/py/cognitive-toolworks)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A library of small, composable **Skills** and **Agent** specifications using Anthropic's SKILL.md format. Each component is:
-- **Focused**: Does one thing, does it right
-- **Tiered**: T1 (≤2k tokens) → T2 (≤6k) → T3 (≤12k) for progressive disclosure
-- **Cited**: Every claim has a source with access date. Zero tolerance for hallucinations.
-- **Validated**: CI enforces format, checks secrets, verifies links
+Transform MCP servers, APIs, and documentation into high-quality **SKILL.md** and **AGENTS.md** files compatible with the [Agentic AI Foundation](https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation) ecosystem (Claude, Codex, Gemini CLI).
 
-**Skills** are single-purpose capabilities invoked by Claude during conversations. **Agents** are multi-step orchestrators you invoke explicitly for complex workflows requiring ≥3 steps and separate context windows.
+## 🎯 Why Cognitive Toolworks?
 
-## Usage with Claude CLI
+The AI agent ecosystem is converging on shared standards:
+- **Anthropic Skills** (`SKILL.md`) - Progressive disclosure architecture for Claude
+- **OpenAI Skills** (`~/.codex/skills/`) - Same format, adopted Dec 2025
+- **AGENTS.md** - Universal coding agent instructions (60k+ repos)
+- **MCP** - Model Context Protocol (10k+ servers)
 
-### 1. Clone and Point Claude at It
+**Problem**: Converting between these formats and generating high-quality artifacts is manual and error-prone.
+
+**Solution**: LLM-powered generation that understands semantics, not just templates.
+
+| Feature | Template Tools | Cognitive Toolworks |
+|---------|---------------|---------------------|
+| Generation | Mechanical | LLM-powered semantic analysis |
+| Sources | MCP only | MCP, OpenAPI, README, scripts |
+| Output | Single platform | Universal (Anthropic + OpenAI) |
+| Quality | Basic | Token optimization, security scan |
+| Examples | Manual | Auto-generated |
+
+## 🚀 Quick Start
 
 ```bash
+# Install
+pip install cognitive-toolworks
+
+# Generate skill from MCP server
+ct generate skill --from-mcp ./github-mcp.json --output ./github-skill/
+
+# Generate AGENTS.md for your repo
+ct generate agents-md --repo . --output ./AGENTS.md
+
+# Analyze existing skill
+ct analyze ./my-skill/SKILL.md --full-report
+```
+
+## 📦 Installation
+
+```bash
+# Basic installation
+pip install cognitive-toolworks
+
+# With claude-flow orchestration support
+pip install cognitive-toolworks[claude-flow]
+
+# Development installation
+pip install cognitive-toolworks[dev]
+```
+
+**Requirements**:
+- Python 3.11+
+- `ANTHROPIC_API_KEY` environment variable for LLM generation
+
+## 📖 Usage
+
+### Generate Skill from MCP Server
+
+```bash
+# Create MCP config
+cat > github-mcp.json << 'EOF'
+{
+  "name": "github",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-github"],
+  "env": {"GITHUB_TOKEN": "$GITHUB_TOKEN"}
+}
+EOF
+
+# Generate universal skill (works with Claude + Codex)
+ct generate skill \
+  --from-mcp github-mcp.json \
+  --platform universal \
+  --output ./github-skill/
+```
+
+### Generate from OpenAPI
+
+```bash
+ct generate skill \
+  --from-openapi https://api.example.com/openapi.json \
+  --name "example-api" \
+  --focus-endpoints /users,/projects
+```
+
+### Generate AGENTS.md
+
+```bash
+# Analyze repo and generate AGENTS.md
+ct generate agents-md --repo . --output ./AGENTS.md
+
+# Also generate llms.txt
+ct generate agents-md --repo . --with-llms-txt
+```
+
+### Analyze & Optimize
+
+```bash
+# Full quality analysis
+ct analyze ./my-skill/ --full-report
+
+# Validate against platforms
+ct validate ./my-skill/ --platforms anthropic,openai
+
+# Optimize token usage
+ct optimize ./my-skill/ --target-tokens 5000
+
+# Security scan
+ct security-scan ./skills/ --recursive
+```
+
+### Multi-Agent Orchestration
+
+For complex generation with parallel agents:
+
+```bash
+# Install claude-flow
+pip install cognitive-toolworks[claude-flow]
+
+# Run orchestrated generation
+ct generate skill \
+  --from-mcp ./config.json \
+  --orchestrated \
+  --examples 5
+```
+
+## 📁 Output Formats
+
+### SKILL.md (Universal)
+
+```yaml
+---
+name: github-operations
+description: "GitHub repository management. Use when users reference repos, issues, or PRs."
+allowed-tools: Bash, Read
+dependencies:
+  - "@modelcontextprotocol/server-github"
+---
+
+# GitHub Operations
+
+## When to Use This Skill
+- User mentions GitHub repos, issues, or pull requests
+- User wants to search code across repositories
+- User needs to manage GitHub workflows
+
+## Quick Reference
+...
+```
+
+### AGENTS.md
+
+```markdown
+# AGENTS.md
+
+## Dev Environment
+- Setup: `npm install && npm run build`
+- Test: `npm test`
+
+## Testing Instructions
+- Run `npm test` before opening PRs
+- Coverage must be >= 80%
+
+## PR Instructions
+- Title format: `[component] Brief description`
+- Required: Tests, types, docs
+```
+
+## 🏗️ Architecture
+
+```
+Sources          →   LLM Analysis   →   Generation   →   Validation   →   Output
+─────────────────────────────────────────────────────────────────────────────────
+• MCP Server         Semantic           SKILL.md        Anthropic        Universal
+• OpenAPI            Analysis           AGENTS.md       OpenAI           Skills
+• README             Relationships      llms.txt        AAIF
+• Scripts            Workflows
+• Docs
+```
+
+**Key Design Principles**:
+
+1. **Progressive Disclosure**: Level 1 (~100 tokens) → Level 2 (<5k tokens) → Level 3 (unbounded)
+2. **Cross-Platform**: Generate once, use everywhere
+3. **Security-First**: Built-in pattern detection
+4. **LLM-Native**: Semantic understanding, not string templates
+
+## 🔒 Security
+
+Cognitive Toolworks includes built-in security scanning:
+
+```bash
+ct security-scan ./skills/ --recursive
+```
+
+**Detects**:
+- ⚠️ Unrestricted file system access
+- ⚠️ Network calls without allowlisting
+- ⚠️ Shell command injection vectors
+- ⚠️ Sensitive data exposure
+- ⚠️ Tool permission escalation
+
+## 🔧 Configuration
+
+### Environment Variables
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-...     # Required for LLM generation
+CT_DEFAULT_PLATFORM=universal    # Default output platform
+CT_TOKEN_BUDGET=5000             # Default Level 2 token budget
+CT_CACHE_DIR=~/.cache/ct         # Cache directory
+CT_MODEL=claude-sonnet-4-20250514  # Default model
+```
+
+### Config File
+
+```yaml
+# ~/.config/cognitive-toolworks/config.yaml
+default_platform: universal
+token_budget: 5000
+example_count: 3
+security_scan: true
+models:
+  analysis: claude-sonnet-4-20250514
+  generation: claude-sonnet-4-20250514
+  examples: claude-haiku-4-20250514
+```
+
+## 📚 Documentation
+
+- [Getting Started Guide](docs/getting-started.md)
+- [API Reference](docs/api-reference.md)
+- [Architecture Overview](docs/architecture.md)
+- [Claude-Flow Integration](docs/claude-flow.md)
+- [Security Best Practices](docs/security.md)
+
+## 🤝 Contributing
+
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+```bash
+# Setup development environment
 git clone https://github.com/williamzujkowski/cognitive-toolworks.git
 cd cognitive-toolworks
+pip install -e ".[dev]"
+pre-commit install
+
+# Run tests
+pytest
+
+# Run linting
+ruff check . && ruff format . && mypy src/
 ```
 
-Tell Claude CLI about this repo by referencing `CLAUDE.md` in your conversations. Claude will load only what it needs.
+## 📜 License
 
-### 2. Use a Skill
+Apache License 2.0 - see [LICENSE](LICENSE) for details.
 
-Ask Claude to use a skill by name:
+## 🙏 Acknowledgments
 
-```
-Use the microservices-pattern-architect skill to recommend patterns for my e-commerce checkout flow.
-```
-
-Claude loads progressively: T1 for simple cases, T2/T3 when you need depth. You don't specify tiers—Claude decides based on complexity.
-
-### 3. Creating Skills
-
-Use the `core-skill-authoring` meta-skill to generate production-ready skills automatically:
-
-```
-Use the core-skill-authoring skill to build a new skill for Kubernetes deployment validation.
-```
-
-**What you get:**
-- `skills/<slug>/SKILL.md` (complete, validated structure)
-- `skills/<slug>/examples/<slug>-example.txt` (≤30 lines)
-- `tests/evals_<slug>.yaml` (3–5 test scenarios)
-- Index entry in `index/skills-index.json`
-
-**Enforces automatically:**
-- CLAUDE.md §3 format (required sections, token budgets)
-- Source citations with access dates
-- No secrets or PII
-- Examples ≤30 lines
-- T1/T2/T3 token budgets
-
-**Requirements:**
-- Provide topic/domain clearly
-- Specify inputs/outputs if known (skill will ask if unclear)
-- Review generated skill and run `python3 tooling/validate_skill.py` before committing
-
-### 4. Creating Agents
-
-Use the `core-agent-authoring` meta-skill for multi-step orchestration workflows:
-
-```
-Use the core-agent-authoring skill to build a security audit orchestrator for multi-tier applications.
-```
-
-**What you get:**
-- `agents/<slug>/AGENT.md` (system prompt, tool restrictions, workflows)
-- `agents/<slug>/examples/` (1–2 interaction examples ≤30 lines each)
-- `agents/<slug>/workflows/` (optional multi-step procedures)
-- `tests/evals_agent_<slug>.yaml` (3–5 test scenarios)
-- Index entry in `index/agents-index.json`
-
-**Enforces automatically:**
-- System prompt ≤1500 tokens
-- Tool restrictions to approved MCP list
-- Required sections (Purpose, System Prompt, Tool Usage, Workflow Patterns, Skills Integration, Examples, Quality Gates, Resources)
-- No embedding of full skills (reference by slug only)
-
-**When to use Agent vs Skill:**
-- **Agent**: ≥3 steps, requires orchestration, stateful workflows, user-invoked (e.g., `orchestrator audit security...`)
-- **Skill**: Single capability, model-invoked, shares main context
-
-## What's Inside
-
-**61 skills across 3-tier taxonomy (see CLAUDE.md §2A):**
-
-- **Tier 1 - Core/Foundation** (4): `core-skill-authoring`, `core-agent-authoring`, `core-codex-delegator`, `core-gemini-delegator`
-- **Tier 2 - Domain Skills** (39): Security (8), Testing (5), Cloud (5), DevOps (5), Compliance (2), Frontend (2), Data (1), Observability (2), FinOps (1), Resilience (1), Documentation (1), Quality (1), Integration (1), Tooling (1), plus Architecture, API, Container, Database, MLOps, Microservices, Mobile, Secrets
-- **Tier 3 - Specialized** (18): Kubernetes (3), API (3), Database (2), Compliance (2), Mobile (1), Rust (1), Go (1), Python (1), Terraform (1), SLO (1), E2E Testing (1), Secrets (1)
-
-**Naming convention (domain-first):**
-- Security: `security-appsec-validator`, `security-cloud-analyzer`, `security-iam-reviewer`
-- Testing: `testing-unit-generator`, `testing-integration-designer`, `testing-load-designer`
-- Cloud: `cloud-aws-architect`, `cloud-multicloud-advisor`, `cloud-edge-architect`
-- DevOps: `devops-cicd-generator`, `devops-iac-generator`, `devops-drift-detector`
-
-**14 orchestrator agents:**
-- **Meta**: `agent-creator` — generates new agents
-- **Architecture**: `architecture-decision-orchestrator` — ADR generation
-- **Cloud**: `cloud-native-orchestrator`, `cloud-aws-orchestrator`, `multi-region-orchestrator`
-- **Compliance**: `compliance-orchestrator`
-- **Cost**: `cost-optimization-orchestrator`
-- **Database**: `database-migration-orchestrator`
-- **DevOps**: `devops-pipeline-orchestrator`
-- **Observability**: `observability-orchestrator`
-- **Performance**: `performance-orchestrator`
-- **Resilience**: `disaster-recovery-orchestrator`, `incident-response-orchestrator`
-- **Security**: `security-auditor`
-
-Full skill list: `ls skills/` or check `index/skills-index.json`. Full agent list: `ls agents/` or check `index/agents-index.json`.
-
-## Rules (Read CLAUDE.md)
-
-CLAUDE.md is the authoritative rulebook. Key points:
-
-- **Accuracy**: Zero tolerance for fabrication. Every claim needs a source with access date.
-- **Token budgets**: T1/T2/T3 are hard limits, not suggestions. Validated by CI.
-- **Examples**: ≤30 lines. No exceptions. Longer samples go in `resources/`.
-- **No secrets**: Commit an API key and CI fails immediately.
-- **Git workflow**: Feature branches only. Squash-merge to main. See CLAUDE.md §13.
-- **Agent system prompts**: ≤1500 tokens. Reference skills by slug, never paste full skill content.
-
-## Contributing
-
-### Creating a New Skill
-
-1. **Use the meta-skill** (recommended):
-   ```
-   Use the core-skill-authoring skill to build a new skill for <your-topic>.
-   ```
-   Review output, validate, commit. Follow naming convention from CLAUDE.md §2A.
-
-2. **Manual creation** (if you must):
-   - Read CLAUDE.md §3 format requirements
-   - Branch: `git checkout -b feature/your-skill`
-   - Build skill following exact section order
-   - Run validator: `python3 tooling/validate_skill.py`
-   - Build index: `python3 tooling/build_index.py`
-   - PR with `gh pr create` (see CLAUDE.md §13 for template)
-
-### Creating a New Agent
-
-1. **Use the meta-skill**:
-   ```
-   Use the core-agent-authoring skill to build a new agent for <your-orchestration-workflow>.
-   ```
-   Specify topic, capabilities, and tool requirements. Agent names end in `-orchestrator`.
-
-2. **Manual creation**:
-   - Read CLAUDE.md §2 for AGENT.md structure
-   - Follow same git workflow as skills
-   - Validate with `python3 tooling/validate_agent.py`
-
-### Quality Gates (CI enforced)
-
-Every PR must pass:
-1. **Validation** (format, token budgets, secrets check, link verification)
-2. **Linting** (section order, headings, citation format)
-3. **Index build** (deterministic, no duplicate slugs)
-4. **Evals** (test scenarios must be valid YAML and pass basic sanity)
-
-If CI fails, fix it. No hand-waving. See CLAUDE.md §8 for specifics.
-
-## Structure
-
-```
-agents/<slug>/
-  AGENT.md                    # Agent specification (frontmatter + 8 sections)
-  examples/                   # Interaction examples (≤30 lines each)
-  workflows/                  # Multi-step procedures (optional)
-  CHANGELOG.md
-
-skills/<slug>/
-  SKILL.md                    # The skill (required sections, cited sources)
-  examples/                   # Small examples (≤30 lines each)
-  resources/                  # Templates, schemas, configs
-  CHANGELOG.md
-
-tests/
-  evals_<slug>.yaml           # 3–5 test scenarios per skill
-  evals_agent_<slug>.yaml     # 3–5 scenarios per agent
-
-index/
-  skills-index.json           # Discovery manifest (generated)
-  agents-index.json           # Agent discovery manifest (generated)
-  embeddings/                 # Optional ANN vectors (tiny)
-```
-
-## Examples
-
-### Creating a Custom Skill
-
-**Task**: Build a skill for validating Terraform configurations against AWS Well-Architected Framework.
-
-**Command**:
-```
-Use the core-skill-authoring skill with topic "Terraform AWS Well-Architected validation" and tier T2. Include compliance checks for security pillar.
-```
-
-**Result**:
-- `skills/terraform-aws-waf-validate/SKILL.md` with T1/T2 procedures
-- Example showing input (Terraform files) → output (compliance report)
-- Tests with happy path + missing required tags + cross-region violation scenarios
-- Index entry with keywords `["terraform", "aws", "well-architected", "compliance"]`
-
-### Creating a Custom Agent
-
-**Task**: Build an agent that orchestrates incident response for security events.
-
-**Command**:
-```
-Use the core-agent-authoring skill for topic "Incident response orchestrator for security events" with tools Read, Bash, Grep, and Task. Include workflow for severity classification, evidence collection, and stakeholder notification.
-```
-
-**Result**:
-- `agents/incident-responder/AGENT.md` with system prompt (≤1500 tokens)
-- Tool usage: Read logs → Grep patterns → Bash (run forensics) → Task (delegate deep analysis)
-- Workflow: 1) Classify severity → 2) Collect evidence → 3) Invoke security-assessment-framework skill → 4) Generate report
-- Skills integration: References `security-assessment-framework` and `compliance-automation-engine` by slug
-- 3 example scenarios: critical breach, false positive, partial data
-
-## License
-
-Apache-2.0
-
-## Maintainer
-
-Personal project - cognitive-toolworks
+Built for the [Agentic AI Foundation](https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation) ecosystem:
+- [Anthropic Skills](https://github.com/anthropics/skills)
+- [AGENTS.md](https://agents.md/)
+- [Model Context Protocol](https://modelcontextprotocol.io/)
+- [Claude-Flow](https://github.com/ruvnet/claude-flow)
 
 ---
 
-**Last Updated**: 2025-10-26T16:00:00-04:00
-**CLAUDE.md Version**: 1.4.0 (added §2A naming convention taxonomy)
-**Skills**: 61 (3-tier taxonomy: core → domain → specialized)
-**Agents**: 14 orchestrators
-**Status**: Production (cleaned, no deprecated skills)
+**Made with 🧠 by [William Zujkowski](https://williamzujkowski.github.io)**
