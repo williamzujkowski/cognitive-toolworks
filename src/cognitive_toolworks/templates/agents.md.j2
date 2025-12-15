@@ -1,0 +1,78 @@
+# AGENTS.md
+
+{{ project_overview }}
+
+## Dev Environment
+
+{% if dev_environment.setup %}
+### Setup
+
+```bash
+{{ dev_environment.setup }}
+```
+{% endif %}
+
+{% if dev_environment.directories %}
+### Key Directories
+
+{% for path, desc in dev_environment.directories.items() -%}
+- `{{ path }}/` - {{ desc }}
+{% endfor %}
+{% endif %}
+
+## Testing Instructions
+
+{% if testing_instructions.commands %}
+```bash
+{% for cmd in testing_instructions.commands -%}
+{{ cmd }}
+{% endfor %}
+```
+{% endif %}
+
+{% if testing_instructions.requirements %}
+### Requirements
+
+{% for req in testing_instructions.requirements -%}
+- {{ req }}
+{% endfor %}
+{% endif %}
+
+## PR Instructions
+
+{% if pr_instructions.title_format %}
+**Title Format**: `{{ pr_instructions.title_format }}`
+{% endif %}
+
+{% if pr_instructions.checklist %}
+### Checklist
+
+{% for item in pr_instructions.checklist -%}
+- [ ] {{ item }}
+{% endfor %}
+{% endif %}
+
+## Coding Conventions
+
+{% for key, value in coding_conventions.items() %}
+{% if value is iterable and value is not string %}
+### {{ key | replace('_', ' ') | title }}
+
+{% for item in value -%}
+- {{ item }}
+{% endfor %}
+{% else %}
+- **{{ key }}**: {{ value }}
+{% endif %}
+{% endfor %}
+
+{% if project_specific %}
+## Project-Specific Guidelines
+
+{% for key, value in project_specific.items() %}
+### {{ key | replace('_', ' ') | title }}
+
+{{ value }}
+
+{% endfor %}
+{% endif %}

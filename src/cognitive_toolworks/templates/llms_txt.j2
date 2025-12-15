@@ -1,0 +1,46 @@
+# {{ name }}
+
+{{ description | default('') }}
+
+## Language & Framework
+
+- **Primary Language**: {{ language }}
+- **Package Manager**: {{ package_manager }}
+{% if test_framework -%}
+- **Test Framework**: {{ test_framework }}
+{% endif %}
+
+## Key Directories
+
+{% for dir, desc in directories.items() -%}
+- `{{ dir }}/`: {{ desc }}
+{% endfor %}
+
+## Quick Start
+
+```bash
+# Install dependencies
+{{ install_command | default(package_manager + ' install') }}
+
+# Run tests
+{{ test_command | default('npm test') }}
+
+# Start development
+{{ dev_command | default('npm run dev') }}
+```
+
+{% if documentation_files %}
+## Documentation
+
+{% for file in documentation_files -%}
+- {{ file }}
+{% endfor %}
+{% endif %}
+
+{% if important_files %}
+## Important Files
+
+{% for file, desc in important_files.items() -%}
+- `{{ file }}`: {{ desc }}
+{% endfor %}
+{% endif %}

@@ -1,0 +1,78 @@
+---
+name: {{ metadata.name }}
+description: "{{ metadata.description }}"
+{% if metadata.allowed_tools -%}
+allowed-tools: {{ metadata.allowed_tools | join(', ') }}
+{% endif -%}
+{% if metadata.dependencies -%}
+dependencies:
+{% for dep in metadata.dependencies %}
+  - {{ dep }}
+{% endfor %}
+{% endif -%}
+{% if metadata.license -%}
+license: {{ metadata.license }}
+{% endif -%}
+---
+
+# {{ metadata.name | replace('-', ' ') | title }}
+
+{{ overview }}
+
+## When to Use This Skill
+
+{% for item in when_to_use -%}
+- {{ item }}
+{% endfor %}
+
+## Quick Reference
+
+{{ quick_reference }}
+
+## Instructions
+
+{{ instructions }}
+
+{% if examples %}
+## Examples
+
+{% for example in examples %}
+### Example {{ loop.index }}: {{ example.title | default('Example') }}
+
+{{ example.description | default('') }}
+
+{% if example.code %}
+```{{ example.language | default('bash') }}
+{{ example.code }}
+```
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% if guidelines %}
+## Guidelines
+
+{% for guideline in guidelines -%}
+- {{ guideline }}
+{% endfor %}
+{% endif %}
+
+{% if troubleshooting %}
+## Troubleshooting
+
+{% for item in troubleshooting %}
+### {{ item.issue | default('Issue') }}
+
+{{ item.solution | default('') }}
+
+{% endfor %}
+{% endif %}
+
+{% if references %}
+## See Also
+
+{% for ref in references -%}
+- {{ ref }}
+{% endfor %}
+{% endif %}
