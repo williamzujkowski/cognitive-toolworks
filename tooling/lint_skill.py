@@ -165,10 +165,10 @@ def check_link_validity(url: str, timeout: int = 5) -> tuple[bool, str | None]:
 
         # Make HEAD request to check accessibility
         # S310: URL validation is intentional for link checking; URLs from skill docs
-        req = Request(url, method="HEAD")  # noqa: S310
+        req = Request(url, method="HEAD")
         req.add_header("User-Agent", "SkillLinter/1.0")
 
-        with urlopen(req, timeout=timeout) as response:  # noqa: S310
+        with urlopen(req, timeout=timeout) as response:
             if response.status < 400:
                 return True, None
             return False, f"HTTP {response.status}"
@@ -228,7 +228,7 @@ def main() -> int:
     ap.add_argument(
         "--root",
         type=Path,
-        default=Path("."),
+        default=Path(),
         help="Repo root (default: .)",
     )
     ap.add_argument(

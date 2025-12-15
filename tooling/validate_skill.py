@@ -222,7 +222,7 @@ def main() -> int:
     ap.add_argument(
         "--root",
         type=Path,
-        default=Path("."),
+        default=Path(),
         help="Repo root (default: .)",
     )
     args = ap.parse_args()

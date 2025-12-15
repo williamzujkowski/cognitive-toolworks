@@ -16,7 +16,7 @@ from typing import Any
 def load_agents_index() -> list[dict[str, Any]]:
     """Load agents index"""
     index_path = Path(__file__).parent.parent / "index" / "agents-index.json"
-    with open(index_path) as f:
+    with index_path.open() as f:
         result: list[dict[str, Any]] = json.load(f)
         return result
 
@@ -24,7 +24,7 @@ def load_agents_index() -> list[dict[str, Any]]:
 def load_skills_index() -> list[dict[str, Any]]:
     """Load skills index"""
     index_path = Path(__file__).parent.parent / "index" / "skills-index.json"
-    with open(index_path) as f:
+    with index_path.open() as f:
         result: list[dict[str, Any]] = json.load(f)
         return result
 

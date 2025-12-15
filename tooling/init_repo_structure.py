@@ -19,8 +19,11 @@ from __future__ import annotations
 
 import argparse
 import sys
-from collections.abc import Iterable
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 DEFAULT_DIRS: list[str] = [
     "index",
@@ -112,7 +115,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--repo-root",
         type=Path,
-        default=Path("."),
+        default=Path(),
         help="Root of the repository (default: current directory).",
     )
     parser.add_argument(
