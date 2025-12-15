@@ -160,9 +160,7 @@ class AgentsGenerator:
         if (repo_path / "pom.xml").exists():
             return "Java", "maven"
 
-        if (repo_path / "build.gradle").exists() or (
-            repo_path / "build.gradle.kts"
-        ).exists():
+        if (repo_path / "build.gradle").exists() or (repo_path / "build.gradle.kts").exists():
             return "Java/Kotlin", "gradle"
 
         return "Unknown", "unknown"
@@ -170,9 +168,7 @@ class AgentsGenerator:
     def _detect_test_framework(self, repo_path: Path, language: str) -> str:
         """Detect the test framework used."""
         if "Python" in language:
-            if (repo_path / "pytest.ini").exists() or (
-                repo_path / "pyproject.toml"
-            ).exists():
+            if (repo_path / "pytest.ini").exists() or (repo_path / "pyproject.toml").exists():
                 pyproject = repo_path / "pyproject.toml"
                 if pyproject.exists() and "pytest" in pyproject.read_text():
                     return "pytest"

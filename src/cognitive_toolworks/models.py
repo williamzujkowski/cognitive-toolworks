@@ -592,18 +592,10 @@ class CompatibilityReport:
                 "anthropic": len(self.anthropic_issues),
                 "openai": len(self.openai_issues),
                 "errors": len(
-                    [
-                        i
-                        for i in self.issues
-                        if i.severity == CompatibilitySeverity.ERROR
-                    ]
+                    [i for i in self.issues if i.severity == CompatibilitySeverity.ERROR]
                 ),
                 "warnings": len(
-                    [
-                        i
-                        for i in self.issues
-                        if i.severity == CompatibilitySeverity.WARNING
-                    ]
+                    [i for i in self.issues if i.severity == CompatibilitySeverity.WARNING]
                 ),
             },
         }

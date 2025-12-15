@@ -181,9 +181,7 @@ Output the optimized SKILL.md content in markdown format."""
 
         # If already under budget, return as-is
         if original_tokens <= T2_BUDGET:
-            changes_made.append(
-                f"Skill already within T2 budget ({original_tokens} tokens)"
-            )
+            changes_made.append(f"Skill already within T2 budget ({original_tokens} tokens)")
             return OptimizationResult(
                 original_tokens=original_tokens,
                 optimized_tokens=original_tokens,

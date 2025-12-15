@@ -1,7 +1,7 @@
 ---
 name: Prometheus Configuration Specialist
 slug: observability-prometheus-configurator
-description: Configure Prometheus monitoring with alerting rules, recording rules, service discovery (Kubernetes, Consul, EC2), federation, PromQL optimization, and Alertmanager integration.
+description: Configure Prometheus with alerting, recording rules, service discovery (K8s, Consul, EC2), federation, PromQL optimization, and Alertmanager.
 capabilities:
   - Prometheus scrape configuration with service discovery
   - Alerting rules with multi-window burn rate patterns

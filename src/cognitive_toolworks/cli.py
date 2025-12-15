@@ -51,9 +51,7 @@ class SourceType(str, Enum):
 @app.command("generate")
 def generate_cmd() -> None:
     """Generate agent artifacts. Use subcommands: skill, agents-md, llms-txt"""
-    console.print(
-        "[yellow]Use a subcommand: ct generate skill, ct generate agents-md[/]"
-    )
+    console.print("[yellow]Use a subcommand: ct generate skill, ct generate agents-md[/]")
     raise typer.Exit(1)
 
 
@@ -105,9 +103,7 @@ def generate_skill(
     ] = True,
     orchestrated: Annotated[
         bool,
-        typer.Option(
-            "--orchestrated", help="Use claude-flow multi-agent orchestration"
-        ),
+        typer.Option("--orchestrated", help="Use claude-flow multi-agent orchestration"),
     ] = False,
     dry_run: Annotated[
         bool,
@@ -144,9 +140,7 @@ def generate_skill(
         elif from_openapi:
             source_type = SourceType.OPENAPI
             source_path = (
-                Path(from_openapi)
-                if not from_openapi.startswith("http")
-                else from_openapi
+                Path(from_openapi) if not from_openapi.startswith("http") else from_openapi
             )
         elif from_readme:
             source_type = SourceType.README
@@ -156,18 +150,14 @@ def generate_skill(
             source_path = from_analysis
 
         # Step 1: Introspect
-        task = progress.add_task(
-            f"[cyan]Introspecting {source_type.value}...", total=None
-        )
+        task = progress.add_task(f"[cyan]Introspecting {source_type.value}...", total=None)
         analysis = _introspect_source(source_type, source_path)
         progress.update(task, completed=True)
 
         # Step 2: Generate
         task = progress.add_task("[cyan]Generating skill...", total=None)
         if orchestrated:
-            skill_content = _generate_orchestrated(
-                analysis, platform, examples, token_budget
-            )
+            skill_content = _generate_orchestrated(analysis, platform, examples, token_budget)
         else:
             skill_content = _generate_skill(analysis, platform, examples, token_budget)
         progress.update(task, completed=True)
@@ -299,9 +289,7 @@ def introspect_openapi(
     ] = None,
     focus_endpoints: Annotated[
         str | None,
-        typer.Option(
-            "--focus-endpoints", help="Comma-separated endpoint paths to focus on"
-        ),
+        typer.Option("--focus-endpoints", help="Comma-separated endpoint paths to focus on"),
     ] = None,
 ) -> None:
     """Introspect an OpenAPI specification."""
@@ -371,9 +359,7 @@ def analyze_repo(
     repo: Annotated[Path, typer.Argument(help="Path to repository")] = Path(),
     generate_all: Annotated[
         bool,
-        typer.Option(
-            "--generate-all", help="Generate AGENTS.md, llms.txt, and skill suggestions"
-        ),
+        typer.Option("--generate-all", help="Generate AGENTS.md, llms.txt, and skill suggestions"),
     ] = False,
 ) -> None:
     """
@@ -405,9 +391,7 @@ def validate(
     path: Annotated[Path, typer.Argument(help="Path to skill or SKILL.md")],
     platforms: Annotated[
         str,
-        typer.Option(
-            "--platforms", "-p", help="Comma-separated platforms to validate against"
-        ),
+        typer.Option("--platforms", "-p", help="Comma-separated platforms to validate against"),
     ] = "anthropic,openai",
     fix: Annotated[
         bool,
@@ -435,9 +419,7 @@ def validate(
 
     platform_list = [p.strip() for p in platforms.split(",")]
 
-    console.print(
-        f"[cyan]Validating {skill_path} against: {', '.join(platform_list)}...[/]"
-    )
+    console.print(f"[cyan]Validating {skill_path} against: {', '.join(platform_list)}...[/]")
 
     content = skill_path.read_text()
     results = {}
@@ -470,9 +452,7 @@ def optimize(
     ] = 5000,
     aggressive: Annotated[
         bool,
-        typer.Option(
-            "--aggressive", help="Aggressive optimization (may lose some detail)"
-        ),
+        typer.Option("--aggressive", help="Aggressive optimization (may lose some detail)"),
     ] = False,
     in_place: Annotated[
         bool,
@@ -503,9 +483,7 @@ def optimize(
     optimized = _optimize_skill(content, target_tokens, aggressive)
     new_tokens = _count_tokens(optimized)
 
-    console.print(
-        f"  Optimized: {new_tokens} tokens ({original_tokens - new_tokens} saved)"
-    )
+    console.print(f"  Optimized: {new_tokens} tokens ({original_tokens - new_tokens} saved)")
 
     if in_place:
         skill_path.write_text(optimized)
@@ -605,9 +583,7 @@ def _introspect_source(source_type: SourceType, source_path, **_kwargs) -> dict:
     }
 
 
-def _generate_skill(
-    analysis: dict, _platform: Platform, _examples: int, _token_budget: int
-) -> str:
+def _generate_skill(analysis: dict, _platform: Platform, _examples: int, _token_budget: int) -> str:
     """Generate skill content from analysis."""
     from cognitive_toolworks.models import SkillContent, SkillMetadata
 
@@ -676,9 +652,7 @@ def _validate_skill(content: str, _platform: Platform) -> dict:
         openai_result = OpenAIValidator().validate(content)
         return {
             "passed": anthropic_result.passed and openai_result.passed,
-            "issues": [
-                i.to_dict() for i in anthropic_result.issues + openai_result.issues
-            ],
+            "issues": [i.to_dict() for i in anthropic_result.issues + openai_result.issues],
         }
 
     return {"passed": result.passed, "issues": [i.to_dict() for i in result.issues]}
@@ -877,9 +851,7 @@ def _display_generation_results(content: str, validation: dict) -> None:
 
 def _display_introspection_results(analysis: dict) -> None:
     """Display introspection results."""
-    console.print(
-        Panel(json.dumps(analysis, indent=2)[:500], title="Introspection Results")
-    )
+    console.print(Panel(json.dumps(analysis, indent=2)[:500], title="Introspection Results"))
 
 
 def _display_analysis_report(report: dict) -> None:

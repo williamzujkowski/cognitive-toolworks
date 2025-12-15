@@ -206,9 +206,7 @@ class SkillGenerator:
         overview = self._extract_section(content, ["# ", "## Overview"])
         when_to_use = self._extract_list_section(content, "When to Use")
         quick_ref = self._extract_section(content, "Quick Reference")
-        instructions = self._extract_section(
-            content, ["Instructions", "Workflows", "Detailed"]
-        )
+        instructions = self._extract_section(content, ["Instructions", "Workflows", "Detailed"])
         examples = self._extract_examples(content)
         guidelines = self._extract_list_section(content, "Guidelines")
         troubleshooting = self._extract_troubleshooting(content)
@@ -249,9 +247,7 @@ class SkillGenerator:
             name=data.get("name", "unnamed-skill"),
             description=data.get("description", ""),
             allowed_tools=(
-                data.get("allowed-tools", "").split(", ")
-                if data.get("allowed-tools")
-                else None
+                data.get("allowed-tools", "").split(", ") if data.get("allowed-tools") else None
             ),
         )
 
@@ -372,9 +368,7 @@ class SkillGenerator:
 
         return name
 
-    def render_skill(
-        self, skill: SkillContent, platform: Platform | None = None
-    ) -> str:
+    def render_skill(self, skill: SkillContent, platform: Platform | None = None) -> str:
         """
         Render SkillContent to markdown string using platform-specific template.
 

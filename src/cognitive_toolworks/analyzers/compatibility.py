@@ -48,9 +48,7 @@ class CompatibilityChecker:
         """Initialize compatibility checker."""
         pass
 
-    def analyze(
-        self, content: str | SkillContent | SkillMetadata
-    ) -> CompatibilityReport:
+    def analyze(self, content: str | SkillContent | SkillMetadata) -> CompatibilityReport:
         """
         Analyze content for cross-platform compatibility.
 
@@ -88,8 +86,7 @@ class CompatibilityChecker:
 
         # Determine compatibility status
         is_anthropic_compatible = not any(
-            i.platform == Platform.ANTHROPIC
-            and i.severity == CompatibilitySeverity.ERROR
+            i.platform == Platform.ANTHROPIC and i.severity == CompatibilitySeverity.ERROR
             for i in issues
         )
 
@@ -312,9 +309,7 @@ class CompatibilityChecker:
 
         # If already universal, add confirmation message
         if is_anthropic_compatible and is_openai_compatible:
-            recommendations.append(
-                "Skill is compatible with both Anthropic and OpenAI platforms"
-            )
+            recommendations.append("Skill is compatible with both Anthropic and OpenAI platforms")
             # Still return any INFO-level suggestions
             return recommendations
 
@@ -361,9 +356,7 @@ class CompatibilityChecker:
                 )
 
         # Generic recommendations based on warnings
-        warning_count = len(
-            [i for i in issues if i.severity == CompatibilitySeverity.WARNING]
-        )
+        warning_count = len([i for i in issues if i.severity == CompatibilitySeverity.WARNING])
         if warning_count > 0:
             recommendations.append(
                 f"Address {warning_count} warning(s) to improve cross-platform compatibility"

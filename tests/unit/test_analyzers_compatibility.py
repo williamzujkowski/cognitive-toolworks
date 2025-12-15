@@ -32,9 +32,7 @@ class TestCompatibilityChecker:
         assert report.is_universal is True
         assert len(report.anthropic_issues) == 0
         # OpenAI may have INFO-level suggestions but no errors
-        assert all(
-            i.severity != CompatibilitySeverity.ERROR for i in report.openai_issues
-        )
+        assert all(i.severity != CompatibilitySeverity.ERROR for i in report.openai_issues)
 
     def test_anthropic_description_too_long(self) -> None:
         """Test Anthropic description length limit (200 chars)."""
@@ -109,17 +107,13 @@ class TestCompatibilityChecker:
     def test_anthropic_description_xml_tags(self) -> None:
         """Test Anthropic prohibition of XML tags in description."""
         checker = CompatibilityChecker()
-        metadata = SkillMetadata(
-            name="test-skill", description="Use <tool> to process data"
-        )
+        metadata = SkillMetadata(name="test-skill", description="Use <tool> to process data")
 
         report = checker.analyze(metadata)
 
         assert report.is_anthropic_compatible is False
         desc_errors = [
-            i
-            for i in report.anthropic_issues
-            if i.field == "description" and "XML" in i.message
+            i for i in report.anthropic_issues if i.field == "description" and "XML" in i.message
         ]
         assert len(desc_errors) > 0
         assert desc_errors[0].severity == CompatibilitySeverity.ERROR
@@ -133,9 +127,7 @@ class TestCompatibilityChecker:
 
         # Should still be compatible but have a warning
         warning_issues = [
-            i
-            for i in report.anthropic_issues
-            if i.severity == CompatibilitySeverity.WARNING
+            i for i in report.anthropic_issues if i.severity == CompatibilitySeverity.WARNING
         ]
         assert len(warning_issues) > 0
         assert any("consecutive hyphens" in w.message for w in warning_issues)
@@ -151,9 +143,7 @@ class TestCompatibilityChecker:
 
         report = checker.analyze(metadata)
 
-        warning_issues = [
-            i for i in report.anthropic_issues if i.field == "allowed-tools"
-        ]
+        warning_issues = [i for i in report.anthropic_issues if i.field == "allowed-tools"]
         assert len(warning_issues) > 0
         assert warning_issues[0].severity == CompatibilitySeverity.WARNING
         assert "Wildcards" in warning_issues[0].message
@@ -171,9 +161,7 @@ class TestCompatibilityChecker:
 
         # Should be compatible but have INFO suggestion
         assert report.is_openai_compatible is True
-        info_issues = [
-            i for i in report.openai_issues if i.severity == CompatibilitySeverity.INFO
-        ]
+        info_issues = [i for i in report.openai_issues if i.severity == CompatibilitySeverity.INFO]
         assert any(i.field == "category" for i in info_issues)
 
     def test_openai_version_recommendation(self) -> None:
@@ -188,9 +176,7 @@ class TestCompatibilityChecker:
         report = checker.analyze(metadata)
 
         # Should have INFO suggestion about version
-        info_issues = [
-            i for i in report.openai_issues if i.severity == CompatibilitySeverity.INFO
-        ]
+        info_issues = [i for i in report.openai_issues if i.severity == CompatibilitySeverity.INFO]
         assert any(i.field == "version" for i in info_issues)
 
     def test_analyze_from_markdown_string(self) -> None:
@@ -342,17 +328,14 @@ No frontmatter here.
         report = checker.analyze(metadata)
         name_issues = [i for i in report.anthropic_issues if i.field == "name"]
         assert any(
-            i.fix_suggestion and "testskill" in i.fix_suggestion.lower()
-            for i in name_issues
+            i.fix_suggestion and "testskill" in i.fix_suggestion.lower() for i in name_issues
         )
 
         # Test with actual hyphens to verify they're preserved
         metadata2 = SkillMetadata(name="Test-Skill", description="Test")
         report2 = checker.analyze(metadata2)
         name_issues2 = [i for i in report2.anthropic_issues if i.field == "name"]
-        assert any(
-            i.fix_suggestion and "test-skill" in i.fix_suggestion for i in name_issues2
-        )
+        assert any(i.fix_suggestion and "test-skill" in i.fix_suggestion for i in name_issues2)
 
     def test_allowed_tools_string_format(self) -> None:
         """Test parsing of allowed-tools as comma-separated string."""

@@ -66,10 +66,7 @@ def large_skill() -> SkillContent:
 
     # Create verbose content that will exceed T2_BUDGET
     verbose_instructions = "\n\n".join(
-        [
-            f"Step {i}: " + " ".join(["This is verbose content."] * 50)
-            for i in range(1, 100)
-        ]
+        [f"Step {i}: " + " ".join(["This is verbose content."] * 50) for i in range(1, 100)]
     )
 
     return SkillContent(
@@ -89,8 +86,7 @@ def large_skill() -> SkillContent:
         ],
         guidelines=[f"Guideline {i}: " + "Follow this. " * 10 for i in range(1, 30)],
         troubleshooting=[
-            {"issue": f"Issue {i}", "solution": "Long solution. " * 20}
-            for i in range(1, 20)
+            {"issue": f"Issue {i}", "solution": "Long solution. " * 20} for i in range(1, 20)
         ],
     )
 
@@ -147,9 +143,7 @@ class TestProgressiveDisclosureOptimizer:
     """Tests for ProgressiveDisclosureOptimizer."""
 
     @pytest.mark.asyncio
-    async def test_optimize_already_under_budget(
-        self, sample_skill: SkillContent
-    ) -> None:
+    async def test_optimize_already_under_budget(self, sample_skill: SkillContent) -> None:
         """Test optimization when skill is already under budget."""
         optimizer = ProgressiveDisclosureOptimizer()
 
@@ -158,14 +152,10 @@ class TestProgressiveDisclosureOptimizer:
         assert result.original_tokens <= T2_BUDGET
         assert result.optimized_tokens == result.original_tokens
         assert result.within_budget
-        assert any(
-            "already within T2 budget" in change for change in result.changes_made
-        )
+        assert any("already within T2 budget" in change for change in result.changes_made)
 
     @pytest.mark.asyncio
-    async def test_optimize_large_skill_dry_run(
-        self, large_skill: SkillContent
-    ) -> None:
+    async def test_optimize_large_skill_dry_run(self, large_skill: SkillContent) -> None:
         """Test dry run optimization of large skill."""
         import json
 
@@ -270,9 +260,7 @@ Step 2: Do that.
             stop_reason="end_turn",
         )
 
-        mock_client.generate = AsyncMock(
-            side_effect=[analysis_response, rewrite_response]
-        )
+        mock_client.generate = AsyncMock(side_effect=[analysis_response, rewrite_response])
 
         optimizer = ProgressiveDisclosureOptimizer(client=mock_client, dry_run=False)
         result = await optimizer.optimize(large_skill)
@@ -429,9 +417,7 @@ Run `test-command`.
             stop_reason="end_turn",
         )
 
-        mock_client.generate = AsyncMock(
-            side_effect=[analysis_response, restructure_response]
-        )
+        mock_client.generate = AsyncMock(side_effect=[analysis_response, restructure_response])
 
         optimizer = StructureOptimizer(client=mock_client, dry_run=False)
         result = await optimizer.optimize(sample_skill)

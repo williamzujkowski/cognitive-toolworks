@@ -60,9 +60,7 @@ Does something useful.
             (temp_dir / "installation.md").write_text(
                 "# Installation\n\n```bash\npip install pkg\n```"
             )
-            (temp_dir / "usage.md").write_text(
-                "# Usage\n\n```python\nimport pkg\npkg.run()\n```"
-            )
+            (temp_dir / "usage.md").write_text("# Usage\n\n```python\nimport pkg\npkg.run()\n```")
 
             parser = DocsParser()
             result = parser.parse_directory(temp_dir)
@@ -314,9 +312,7 @@ advanced.process()
 
         parser = DocsParser()
 
-        install_page = PageInfo(
-            title="Installation Guide", url="install.md", content=""
-        )
+        install_page = PageInfo(title="Installation Guide", url="install.md", content="")
         assert parser._is_installation_page(install_page) is True
 
         other_page = PageInfo(title="Tutorial", url="tutorial.md", content="")
@@ -540,9 +536,7 @@ advanced.process()
         """Test parse_docs convenience function with HTML directory."""
         with TemporaryDirectory() as tmpdir:
             temp_dir = Path(tmpdir)
-            (temp_dir / "index.html").write_text(
-                "<html><head><title>Test</title></head></html>"
-            )
+            (temp_dir / "index.html").write_text("<html><head><title>Test</title></head></html>")
 
             result = parse_docs(temp_dir)
 
@@ -692,20 +686,14 @@ Processes the input data.
 
             # Verify code examples
             assert len(result.code_examples) >= 4
-            bash_examples = [
-                ex for ex in result.code_examples if ex["language"] == "bash"
-            ]
-            python_examples = [
-                ex for ex in result.code_examples if ex["language"] == "python"
-            ]
+            bash_examples = [ex for ex in result.code_examples if ex["language"] == "bash"]
+            python_examples = [ex for ex in result.code_examples if ex["language"] == "python"]
             assert len(bash_examples) >= 2
             assert len(python_examples) >= 2
 
             # Verify installation instructions
             assert len(result.installation_instructions) >= 1
-            assert any(
-                "pip install" in inst for inst in result.installation_instructions
-            )
+            assert any("pip install" in inst for inst in result.installation_instructions)
 
             # Verify API references
             assert len(result.api_references) >= 1

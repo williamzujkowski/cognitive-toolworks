@@ -1,7 +1,7 @@
 ---
 name: Kafka Messaging Architect
 slug: messaging-kafka-architect
-description: Design Apache Kafka architectures with producer/consumer patterns, exactly-once semantics, Kafka Streams, ksqlDB, Schema Registry (Avro/Protobuf), performance tuning, and KRaft deployment.
+description: Design Kafka architectures with exactly-once semantics, Kafka Streams, ksqlDB, Schema Registry (Avro/Protobuf), performance tuning, and KRaft.
 capabilities:
   - Kafka topology design (topics, partitions, replication factor, KRaft vs ZooKeeper)
   - Producer patterns (idempotent, transactional, batching, compression, exactly-once)

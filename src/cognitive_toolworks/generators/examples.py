@@ -119,9 +119,7 @@ class ExampleSet:
         issues = []
         for i, example in enumerate(self.examples):
             if not example.is_valid():
-                issues.append(
-                    f"Example {i + 1} ({example.title}): missing required fields"
-                )
+                issues.append(f"Example {i + 1} ({example.title}): missing required fields")
             if len(example.code) < 10:
                 issues.append(f"Example {i + 1} ({example.title}): code too short")
             if not example.description:
@@ -182,10 +180,7 @@ class ExampleGenerator:
             skill_overview=skill_overview or semantic.purpose,
             tools_json=json.dumps(list(semantic.tool_categories.keys()), indent=2),
             workflows_json=json.dumps(
-                [
-                    w if isinstance(w, dict) else {"name": str(w)}
-                    for w in semantic.workflows
-                ],
+                [w if isinstance(w, dict) else {"name": str(w)} for w in semantic.workflows],
                 indent=2,
             ),
         )
@@ -338,9 +333,7 @@ Output as JSON with all fields including the enhancements."""
         issues: list[str] = []
         for i, example in enumerate(examples):
             if not example.is_valid():
-                issues.append(
-                    f"Example {i + 1} ({example.title}): missing required fields"
-                )
+                issues.append(f"Example {i + 1} ({example.title}): missing required fields")
             if len(example.code) < 10:
                 issues.append(f"Example {i + 1} ({example.title}): code too short")
             if not example.description:
@@ -361,9 +354,7 @@ Output as JSON with all fields including the enhancements."""
         Returns:
             Markdown-formatted examples section.
         """
-        example_list = (
-            examples.examples if isinstance(examples, ExampleSet) else examples
-        )
+        example_list = examples.examples if isinstance(examples, ExampleSet) else examples
 
         if not example_list:
             return ""

@@ -157,9 +157,7 @@ class CoverageAnalyzer:
                 name=name,
                 present=False,
                 completeness=CoverageLevel.MISSING,
-                issues=[
-                    f"{'Required' if required else 'Recommended'} section '{name}' is missing"
-                ],
+                issues=[f"{'Required' if required else 'Recommended'} section '{name}' is missing"],
             )
 
         # Assess completeness based on content length
@@ -196,9 +194,7 @@ class CoverageAnalyzer:
 
         return "\n".join(section_lines)
 
-    def _assess_completeness(
-        self, section_content: str, section_name: str
-    ) -> CoverageLevel:
+    def _assess_completeness(self, section_content: str, section_name: str) -> CoverageLevel:
         """Assess completeness of a section's content."""
         if not section_content.strip():
             return CoverageLevel.MISSING
@@ -217,9 +213,7 @@ class CoverageAnalyzer:
             "troubleshooting": {"complete": 3, "good": 2, "partial": 1},
         }
 
-        thresh = thresholds.get(
-            section_name, {"complete": 50, "good": 20, "partial": 5}
-        )
+        thresh = thresholds.get(section_name, {"complete": 50, "good": 20, "partial": 5})
 
         # Use line count for lists, word count for prose
         if section_name in ["when_to_use", "examples", "troubleshooting"]:
@@ -236,9 +230,7 @@ class CoverageAnalyzer:
         else:
             return CoverageLevel.MINIMAL
 
-    def _find_section_issues(
-        self, section_content: str, section_name: str
-    ) -> list[str]:
+    def _find_section_issues(self, section_content: str, section_name: str) -> list[str]:
         """Find specific issues with a section."""
         issues: list[str] = []
 
@@ -314,9 +306,7 @@ class CoverageAnalyzer:
             )
         else:
             # Check if commands have descriptions
-            completeness = (
-                CoverageLevel.COMPLETE if len(commands) >= 3 else CoverageLevel.PARTIAL
-            )
+            completeness = CoverageLevel.COMPLETE if len(commands) >= 3 else CoverageLevel.PARTIAL
             sections.append(
                 SectionCoverage(
                     name="commands",
@@ -390,9 +380,7 @@ class CoverageAnalyzer:
             if section.completeness == CoverageLevel.MISSING:
                 recommendations.append(f"Add '{section.name}' section")
             elif section.completeness in (CoverageLevel.MINIMAL, CoverageLevel.PARTIAL):
-                recommendations.append(
-                    f"Expand '{section.name}' section with more detail"
-                )
+                recommendations.append(f"Expand '{section.name}' section with more detail")
 
             for issue in section.issues:
                 if issue not in recommendations:

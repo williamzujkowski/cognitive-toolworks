@@ -56,9 +56,7 @@ class AAIFValidationResult:
             "counts": {
                 "errors": len(self.errors),
                 "warnings": len(self.warnings),
-                "info": len(
-                    [i for i in self.issues if i.severity == ValidationSeverity.INFO]
-                ),
+                "info": len([i for i in self.issues if i.severity == ValidationSeverity.INFO]),
             },
         }
 
@@ -138,9 +136,7 @@ class AAIFValidator:
                     fix_suggestion="Add frontmatter starting with --- and ending with ---",
                 )
             )
-            return AAIFValidationResult(
-                valid=False, issues=issues, tier_compliance={}, score=0.0
-            )
+            return AAIFValidationResult(valid=False, issues=issues, tier_compliance={}, score=0.0)
 
         # Validate frontmatter fields
         issues.extend(self._validate_frontmatter(frontmatter))
@@ -204,9 +200,7 @@ class AAIFValidator:
         except yaml.YAMLError:
             return None
 
-    def _validate_frontmatter(
-        self, frontmatter: dict[str, Any]
-    ) -> list[ValidationIssue]:
+    def _validate_frontmatter(self, frontmatter: dict[str, Any]) -> list[ValidationIssue]:
         """Validate required frontmatter fields."""
         issues: list[ValidationIssue] = []
 
@@ -258,9 +252,7 @@ class AAIFValidator:
 
         return issues
 
-    def _validate_naming_convention(
-        self, frontmatter: dict[str, Any]
-    ) -> list[ValidationIssue]:
+    def _validate_naming_convention(self, frontmatter: dict[str, Any]) -> list[ValidationIssue]:
         """Validate naming convention follows AAIF standards."""
         issues: list[ValidationIssue] = []
 
@@ -304,10 +296,7 @@ class AAIFValidator:
 
         # Check for required sections
         for required_section in self.REQUIRED_SECTIONS:
-            found = any(
-                required_section.lower() in section.lower()
-                for section in sections_found
-            )
+            found = any(required_section.lower() in section.lower() for section in sections_found)
             if not found:
                 issues.append(
                     ValidationIssue(
@@ -426,9 +415,7 @@ class AAIFValidator:
 
         # Check if token budgets are mentioned in Quality Gates
         if "quality gates" in content.lower():
-            has_budget_mention = (
-                "token" in content.lower() and "budget" in content.lower()
-            )
+            has_budget_mention = "token" in content.lower() and "budget" in content.lower()
             if not has_budget_mention:
                 issues.append(
                     ValidationIssue(
@@ -469,9 +456,7 @@ class AAIFValidator:
                     result_lines.append(line)
             elif in_section:
                 # Stop at T2/T3 procedure subsections
-                if "###" in line and (
-                    "tier 2" in line.lower() or "tier 3" in line.lower()
-                ):
+                if "###" in line and ("tier 2" in line.lower() or "tier 3" in line.lower()):
                     in_section = False
                 else:
                     result_lines.append(line)
@@ -512,9 +497,7 @@ class AAIFValidator:
         issues: list[ValidationIssue] = []
 
         # Check for tiered procedure sections
-        has_t1_procedure = (
-            "### step 1" in content.lower() or "t1 procedure" in content.lower()
-        )
+        has_t1_procedure = "### step 1" in content.lower() or "t1 procedure" in content.lower()
         has_procedure_section = "## procedure" in content.lower()
 
         if has_procedure_section and not has_t1_procedure:
@@ -554,9 +537,7 @@ class AAIFValidator:
         references = skill_ref_pattern.findall(content)
 
         # Look for explicit "see also" or "related skills" sections
-        has_related_section = (
-            "see also" in content.lower() or "related skills" in content.lower()
-        )
+        has_related_section = "see also" in content.lower() or "related skills" in content.lower()
 
         if references and not has_related_section:
             issues.append(
@@ -634,9 +615,7 @@ class AAIFValidator:
         score -= error_count * 0.15
 
         # Deduct for warnings
-        warning_count = len(
-            [i for i in issues if i.severity == ValidationSeverity.WARNING]
-        )
+        warning_count = len([i for i in issues if i.severity == ValidationSeverity.WARNING])
         score -= warning_count * 0.05
 
         # Deduct for info issues

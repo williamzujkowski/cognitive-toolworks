@@ -1,7 +1,7 @@
 ---
 name: Observability Unified Dashboard
 slug: observability-unified-dashboard
-description: Design unified observability dashboards with golden signals (latency, traffic, errors, saturation), OpenTelemetry correlation, SLO tracking, and Grafana 11 auto-correlations.
+description: Design unified dashboards with golden signals, OpenTelemetry correlation, SLO tracking, and Grafana 11 auto-correlations for metrics/logs/traces.
 capabilities:
   - Unified dashboard design integrating metrics, logs, and traces
   - Golden Signals implementation (latency, traffic, errors, saturation)

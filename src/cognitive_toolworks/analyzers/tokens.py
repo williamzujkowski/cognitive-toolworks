@@ -161,9 +161,7 @@ class TokenAnalyzer:
 
         # List efficiency (lists are compact)
         list_lines = sum(
-            1
-            for line in content.split("\n")
-            if line.strip().startswith(("-", "*", "1."))
+            1 for line in content.split("\n") if line.strip().startswith(("-", "*", "1."))
         )
         total_lines = len([line for line in content.split("\n") if line.strip()])
         if total_lines > 0:
@@ -192,10 +190,7 @@ class TokenAnalyzer:
 
         # Lists are useful
         useful_indicators += (
-            sum(
-                1 for line in content.split("\n") if line.strip().startswith(("-", "*"))
-            )
-            * 5
+            sum(1 for line in content.split("\n") if line.strip().startswith(("-", "*"))) * 5
         )
 
         # Headers structure content

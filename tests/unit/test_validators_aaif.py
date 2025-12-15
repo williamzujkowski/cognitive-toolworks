@@ -100,9 +100,7 @@ description: "Missing other fields"
         result = validator.validate(content)
         assert result.valid is False
         # Should have errors for missing slug, capabilities, inputs, etc.
-        missing_fields = [
-            i for i in result.issues if i.severity == ValidationSeverity.ERROR
-        ]
+        missing_fields = [i for i in result.issues if i.severity == ValidationSeverity.ERROR]
         assert len(missing_fields) > 5
 
     def test_description_too_long(self) -> None:
@@ -163,8 +161,7 @@ links:
         result = validator.validate(content)
         # Should have warning about slug format
         assert any(
-            "naming convention" in i.message.lower()
-            and i.severity == ValidationSeverity.WARNING
+            "naming convention" in i.message.lower() and i.severity == ValidationSeverity.WARNING
             for i in result.issues
         )
 
@@ -386,8 +383,7 @@ Resources here.
         result = validator.validate(content)
         assert result.valid is False
         assert any(
-            "TODO" in i.message and i.severity == ValidationSeverity.ERROR
-            for i in result.issues
+            "TODO" in i.message and i.severity == ValidationSeverity.ERROR for i in result.issues
         )
 
     def test_security_secrets_detected(self) -> None:
@@ -448,8 +444,7 @@ Resources here.
         result = validator.validate(content)
         assert result.valid is False
         assert any(
-            "API key" in i.message and i.severity == ValidationSeverity.ERROR
-            for i in result.issues
+            "API key" in i.message and i.severity == ValidationSeverity.ERROR for i in result.issues
         )
 
     def test_sections_out_of_order(self) -> None:
@@ -510,8 +505,7 @@ Resources here.
         result = validator.validate(content)
         # Should have warning about section order
         assert any(
-            "out of order" in i.message.lower()
-            and i.severity == ValidationSeverity.WARNING
+            "out of order" in i.message.lower() and i.severity == ValidationSeverity.WARNING
             for i in result.issues
         )
 

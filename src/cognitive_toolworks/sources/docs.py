@@ -204,9 +204,7 @@ class DocsParser:
             pages=[page],
             code_examples=self._extract_code_examples(page.content),
             api_references=self._extract_api_references(page.content),
-            installation_instructions=self._extract_installation_instructions(
-                page.content
-            ),
+            installation_instructions=self._extract_installation_instructions(page.content),
             usage_patterns=self._extract_usage_patterns(page.content),
         )
 
@@ -228,11 +226,7 @@ class DocsParser:
             url = str(file_path)
 
         # Compute hierarchy level based on path depth
-        level = (
-            len(file_path.relative_to(self.base_path).parts) - 1
-            if self.base_path
-            else 0
-        )
+        level = len(file_path.relative_to(self.base_path).parts) - 1 if self.base_path else 0
 
         # Determine parent from directory structure
         parent = None
@@ -270,11 +264,7 @@ class DocsParser:
             url = str(file_path)
 
         # Compute hierarchy level
-        level = (
-            len(file_path.relative_to(self.base_path).parts) - 1
-            if self.base_path
-            else 0
-        )
+        level = len(file_path.relative_to(self.base_path).parts) - 1 if self.base_path else 0
 
         return PageInfo(
             title=title,
@@ -315,12 +305,8 @@ class DocsParser:
         consider using BeautifulSoup or similar libraries.
         """
         # Remove script and style tags
-        content = re.sub(
-            r"<script[^>]*>.*?</script>", "", content, flags=re.DOTALL | re.IGNORECASE
-        )
-        content = re.sub(
-            r"<style[^>]*>.*?</style>", "", content, flags=re.DOTALL | re.IGNORECASE
-        )
+        content = re.sub(r"<script[^>]*>.*?</script>", "", content, flags=re.DOTALL | re.IGNORECASE)
+        content = re.sub(r"<style[^>]*>.*?</style>", "", content, flags=re.DOTALL | re.IGNORECASE)
 
         # Remove HTML tags
         content = re.sub(r"<[^>]+>", " ", content)
@@ -447,9 +433,7 @@ class DocsParser:
         instructions = []
         for page in self.pages:
             if self._is_installation_page(page):
-                page_instructions = self._extract_installation_instructions(
-                    page.content
-                )
+                page_instructions = self._extract_installation_instructions(page.content)
                 instructions.extend(page_instructions)
         return instructions
 

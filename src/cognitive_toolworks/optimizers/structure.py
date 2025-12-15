@@ -178,9 +178,7 @@ Output the restructured SKILL.md content in markdown format."""
 
             # Step 2: Restructure the skill if not dry run
             if self.dry_run:
-                changes_made.append(
-                    "Dry run - analysis only, no restructuring performed"
-                )
+                changes_made.append("Dry run - analysis only, no restructuring performed")
                 return OptimizationResult(
                     original_tokens=original_tokens,
                     optimized_tokens=original_tokens,
@@ -295,9 +293,7 @@ Output the restructured SKILL.md content in markdown format."""
             return {
                 "original_tokens": original_tokens,
                 "analysis": analysis_response.as_json,
-                "total_issues": len(
-                    analysis_response.as_json.get("structure_issues", [])
-                )
+                "total_issues": len(analysis_response.as_json.get("structure_issues", []))
                 + len(analysis_response.as_json.get("readability_issues", []))
                 + len(analysis_response.as_json.get("llm_optimization_issues", [])),
             }
