@@ -7,7 +7,13 @@ This module provides validators for:
 - AAIF standards (aaif.py)
 """
 
+from cognitive_toolworks.validators.aaif import AAIFValidationResult, AAIFValidator
 from cognitive_toolworks.validators.anthropic import AnthropicValidator
 from cognitive_toolworks.validators.openai import OpenAIValidator
 
-__all__ = ["AnthropicValidator", "OpenAIValidator"]
+__all__ = [
+    "AAIFValidationResult",
+    "AAIFValidator",
+    "AnthropicValidator",
+    "OpenAIValidator",
+]

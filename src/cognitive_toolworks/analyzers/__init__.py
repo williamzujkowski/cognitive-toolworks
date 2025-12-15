@@ -8,11 +8,13 @@ This module provides analyzers for:
 - Cross-platform compatibility (compatibility.py)
 """
 
+from cognitive_toolworks.analyzers.compatibility import CompatibilityChecker
 from cognitive_toolworks.analyzers.coverage import CoverageAnalyzer
 from cognitive_toolworks.analyzers.security import SecurityAnalyzer
 from cognitive_toolworks.analyzers.tokens import TokenAnalyzer, count_tokens
 
 __all__ = [
+    "CompatibilityChecker",
     "CoverageAnalyzer",
     "SecurityAnalyzer",
     "TokenAnalyzer",

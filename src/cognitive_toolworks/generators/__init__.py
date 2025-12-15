@@ -9,6 +9,23 @@ This module provides LLM-powered generators for:
 """
 
 from cognitive_toolworks.generators.agents import AgentsGenerator
+from cognitive_toolworks.generators.examples import (
+    Example,
+    ExampleComplexity,
+    ExampleGenerationConfig,
+    ExampleGenerator,
+    ExampleSet,
+    create_example,
+)
 from cognitive_toolworks.generators.skill import SkillGenerator
 
-__all__ = ["AgentsGenerator", "SkillGenerator"]
+__all__ = [
+    "AgentsGenerator",
+    "Example",
+    "ExampleComplexity",
+    "ExampleGenerationConfig",
+    "ExampleGenerator",
+    "ExampleSet",
+    "SkillGenerator",
+    "create_example",
+]
