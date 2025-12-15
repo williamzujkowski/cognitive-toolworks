@@ -2,14 +2,32 @@
 
 ## Executive Summary
 
-**Vision**: Transform cognitive-toolworks from a static skills library into an **LLM-powered generation platform** for creating cross-platform agent artifacts (SKILL.md, AGENTS.md) aligned with the newly formed Agentic AI Foundation (AAIF) ecosystem.
+**Vision**: Transform cognitive-toolworks from a static skills library into an **LLM-powered generation platform** for creating cross-platform agent artifacts (SKILL.md, AGENTS.md) aligned with the AAIF ecosystem.
 
-**Timing**: Perfect convergence of industry events:
-- Dec 9, 2025: AAIF founded (Anthropic MCP + OpenAI AGENTS.md + Block goose)
-- Dec 13, 2025: OpenAI ships Skills framework mirroring Anthropic's format
-- 60,000+ repos now using AGENTS.md; 10,000+ MCP servers published
+---
 
-**Gap Identified**: No LLM-powered tool exists for intelligent generation of skills and agent configs. Existing converters (mcp-to-skill-converter, skillz, etc.) are mechanical template-based transformers.
+## Implementation Status (as of 2025-12-15)
+
+| Phase | Status | Details |
+|-------|--------|---------|
+| Phase 1: Foundation | ✅ Complete | Core modules, MCP introspection, CLI, basic LLM client |
+| Phase 2: Multi-Source | ⚠️ Partial | MCP + AGENTS.md functional; OpenAPI/README/scripts not implemented |
+| Phase 3: Analysis | ⚠️ Partial | Token/security/coverage analyzers exist; optimization is basic |
+| Phase 4: Claude-Flow | ⚠️ Partial | Workflow files exist but not deeply integrated |
+| Phase 5: Polish | ❌ Not Started | No PyPI package, no docs site |
+
+**What Works**:
+- MCP server introspection and skill generation
+- AGENTS.md generation from repository analysis
+- Cross-platform validation (Anthropic + OpenAI)
+- Token counting, security scanning, coverage analysis
+- CLI with all core commands
+
+**Known Limitations**:
+- OpenAPI parsing returns placeholder data (not functional)
+- README/script analysis not implemented
+- Optimization is basic whitespace removal (not LLM-powered)
+- Claude-flow orchestration flag exists but falls back to regular generation
 
 ---
 
@@ -38,16 +56,16 @@ Generate → Validate → Optimize → Deploy
 Cross-platform agent artifacts powered by LLM intelligence
 ```
 
-**Differentiators**:
-| Feature | Existing Tools | cognitive-toolworks v2.0 |
-|---------|---------------|--------------------------|
-| Generation Method | Template-based | LLM-powered synthesis |
-| Output Formats | Single platform | Multi-platform (Anthropic + OpenAI) |
-| Source Support | MCP only | MCP, OpenAPI, README, scripts, docs |
-| Quality Analysis | None | Token efficiency, coverage, security |
-| Examples | Manual | Auto-generated from semantic analysis |
-| Progressive Disclosure | Manual structuring | Auto-optimized |
-| Security | Basic | Built-in pattern detection |
+**Differentiators** (actual vs planned):
+| Feature | Existing Tools | cognitive-toolworks v2.0 | Status |
+|---------|---------------|--------------------------|--------|
+| Generation Method | Template-based | LLM-powered synthesis | ✅ Implemented |
+| Output Formats | Single platform | Multi-platform (Anthropic + OpenAI) | ✅ Implemented |
+| Source Support | MCP only | MCP (+ OpenAPI, README planned) | ⚠️ MCP only |
+| Quality Analysis | None | Token efficiency, coverage, security | ✅ Implemented |
+| Examples | Manual | LLM-generated | ✅ Implemented |
+| Progressive Disclosure | Manual structuring | Basic optimization | ⚠️ Basic |
+| Security | Basic | Built-in pattern detection | ✅ Implemented |
 
 ### 1.3 Target Users
 
