@@ -11,8 +11,8 @@ import pickle
 from pathlib import Path
 from typing import Any
 
-from sklearn.feature_extraction.text import (
-    TfidfVectorizer,  # type: ignore[import-not-found,import-untyped]
+from sklearn.feature_extraction.text import (  # type: ignore[import-not-found]
+    TfidfVectorizer,
 )
 
 
