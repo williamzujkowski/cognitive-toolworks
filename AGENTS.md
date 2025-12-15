@@ -4,7 +4,9 @@
 
 ## Project Overview
 
-Cognitive Toolworks is an LLM-powered platform for generating cross-platform agent artifacts (SKILL.md, AGENTS.md, llms.txt). It transforms various sources (MCP servers, OpenAPI specs, documentation) into high-quality skills compatible with the AAIF ecosystem (Anthropic Claude, OpenAI Codex, Gemini CLI).
+Cognitive Toolworks is an LLM-powered platform for generating cross-platform agent artifacts (SKILL.md, AGENTS.md, llms.txt). It transforms MCP servers and repositories into skills compatible with Claude, Codex, and other agents.
+
+> **Status**: MCP generation stable. OpenAPI/README sources planned but not yet implemented.
 
 ## Dev Environment
 
@@ -38,9 +40,6 @@ ct --version
 ### Environment Variables
 ```bash
 ANTHROPIC_API_KEY=sk-ant-...     # Required for LLM generation
-CT_DEFAULT_PLATFORM=universal    # Default output platform
-CT_TOKEN_BUDGET=5000             # Default Level 2 token budget
-CT_CACHE_DIR=~/.cache/ct         # Cache for introspection results
 ```
 
 ## Testing Instructions
