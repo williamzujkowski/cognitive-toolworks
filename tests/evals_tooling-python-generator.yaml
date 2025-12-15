@@ -1,0 +1,71 @@
+skill: tooling-python-generator
+version: 1.0.0
+timestamp: 2025-10-26T00:00:00-05:00
+
+scenarios:
+  - name: basic-library-poetry
+    description: "Generate a simple Python library with Poetry"
+    input:
+      project_type: library
+      dependency_manager: poetry
+      python_version: "3.11"
+      project_name: "data-utils"
+    expected:
+      - pyproject.toml with Poetry configuration
+      - src/data_utils/__init__.py
+      - src/data_utils/py.typed marker
+      - pytest configuration with coverage
+      - mypy strict mode enabled
+    token_tier: T1
+
+  - name: cli-tool-with-click
+    description: "Generate CLI tool with Click and testing"
+    input:
+      project_type: cli
+      dependency_manager: poetry
+      python_version: "3.12"
+      project_name: "build-tool"
+    expected:
+      - pyproject.toml with Click dependency
+      - Poetry scripts entry point
+      - pytest with Click testing utilities
+      - ruff and black configuration
+    token_tier: T2
+
+  - name: fastapi-service
+    description: "Generate FastAPI service with async testing"
+    input:
+      project_type: application
+      dependency_manager: poetry
+      python_version: "3.11"
+      project_name: "payment-api"
+    expected:
+      - FastAPI and uvicorn dependencies
+      - pytest-asyncio configuration
+      - httpx for testing
+      - Pydantic mypy plugin
+    token_tier: T2
+
+  - name: pipenv-data-pipeline
+    description: "Generate data pipeline with pipenv"
+    input:
+      project_type: data-pipeline
+      dependency_manager: pipenv
+      python_version: "3.10"
+      project_name: "etl-pipeline"
+    expected:
+      - Pipfile with dev/prod separation
+      - Jupyter notebook support
+      - pandas and numpy type stubs
+      - pytest configuration
+    token_tier: T2
+
+  - name: invalid-package-name
+    description: "Error case: uppercase package name should be rejected"
+    input:
+      project_type: library
+      dependency_manager: poetry
+      python_version: "3.11"
+      project_name: "InvalidName"
+    expected_error: "Invalid package name"
+    token_tier: T1

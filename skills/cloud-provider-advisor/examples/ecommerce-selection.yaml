@@ -1,0 +1,56 @@
+# Cloud Provider Selection: E-commerce Platform
+
+scenario:
+  company: "Mid-size retailer migrating from on-premises"
+  workload_type: "web-app"
+  scale: "100K daily users, 1M products, 10TB data"
+  priorities: [cost, performance, migration-ease]
+  constraints:
+    region: "us-east (primary), eu-west (secondary)"
+    compliance: "PCI-DSS Level 1"
+    timeline: "6 months migration"
+
+comparison:
+  aws:
+    services:
+      compute: "ECS Fargate (containerized microservices)"
+      database: "Aurora PostgreSQL (15K IOPS)"
+      storage: "S3 + CloudFront (static assets/CDN)"
+      cache: "ElastiCache Redis (session store)"
+    monthly_cost: "$2,850"
+    pros: ["Mature PCI-DSS compliance", "Largest partner ecosystem", "Aurora performance (5x)"]
+    cons: ["Higher egress costs", "Steeper learning curve", "Vendor lock-in (Aurora)"]
+
+  gcp:
+    services:
+      compute: "Cloud Run (serverless containers)"
+      database: "Cloud SQL PostgreSQL (12K IOPS)"
+      storage: "Cloud Storage + Cloud CDN"
+      cache: "Memorystore Redis"
+    monthly_cost: "$2,340"
+    pros: ["Lowest cost (sustained discounts)", "Simple developer experience", "Excellent BigQuery for analytics"]
+    cons: ["Smaller PCI-DSS partner ecosystem", "Fewer regions", "Less enterprise support"]
+
+  azure:
+    services:
+      compute: "App Service (PaaS web hosting)"
+      database: "Azure SQL Database (8K IOPS)"
+      storage: "Blob Storage + Front Door"
+      cache: "Azure Cache for Redis"
+    monthly_cost: "$2,650"
+    pros: ["Hybrid cloud (on-prem integration)", "Strong compliance (PCI-DSS certified)", "Azure Migrate tools"]
+    cons: ["More expensive than GCP", "SQL Database not PostgreSQL", "Complex networking"]
+
+recommendation: "AWS"
+rationale:
+  - PCI-DSS Level 1 compliance well-established (10+ years)
+  - Aurora performance critical for product catalog queries
+  - Large partner ecosystem for e-commerce (Shopify, Stripe integrations)
+  - Migration tools mature (AWS Migration Hub, Database Migration Service)
+  - Cost difference ($510/mo) justified by performance and compliance confidence
+
+migration_plan:
+  phase_1: "Migrate static assets to S3 + CloudFront (week 1-2)"
+  phase_2: "Migrate product database to Aurora (week 3-8, use DMS)"
+  phase_3: "Containerize and deploy app to ECS Fargate (week 9-20)"
+  phase_4: "Cutover with Route 53 weighted routing (week 21-24)"

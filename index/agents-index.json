@@ -22,7 +22,7 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/agent-creator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/agent-creator/AGENT.md"
   },
   {
     "slug": "architecture-decision-orchestrator",
@@ -47,31 +47,7 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/architecture-decision-orchestrator/AGENT.md"
-  },
-  {
-    "slug": "cloud-azure-orchestrator",
-    "name": "Azure Cloud Architect",
-    "description": "Orchestrates Azure solution delivery by coordinating requirements, architecture design, cost optimization, and deployment planning.",
-    "keywords": [
-      "azure-orchestration",
-      "solution-architecture",
-      "workflow-coordination",
-      "requirements-discovery",
-      "architecture-decisions",
-      "deployment-planning"
-    ],
-    "model": "inherit",
-    "tools": [
-      "Read",
-      "Write",
-      "Bash",
-      "Grep",
-      "Glob"
-    ],
-    "version": "1.0.0",
-    "owner": "cognitive-toolworks",
-    "entry": "agents/cloud-azure-orchestrator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/architecture-decision-orchestrator/AGENT.md"
   },
   {
     "slug": "cloud-aws-orchestrator",
@@ -95,7 +71,31 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/cloud-aws-orchestrator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/cloud-aws-orchestrator/AGENT.md"
+  },
+  {
+    "slug": "cloud-azure-orchestrator",
+    "name": "Azure Cloud Architect",
+    "description": "Orchestrates Azure solution delivery by coordinating requirements, architecture design, cost optimization, and deployment planning.",
+    "keywords": [
+      "azure-orchestration",
+      "solution-architecture",
+      "workflow-coordination",
+      "requirements-discovery",
+      "architecture-decisions",
+      "deployment-planning"
+    ],
+    "model": "inherit",
+    "tools": [
+      "Read",
+      "Write",
+      "Bash",
+      "Grep",
+      "Glob"
+    ],
+    "version": "1.0.0",
+    "owner": "cognitive-toolworks",
+    "entry": "/home/william/git/cognitive-toolworks/agents/cloud-azure-orchestrator/AGENT.md"
   },
   {
     "slug": "cloud-gcp-orchestrator",
@@ -119,12 +119,12 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/cloud-gcp-orchestrator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/cloud-gcp-orchestrator/AGENT.md"
   },
   {
     "slug": "cloud-native-orchestrator",
     "name": "Cloud-Native Deployment Orchestrator",
-    "description": "Orchestrates end-to-end cloud-native deployments by coordinating container optimization, Kubernetes manifests, Helm charts, service mesh, serverless, and cloud platform integration.",
+    "description": "Orchestrates end-to-end cloud-native deployments by coordinating container optimization, Kubernetes manifests, Helm charts, service mesh, serverless, and cloud ",
     "keywords": [
       "cloud-native",
       "kubernetes",
@@ -145,8 +145,7 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/cloud-native-orchestrator/AGENT.md",
-    "replaces": "skills/cloud-native-deployment-orchestrator"
+    "entry": "/home/william/git/cognitive-toolworks/agents/cloud-native-orchestrator/AGENT.md"
   },
   {
     "slug": "compliance-orchestrator",
@@ -175,7 +174,7 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/compliance-orchestrator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/compliance-orchestrator/AGENT.md"
   },
   {
     "slug": "cost-optimization-orchestrator",
@@ -200,7 +199,7 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/cost-optimization-orchestrator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/cost-optimization-orchestrator/AGENT.md"
   },
   {
     "slug": "database-migration-orchestrator",
@@ -226,12 +225,12 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/database-migration-orchestrator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/database-migration-orchestrator/AGENT.md"
   },
   {
     "slug": "design-system-builder",
     "name": "Design System Builder",
-    "description": "Orchestrates design system creation and evolution by coordinating design token definition, component library design, accessibility validation, and documentation generation.",
+    "description": "Orchestrates design system creation and evolution by coordinating design token definition, component library design, accessibility validation, and documentation",
     "keywords": [
       "design-system",
       "design-tokens",
@@ -251,7 +250,7 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/design-system-builder/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/design-system-builder/AGENT.md"
   },
   {
     "slug": "devops-pipeline-orchestrator",
@@ -275,8 +274,7 @@
     ],
     "version": "1.0.0",
     "owner": "william@cognitive-toolworks",
-    "entry": "agents/devops-pipeline-orchestrator/AGENT.md",
-    "replaces": "skills/devops-pipeline-architect"
+    "entry": "/home/william/git/cognitive-toolworks/agents/devops-pipeline-orchestrator/AGENT.md"
   },
   {
     "slug": "disaster-recovery-orchestrator",
@@ -304,12 +302,12 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/disaster-recovery-orchestrator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/disaster-recovery-orchestrator/AGENT.md"
   },
   {
     "slug": "incident-response-orchestrator",
     "name": "Incident Response Orchestrator",
-    "description": "Orchestrates end-to-end incident response lifecycle from detection through post-mortem by coordinating playbook generation, security assessment, monitoring, and compliance reporting.",
+    "description": "Orchestrates end-to-end incident response lifecycle from detection through post-mortem by coordinating playbook generation, security assessment, monitoring, and",
     "keywords": [
       "incident-orchestration",
       "incident-response",
@@ -331,7 +329,7 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/incident-response-orchestrator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/incident-response-orchestrator/AGENT.md"
   },
   {
     "slug": "multi-region-orchestrator",
@@ -357,7 +355,7 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/multi-region-orchestrator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/multi-region-orchestrator/AGENT.md"
   },
   {
     "slug": "observability-orchestrator",
@@ -383,7 +381,7 @@
     ],
     "version": "1.0.0",
     "owner": "william@cognitive-toolworks",
-    "entry": "agents/observability-orchestrator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/observability-orchestrator/AGENT.md"
   },
   {
     "slug": "performance-orchestrator",
@@ -409,7 +407,7 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/performance-orchestrator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/performance-orchestrator/AGENT.md"
   },
   {
     "slug": "security-auditor",
@@ -436,8 +434,7 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/security-auditor/AGENT.md",
-    "replaces": "skills/security-assessment-framework"
+    "entry": "/home/william/git/cognitive-toolworks/agents/security-auditor/AGENT.md"
   },
   {
     "slug": "testing-orchestrator",
@@ -461,6 +458,6 @@
     ],
     "version": "1.0.0",
     "owner": "cognitive-toolworks",
-    "entry": "agents/testing-orchestrator/AGENT.md"
+    "entry": "/home/william/git/cognitive-toolworks/agents/testing-orchestrator/AGENT.md"
   }
 ]

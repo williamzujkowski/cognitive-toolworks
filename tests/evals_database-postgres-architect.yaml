@@ -1,0 +1,157 @@
+scenarios:
+  - name: oltp-ecommerce-platform
+    description: "OLTP e-commerce platform with high transaction volume"
+    input:
+      workload_type: oltp
+      data_volume: "500GB (5M users, 50M orders)"
+      queries_per_second: 5000
+      availability_sla: 99.95%
+      deployment_environment: aws-rds-postgres-17
+      access_patterns:
+        - "User login by email (frequent)"
+        - "User order history by user_id + date range (frequent)"
+        - "Active orders by status (frequent)"
+        - "Product search by category (moderate)"
+    expected_recommendations:
+      schema: "3NF normalized with users, orders, products tables"
+      indexes:
+        - "B-tree on users(email) UNIQUE for login"
+        - "B-tree on orders(user_id, created_at) for history"
+        - "Partial index on orders(status) WHERE status != 'completed'"
+        - "GIN index on products(categories) for multi-value search"
+      partitioning: "orders table RANGE by created_at (monthly)"
+      tuning: "shared_buffers 25-40% RAM, work_mem 4-16MB"
+      ha: "Primary + 2 async read replicas, auto-failover"
+    token_tier: T2
+
+  - name: olap-analytics-workload
+    description: "Analytics platform with large scan queries and aggregations"
+    input:
+      workload_type: olap
+      data_volume: "2TB (100M events, 500M metrics)"
+      queries_per_second: 50
+      latency_tolerance: "5-30 seconds per query"
+      deployment_environment: gcp-cloudsql-postgres-17
+      access_patterns:
+        - "Date range aggregations (SUM, AVG, COUNT)"
+        - "Full table scans with WHERE filters"
+        - "JOIN between events and dimensions"
+    expected_recommendations:
+      schema: "Star schema with fact and dimension tables"
+      indexes:
+        - "BRIN on events(timestamp) for time-series"
+        - "B-tree on dimensions for JOIN keys"
+      partitioning: "events table RANGE by timestamp (weekly or monthly)"
+      tuning:
+        - "shared_buffers 25-40% RAM"
+        - "work_mem 64-256MB (large sorts/hashes)"
+        - "max_parallel_workers_per_gather 4-8 (leverage parallelism)"
+        - "effective_cache_size 50-75% RAM"
+      materialized_views: "For expensive aggregations, REFRESH CONCURRENTLY"
+    token_tier: T2
+
+  - name: time-series-iot-platform
+    description: "Time-series IoT data with append-heavy writes and time-based queries"
+    input:
+      workload_type: time-series
+      data_volume: "5TB (1B sensor readings)"
+      inserts_per_second: 50000
+      queries_per_second: 500
+      retention_policy: "keep last 2 years, drop older data"
+      deployment_environment: self-hosted-postgres-17
+      access_patterns:
+        - "INSERT sensor readings continuously"
+        - "SELECT by device_id + time range"
+        - "Aggregations over time windows (hourly, daily)"
+    expected_recommendations:
+      schema: "sensor_readings with device_id, timestamp, value"
+      indexes:
+        - "BRIN on sensor_readings(timestamp) (minimal space, fast time-range)"
+        - "B-tree on sensor_readings(device_id, timestamp) for device queries"
+      partitioning: "RANGE by timestamp (daily or weekly), auto-drop old partitions"
+      tuning:
+        - "wal_buffers 16MB (high write volume)"
+        - "checkpoint_timeout 30min (reduce checkpoint frequency)"
+        - "autovacuum aggressive for append-only workload"
+      extensions: "Consider TimescaleDB extension for time-series optimizations"
+    token_tier: T2
+
+  - name: slow-query-performance-troubleshooting
+    description: "Existing PostgreSQL with slow queries needing optimization"
+    input:
+      workload_type: oltp
+      postgresql_version: 16
+      existing_problems:
+        - "Login query SELECT * FROM users WHERE email = ? takes 2.5s (should be <10ms)"
+        - "Order history query scans entire 50M row table (45s)"
+        - "Product search returns 10K rows but only displays 20 (wasteful)"
+      deployment_environment: azure-postgres-flexible
+    expected_diagnosis:
+      - problem: "Missing index on users(email)"
+        solution: "CREATE UNIQUE INDEX CONCURRENTLY idx_users_email ON users(email);"
+        expected_speedup: "2500ms → 5ms (500x faster)"
+      - problem: "Full table scan on orders (no partition pruning)"
+        solution: "Partition orders by created_at, add index on (user_id, created_at)"
+        expected_speedup: "45s → 2s (22x faster)"
+      - problem: "SELECT * fetches all columns, no LIMIT"
+        solution: "SELECT id, name, price LIMIT 20; use cursor pagination"
+        expected_speedup: "Reduce result size 90%, eliminate wasteful network transfer"
+    token_tier: T1
+
+  - name: postgresql-17-migration-planning
+    description: "Plan migration from PostgreSQL 14 to PostgreSQL 17"
+    input:
+      workload_type: htap
+      current_version: 14
+      target_version: 17
+      data_volume: "1TB"
+      downtime_tolerance: "< 1 hour"
+      deployment_environment: aws-rds
+    expected_migration_plan:
+      benefits:
+        - "2x write throughput (vectored I/O, 64-bit atomic variables)"
+        - "20x vacuum memory reduction"
+        - "Improved parallelism for FULL OUTER JOIN and aggregates"
+        - "Better partition pruning"
+      migration_strategy: "Blue-green with logical replication"
+      steps:
+        - "Create PostgreSQL 17 replica using logical replication"
+        - "Replicate data while old system still running"
+        - "Test queries on PostgreSQL 17 replica (validate performance)"
+        - "Switch application connection strings (downtime <5 min)"
+        - "Monitor for 24h, rollback if issues detected"
+      risks: "Incompatible extensions, changed configuration parameters"
+    token_tier: T2
+
+  - name: high-availability-multi-region
+    description: "Design HA PostgreSQL for multi-region global application"
+    input:
+      workload_type: oltp
+      availability_sla: 99.99%
+      rto: "< 60 seconds"
+      rpo: "< 5 seconds"
+      regions: ["us-east", "eu-west", "ap-southeast"]
+      deployment_environment: cloud-agnostic
+    expected_architecture:
+      primary: "us-east (primary, synchronous replica in same region)"
+      replicas:
+        - "us-east-2 (synchronous, zero data loss)"
+        - "eu-west (async, read-only, <100ms lag)"
+        - "ap-southeast (async, read-only, <200ms lag)"
+      failover: "Automatic with Patroni + etcd cluster (distributed consensus)"
+      connection_routing: "PgBouncer for connection pooling + read/write split"
+      disaster_recovery: "PITR backups to S3, test restore monthly"
+    expected_configs:
+      - "synchronous_commit = on"
+      - "synchronous_standby_names = 'us-east-2'"
+      - "wal_level = replica"
+      - "max_wal_senders = 10"
+    token_tier: T3
+
+  - name: insufficient-data-error
+    description: "Error case: missing critical data model information"
+    input:
+      workload_type: oltp
+      deployment_environment: aws-rds-postgres-17
+    expected_error: "Insufficient data: missing data model (entities, relationships), access patterns, and data volume estimates. Cannot design schema without requirements."
+    token_tier: T1

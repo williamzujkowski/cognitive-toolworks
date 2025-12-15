@@ -1,0 +1,76 @@
+scenarios:
+  - name: basic-webapp-with-database
+    description: "Design a simple web application with database on Azure"
+    input:
+      workload_type: web-app
+      requirements:
+        performance: "Handle 10K daily active users, <200ms response time"
+        security: "HTTPS only, encrypted at rest, managed identities"
+        cost: "Minimize costs, use PaaS where possible"
+      deployment_tier: T1
+      regions: ["eastus"]
+    expected_services:
+      - App Service
+      - Azure SQL Database
+      - Blob Storage
+      - Front Door
+    token_tier: T1
+
+  - name: batch-data-processing
+    description: "Design a batch data processing pipeline with cost optimization"
+    input:
+      workload_type: data-processing
+      requirements:
+        performance: "Process 1TB daily, <6 hour SLA"
+        cost: "Use Spot VMs where possible"
+      deployment_tier: T1
+      regions: ["westus2"]
+    expected_services:
+      - Blob Storage
+      - Azure Batch
+      - Synapse Analytics
+    token_tier: T1
+
+  - name: multi-region-ha-webapp
+    description: "Design highly available web app with multi-region deployment and IaC"
+    input:
+      workload_type: web-app
+      requirements:
+        reliability: "99.95% uptime, multi-region active-active"
+        performance: "<100ms global latency"
+        security: "WAF, DDoS protection, least-privilege RBAC"
+      deployment_tier: T2
+      regions: ["eastus", "westeurope", "southeastasia"]
+      budget_constraints: "$3000/month"
+    expected_outputs:
+      - bicep_or_terraform_code
+      - rbac_assignments
+      - monitoring_config
+    token_tier: T2
+
+  - name: kubernetes-microservices
+    description: "Design AKS-based microservices architecture"
+    input:
+      workload_type: hybrid
+      requirements:
+        performance: "Support 50+ microservices, auto-scaling"
+        security: "Workload identity, network policies, private cluster"
+      deployment_tier: T2
+      regions: ["centralus"]
+    expected_services:
+      - AKS
+      - Azure SQL Database
+      - Azure Cache for Redis
+      - Application Gateway
+    token_tier: T2
+
+  - name: invalid-conflicting-requirements
+    description: "Error case: conflicting cost and availability requirements"
+    input:
+      workload_type: web-app
+      requirements:
+        cost: "Minimize all costs, use cheapest options"
+        reliability: "99.999% uptime, multi-region active-active"
+      deployment_tier: T1
+    expected_error: "Budget constraints conflict with availability requirements"
+    token_tier: T1

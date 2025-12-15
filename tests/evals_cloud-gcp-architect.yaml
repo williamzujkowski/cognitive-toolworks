@@ -1,0 +1,76 @@
+scenarios:
+  - name: basic-serverless-webapp
+    description: "Design a simple serverless web application on GCP"
+    input:
+      workload_type: web-app
+      requirements:
+        performance: "Handle 10K daily active users, <200ms response time"
+        security: "HTTPS only, encrypted at rest"
+        cost: "Minimize costs, pay-per-use preferred"
+      deployment_tier: T1
+      regions: ["us-central1"]
+    expected_services:
+      - Cloud Run
+      - Cloud SQL
+      - Cloud Storage
+      - Cloud CDN
+    token_tier: T1
+
+  - name: data-processing-pipeline
+    description: "Design a batch data processing pipeline with cost optimization"
+    input:
+      workload_type: data-processing
+      requirements:
+        performance: "Process 1TB daily, <6 hour SLA"
+        cost: "Use spot instances where possible"
+      deployment_tier: T1
+      regions: ["us-central1"]
+    expected_services:
+      - Cloud Storage
+      - Dataflow
+      - BigQuery
+    token_tier: T1
+
+  - name: multi-region-ha-webapp
+    description: "Design highly available web app with multi-region deployment and IaC"
+    input:
+      workload_type: web-app
+      requirements:
+        reliability: "99.95% uptime, multi-region active-active"
+        performance: "<100ms global latency"
+        security: "WAF, DDoS protection, least-privilege IAM"
+      deployment_tier: T2
+      regions: ["us-central1", "europe-west1", "asia-east1"]
+      budget_constraints: "$2000/month"
+    expected_outputs:
+      - terraform_code
+      - iam_policies
+      - monitoring_config
+    token_tier: T2
+
+  - name: kubernetes-microservices
+    description: "Design GKE-based microservices architecture with service mesh"
+    input:
+      workload_type: hybrid
+      requirements:
+        performance: "Support 50+ microservices, auto-scaling"
+        security: "Mutual TLS, workload identity, network policies"
+      deployment_tier: T2
+      regions: ["us-central1"]
+    expected_services:
+      - GKE
+      - Cloud SQL
+      - Memorystore
+      - Cloud Load Balancing
+    token_tier: T2
+
+  - name: invalid-conflicting-requirements
+    description: "Error case: conflicting cost and availability requirements"
+    input:
+      workload_type: web-app
+      requirements:
+        cost: "Minimize all costs, use cheapest options"
+        reliability: "99.999% uptime, multi-region active-active"
+      deployment_tier: T1
+    expected_error: "Budget constraints conflict with availability requirements"
+    token_tier: T1

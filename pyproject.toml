@@ -161,9 +161,8 @@ source = ["tooling"]
 omit = ["*/tests/*", "*/test_*.py"]
 
 [tool.coverage.report]
-# TODO: Add unit tests for tooling/ scripts and restore fail_under = 80
-# Currently set to 0 to allow CI to pass until tests are implemented
-fail_under = 0
+# Coverage threshold: 80% minimum required for CI to pass
+fail_under = 80
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",

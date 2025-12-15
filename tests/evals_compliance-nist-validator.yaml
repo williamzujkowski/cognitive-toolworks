@@ -1,0 +1,165 @@
+scenarios:
+  - name: moderate-baseline-quick-check
+    description: "Quick gap analysis for MODERATE baseline (T1 fast path)"
+    input:
+      baseline: MODERATE
+      system_name: "Financial Services API"
+      assessment_type: quick_check
+      control_families: ["AC", "SI", "CM", "AU", "IA"]
+    expected_recommendations:
+      baseline_controls: 325
+      sample_controls: 5
+      quick_checks:
+        - "AC-2 (Account Management): Check user account policies, periodic review"
+        - "SI-2 (Flaw Remediation): Check patch management, vuln scans"
+        - "CM-2 (Baseline Configuration): Check config baselines, change control"
+        - "IA-2 (Identification & Auth): Check MFA enabled, auth logs"
+        - "AU-2 (Event Logging): Check audit policy, log retention"
+      gap_score_format: "Implemented/Partial/Not Implemented"
+      top_priorities: 3
+    token_tier: T1
+
+  - name: access-control-family-assessment
+    description: "Comprehensive AC (Access Control) family assessment with evidence mapping"
+    input:
+      baseline: MODERATE
+      system_name: "E-commerce Platform"
+      control_families: ["AC"]
+      evidence_sources:
+        - "IAM configuration exports"
+        - "User access review spreadsheets"
+        - "MFA enrollment reports"
+        - "Account management policy"
+    expected_recommendations:
+      control_family: "AC (Access Control)"
+      control_count: 25
+      assessment_methods:
+        examine: "Policies, procedures, configuration baselines"
+        interview: "System admins, security team"
+        test: "Automated IAM scans, MFA enforcement tests"
+      evidence_mapping:
+        automated: ["IAM configs", "MFA logs", "SIEM logs"]
+        manual: ["Policies", "interviews", "access reviews"]
+      validation_results:
+        - "AC-2: Account Management (status, evidence, findings)"
+        - "AC-3: Access Enforcement (RBAC validation)"
+        - "AC-17: Remote Access (VPN controls, logging)"
+      compliance_score: "Percentage by control"
+    token_tier: T2
+
+  - name: system-integrity-gap-analysis
+    description: "SI (System and Information Integrity) family with automated testing"
+    input:
+      baseline: HIGH
+      system_name: "National Security System"
+      control_families: ["SI"]
+      automated_tools:
+        - "Qualys vulnerability scanner"
+        - "Nessus pro"
+        - "SCCM patch management"
+        - "CrowdStrike AV"
+    expected_recommendations:
+      control_family: "SI (System and Information Integrity)"
+      control_count: 23
+      automated_tests:
+        - "SI-2: Vulnerability scanning (weekly), patch compliance (daily)"
+        - "SI-3: Malware protection (AV signature updates, scan logs)"
+        - "SI-4: System monitoring (SIEM alerts, anomaly detection)"
+      gap_analysis:
+        implementation_gaps: "Controls not deployed"
+        evidence_gaps: "Controls deployed, no evidence"
+        partial_implementation: "Controls partially deployed"
+      prioritization_method: "(Criticality × Impact × Likelihood) / Effort"
+      remediation_plan: "Control ID, action, effort, deadline, priority"
+    token_tier: T2
+
+  - name: oscal-sar-generation
+    description: "Generate OSCAL SAR (Security Assessment Report) for MODERATE baseline"
+    input:
+      baseline: MODERATE
+      system_name: "Federal HR System"
+      control_families: ["AC", "AU", "IA", "SI"]
+      assessment_results:
+        - "AC-2: Implemented with evidence"
+        - "AU-2: Implemented, log retention verified"
+        - "IA-2(1): Partial (MFA at 85%, target 100%)"
+        - "SI-2: Not Implemented (no patch mgmt)"
+      oscal_format: "json"
+    expected_outputs:
+      oscal_sar:
+        uuid: "assessment-results-uuid"
+        title: "NIST SP 800-53 Assessment Results"
+        oscal_version: "1.1.2"
+        results:
+          - "Control-level findings with observations"
+          - "Related evidence artifacts"
+          - "Risk status (satisfied, not-satisfied)"
+      oscal_poam:
+        uuid: "poam-uuid"
+        title: "NIST SP 800-53 Remediation Plan"
+        poam_items:
+          - "SI-2: Implement patch management (milestones, target dates)"
+          - "IA-2(1): Complete MFA rollout (milestones, target dates)"
+      interoperability: "Compatible with compliance-oscal-validator"
+    token_tier: T2
+
+  - name: continuous-monitoring-setup
+    description: "Configure continuous monitoring for enterprise with 50 systems"
+    input:
+      baseline: MODERATE
+      systems_count: 50
+      deployment: "multi-datacenter (3 locations)"
+      assessment_frequency: "quarterly manual + continuous automated"
+      common_controls:
+        - "PE-2 (Physical Access): Inherited from DC Ops"
+        - "IR-1 (Incident Response Policy): Inherited from CISO"
+    expected_recommendations:
+      continuous_monitoring_framework: "NIST SP 800-137"
+      automated_tests:
+        - "AC: Inactive account detection (daily via SIEM)"
+        - "SI: Vulnerability scanning (weekly via Qualys)"
+        - "CM: Config drift detection (continuous via Chef InSpec)"
+        - "AU: Log collection (continuous via Splunk)"
+      common_controls_inheritance: "Assess once, inherit across all 50 systems"
+      dashboards:
+        - "Real-time compliance score by family"
+        - "Trend analysis (30/60/90 days)"
+        - "Recent findings and remediation status"
+      automation_benefits: "60-80% effort reduction"
+    token_tier: T3
+
+  - name: nist-rev-52-update-validation
+    description: "Validate compliance with NIST SP 800-53 Rev 5.2.0 (August 2025 updates)"
+    input:
+      baseline: MODERATE
+      system_name: "Software Development Platform"
+      focus_controls:
+        - "SA-15 (Development Process, Standards, Tools)"
+        - "SA-11 (Developer Testing)"
+        - "CM-3 (Configuration Change Control)"
+        - "SI-7 (Software Integrity)"
+      compliance_drivers: "Executive Order 14306 (software supply chain security)"
+    expected_recommendations:
+      rev_52_updates:
+        - "SA-15: Enhanced software update security requirements"
+        - "SA-11: Improved developer testing for security"
+        - "CM-3: Strengthened update deployment management"
+        - "SI-7: Enhanced software integrity verification"
+      validation_focus:
+        - "Secure software development lifecycle (SDLC)"
+        - "Software bill of materials (SBOM)"
+        - "Update integrity verification (signatures, checksums)"
+        - "Automated security testing in CI/CD"
+      evidence_requirements:
+        - "SBOM documentation (CycloneDX, SPDX)"
+        - "CI/CD pipeline security tests (SAST, DAST)"
+        - "Code signing certificates and verification logs"
+        - "Patch management process with testing"
+    token_tier: T2
+
+  - name: insufficient-data-error
+    description: "Error case: missing baseline and system documentation"
+    input:
+      system_name: "Unknown Application"
+    expected_error: "Insufficient data: missing NIST baseline (LOW/MODERATE/HIGH), control families, and system documentation. Cannot validate controls without requirements. Please provide: (1) System impact level (FIPS 199), (2) Control scope or families, (3) Evidence sources."
+    token_tier: T1

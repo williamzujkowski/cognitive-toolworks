@@ -1,0 +1,27 @@
+# Full-Stack Security Assessment: Production SaaS
+
+INPUT: scope: full-stack, env: prod, compliance: nist-csf, depth: comprehensive
+Context: mission-critical, PII/PHI, internet-facing
+
+OUTPUT: Maturity 6.2/10 (Walk) | CRI: 47 (immediate) | 142 findings
+
+CRITICAL (3): SQL injection, overpermissive IAM, public S3 with PII
+HIGH (18): XSS, weak crypto, unpatched OS, network exposure
+
+NIST CSF: Govern 85% (7.2), Identify 90% (6.8), Protect 78% (6.1),
+  Detect 65% (5.5), Respond 45% (4.2) ← gap, Recover 30% (3.8) ← gap
+
+ATTACK PATHS:
+AP-001: Public S3 → IAM escalation → PII breach (risk 17.6)
+AP-002: SQL injection → lateral move → admin access (risk 16.2)
+
+ROADMAP:
+Phase 1 (0-30d): 21 items, 120h, 68.5 risk reduction
+  1. SQL injection fix (CVSS 9.8, ROI 12.3) → appsec
+  2. IAM restriction (CVSS 8.8, ROI 10.2) → cloudops
+  3. S3 hardening (CVSS 8.6, ROI 9.8) → cloudops
+Phase 2 (31-90d): 45 items, 280h, 24.3 reduction
+Phase 3 (91-180d): 76 items, 450h, 7.2 reduction
+
+SKILLS INVOKED: 10 security-* (appsec, cloud, container, crypto, iam,
+network, os, supplychain, zerotrust-architect, zerotrust-assessor)

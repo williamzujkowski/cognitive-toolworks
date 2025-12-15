@@ -1,0 +1,30 @@
+# Azure Serverless Web Application Architecture Example
+# App Service + Azure SQL + Blob Storage + Front Door
+
+architecture:
+  workload_type: web-app
+  services:
+    - category: compute
+      service: App Service
+      config: "Standard S1, autoscale 1-5 instances, .NET 8"
+      rationale: "PaaS web hosting, deployment slots, built-in scaling"
+
+    - category: database
+      service: Azure SQL Database
+      config: "General Purpose, 2 vCores, 32GB, automated backups"
+      rationale: "Managed relational DB, point-in-time recovery"
+
+    - category: storage
+      service: Blob Storage
+      config: "Hot tier, LRS, lifecycle policy to Cool@30d"
+      rationale: "Object storage for static assets, 11 9s durability"
+
+    - category: networking
+      service: Azure Front Door
+      config: "Global load balancing, WAF enabled, SSL offload"
+      rationale: "Global distribution, reduced latency, DDoS protection"
+
+cost_estimate:
+  monthly_usd: 250
+  breakdown: {compute: 73, database: 115, storage: 5, cdn: 40, cache: 17}
+  optimizations: ["Use Reserved Instance for SQL Database", "Move old blobs to Archive"]

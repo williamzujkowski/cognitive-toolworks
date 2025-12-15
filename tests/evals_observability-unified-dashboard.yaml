@@ -1,0 +1,219 @@
+scenarios:
+  - name: ecommerce-platform-dashboard
+    description: "Unified dashboard for e-commerce platform with golden signals and SLO tracking"
+    input:
+      services:
+        - name: "api-gateway"
+          type: "api"
+        - name: "order-service"
+          type: "backend"
+        - name: "payment-service"
+          type: "backend"
+      deployment_env: "production"
+      slo_targets:
+        - service: "api-gateway"
+          availability: 99.95
+          p95_latency_ms: 200
+        - service: "order-service"
+          availability: 99.9
+          p95_latency_ms: 500
+        - service: "payment-service"
+          availability: 99.99
+          p95_latency_ms: 100
+      telemetry_sources:
+        metrics: "prometheus-prod"
+        logs: "loki-prod"
+        traces: "tempo-prod"
+      alert_destinations:
+        - type: "pagerduty"
+        - type: "slack"
+    expected_recommendations:
+      dashboard_panels: 16
+      golden_signals_per_service:
+        - "Latency (p50, p95, p99 percentiles)"
+        - "Traffic (requests per second)"
+        - "Errors (error rate percentage, 5xx count)"
+        - "Saturation (CPU, memory, disk utilization)"
+      slo_tracking:
+        - "Current compliance percentage per service"
+        - "Error budget remaining (percentage)"
+        - "Burn rate multiplier (1× = normal consumption)"
+        - "Time to error budget exhaustion (hours/days)"
+      correlations:
+        - "Prometheus alert → Loki logs (filtered by service.name + time)"
+        - "Loki log entry → Tempo trace (via trace_id)"
+        - "Tempo slow span → Prometheus endpoint metrics"
+      alert_rules:
+        - "Error rate >5% for 5 minutes (critical, PagerDuty)"
+        - "SLO burn rate 14.4× (error budget exhausted in 2 days, critical)"
+        - "SLO burn rate 6× (error budget exhausted in 5 days, warning, Slack)"
+        - "Latency p95 >2× baseline for 10 minutes (warning)"
+      otel_pipeline:
+        receivers: "OTLP (grpc + http)"
+        processors: "batch (10s timeout, 1024 batch size) + resource attributes"
+        exporters: "Prometheus, Loki, Tempo"
+    token_tier: T2
+
+  - name: single-service-quick-dashboard
+    description: "Fast dashboard creation for a single critical service (T1 fast path)"
+    input:
+      services:
+        - name: "api-gateway"
+          type: "api"
+      deployment_env: "production"
+      telemetry_sources:
+        metrics: "prometheus-prod"
+    expected_recommendations:
+      dashboard_type: "Quick dashboard (T1)"
+      panels: 4
+      golden_signals:
+        - "Latency: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))"
+        - "Traffic: sum(rate(http_requests_total[5m]))"
+        - "Errors: sum(rate(http_requests_total{status=~'5..'}[5m])) / sum(rate(http_requests_total[5m])) * 100"
+        - "Saturation: avg(process_cpu_seconds_total), avg(process_resident_memory_bytes)"
+      basic_alert: "Error rate >5% for 5 minutes (severity: warning)"
+      time_range: "Last 1 hour"
+      refresh_interval: "30 seconds"
+    token_tier: T1
+
+  - name: microservices-multi-environment
+    description: "Multi-environment dashboard with production, staging, dev separation"
+    input:
+      services:
+        - name: "frontend-web"
+        - name: "api-gateway"
+        - name: "user-service"
+        - name: "product-service"
+        - name: "order-service"
+      deployment_env: ["production", "staging", "dev"]
+      slo_targets:
+        - service: "api-gateway"
+          availability: 99.95
+          p95_latency_ms: 200
+      telemetry_sources:
+        metrics: "prometheus-all-envs"
+        logs: "loki-all-envs"
+        traces: "tempo-all-envs"
+    expected_recommendations:
+      environment_selector: "Grafana template variable to toggle prod/staging/dev"
+      panels_per_environment:
+        - "Overview table (all services, current status)"
+        - "Per-service rows (4 golden signals + SLO panel)"
+      slo_tracking: "Production only (staging/dev have no SLOs)"
+      filters:
+        - "deployment.environment label in PromQL queries"
+        - "environment field in LogQL queries"
+      alert_rules: "Production alerts only (staging/dev informational)"
+    token_tier: T2
+
+  - name: enterprise-custom-metrics-dashboard
+    description: "Enterprise dashboard with custom business metrics and anomaly detection"
+    input:
+      services:
+        - name: "payment-gateway"
+        - name: "order-processing"
+        - name: "inventory-service"
+      deployment_env: "production"
+      custom_metrics:
+        - name: "payment_success_rate"
+          query: "sum(rate(payment_transactions_total{status='success'}[5m])) / sum(rate(payment_transactions_total[5m])) * 100"
+          target: 99.5
+        - name: "order_conversion_rate"
+          query: "sum(rate(orders_completed_total[5m])) / sum(rate(orders_initiated_total[5m])) * 100"
+          target: 85.0
+        - name: "inventory_accuracy"
+          query: "sum(inventory_correct_total) / sum(inventory_total) * 100"
+          target: 99.9
+      telemetry_sources:
+        metrics: "prometheus-prod"
+        logs: "loki-prod"
+        traces: "tempo-prod"
+      anomaly_detection: true
+    expected_recommendations:
+      custom_panels:
+        - "Payment success rate (target 99.5%)"
+        - "Order conversion rate (target 85%)"
+        - "Inventory accuracy (target 99.9%)"
+      anomaly_detection_alerts:
+        - "Latency 30% higher than 7-day baseline for 10 minutes"
+        - "Traffic 50% lower than 7-day baseline (potential outage)"
+        - "Error rate 2× higher than 7-day baseline"
+      baseline_calculation: "7-day moving average (Prometheus recording rules)"
+      capacity_planning:
+        - "Disk usage extrapolation (predict days until full)"
+        - "Memory growth trend (predict OOM events)"
+      compliance_reporting: "NIST SP 800-92 log retention status, GDPR PII redaction"
+    token_tier: T3
+
+  - name: slo-burn-rate-alerting
+    description: "SLO-focused dashboard with multi-window burn rate alerts"
+    input:
+      services:
+        - name: "critical-api"
+          type: "api"
+      deployment_env: "production"
+      slo_targets:
+        - service: "critical-api"
+          availability: 99.99
+          p99_latency_ms: 100
+          error_budget_policy: "30-day window"
+      telemetry_sources:
+        metrics: "prometheus-prod"
+        logs: "loki-prod"
+    expected_recommendations:
+      slo_dashboard_features:
+        - "Current SLO compliance (99.99% target)"
+        - "Error budget remaining (absolute minutes and percentage)"
+        - "Burn rate (1× = normal, 14.4× = exhausted in 2 days)"
+        - "Time to exhaustion (hours/days until error budget = 0)"
+        - "Historical compliance trend (30-day rolling window)"
+      multi_window_burn_rate_alerts:
+        - "Critical: 14.4× burn rate (1h window) AND 14.4× (5m window) → PagerDuty"
+        - "Warning: 6× burn rate (6h window) AND 6× (30m window) → Slack"
+        - "Info: Trending toward breach in 7 days → Email"
+      alert_methodology: "Google SRE multi-window burn rate (avoids false positives)"
+      error_budget_policy: "30-day rolling window, resets monthly"
+    token_tier: T2
+
+  - name: correlation-chain-validation
+    description: "Validate correlation setup from metrics → logs → traces"
+    input:
+      services:
+        - name: "web-api"
+      deployment_env: "production"
+      telemetry_sources:
+        metrics: "prometheus-prod"
+        logs: "loki-prod"
+        traces: "tempo-prod"
+      correlation_test: true
+    expected_recommendations:
+      correlation_rules:
+        - source: "Prometheus"
+          target: "Loki"
+          field: "service.name + time range"
+          label: "View Logs"
+        - source: "Loki"
+          target: "Tempo"
+          field: "trace_id"
+          label: "View Trace"
+        - source: "Tempo"
+          target: "Prometheus"
+          field: "service.name + span.name (endpoint)"
+          label: "View Metrics"
+      validation_steps:
+        - "1. Trigger Prometheus alert (inject high error rate)"
+        - "2. Click alert → verify Loki logs appear (filtered by service + time)"
+        - "3. Click log entry → verify Tempo trace opens (trace_id match)"
+        - "4. Click slow trace span → verify Prometheus metrics panel opens"
+      prerequisites:
+        - "OpenTelemetry instrumentation with trace context propagation"
+        - "Loki logs include trace_id and span_id fields (structured logging)"
+        - "Grafana 11+ with correlations feature enabled"
+    token_tier: T2
+
+  - name: insufficient-data-error
+    description: "Error case: missing telemetry sources and service definitions"
+    input:
+      deployment_env: "production"
+    expected_error: "Insufficient data: missing 'services' array and 'telemetry_sources'. Cannot create dashboard without services to monitor and data sources to query. Please provide: (1) List of services with names and types, (2) At least one telemetry source (metrics, logs, or traces), (3) Deployment environment."
+    token_tier: T1

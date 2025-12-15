@@ -59,6 +59,29 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/api-graphql-designer/SKILL.md"
   },
   {
+    "slug": "api-rest-designer",
+    "name": "REST API Designer",
+    "summary": "Design RESTful APIs with OpenAPI 3.1/3.2, resource modeling, HTTP semantics, versioning strategies, pagination patterns, HATEOAS, and OWASP API Security compliance.",
+    "keywords": [
+      "rest-api",
+      "openapi",
+      "api-design",
+      "resource-modeling",
+      "http-methods",
+      "richardson-maturity-model",
+      "hateoas",
+      "api-versioning",
+      "pagination",
+      "api-security",
+      "owasp",
+      "swagger",
+      "api-gateway"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/api-rest-designer/SKILL.md"
+  },
+  {
     "slug": "architecture-decision-framework",
     "name": "Architecture Decision Framework",
     "summary": "Guide architecture decisions using ADRs, trade-off analysis, pattern catalogs, and C4 diagrams for layered, hexagonal, event-driven, and CQRS patterns.",
@@ -104,6 +127,30 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/cloud-aws-architect/SKILL.md"
   },
   {
+    "slug": "cloud-azure-architect",
+    "name": "Azure Multi-Service Architect",
+    "summary": "Design Azure solutions across compute, storage, networking, and serverless with cost optimization, security hardening, and Framework alignment.",
+    "keywords": [
+      "azure",
+      "cloud-architecture",
+      "virtual-machines",
+      "app-service",
+      "container-apps",
+      "functions",
+      "aks",
+      "blob-storage",
+      "bicep",
+      "terraform",
+      "well-architected",
+      "serverless",
+      "cost-optimization",
+      "multi-region"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/cloud-azure-architect/SKILL.md"
+  },
+  {
     "slug": "cloud-edge-architect",
     "name": "Edge Computing Architecture Designer",
     "summary": "Design edge computing solutions with CDN integration, edge functions, IoT device management, and latency-optimized deployment patterns.",
@@ -122,6 +169,29 @@
     "owner": "william",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/cloud-edge-architect/SKILL.md"
+  },
+  {
+    "slug": "cloud-gcp-architect",
+    "name": "GCP Multi-Service Architect",
+    "summary": "Design GCP solutions across compute, storage, networking, and serverless with cost optimization, security hardening, and Framework alignment.",
+    "keywords": [
+      "gcp",
+      "google-cloud",
+      "cloud-architecture",
+      "compute-engine",
+      "cloud-run",
+      "cloud-functions",
+      "gke",
+      "cloud-storage",
+      "terraform",
+      "architecture-framework",
+      "serverless",
+      "cost-optimization",
+      "multi-region"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/cloud-gcp-architect/SKILL.md"
   },
   {
     "slug": "cloud-kubernetes-integrator",
@@ -162,6 +232,25 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/cloud-multicloud-advisor/SKILL.md"
+  },
+  {
+    "slug": "cloud-provider-advisor",
+    "name": "Cloud Provider Selection Advisor",
+    "summary": "Compare AWS, GCP, and Azure to select the best cloud provider based on workload requirements, cost, compliance, and migration complexity.",
+    "keywords": [
+      "cloud-comparison",
+      "aws",
+      "gcp",
+      "azure",
+      "cloud-selection",
+      "multi-cloud",
+      "vendor-comparison",
+      "cost-comparison",
+      "migration-planning"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/cloud-provider-advisor/SKILL.md"
   },
   {
     "slug": "cloud-serverless-designer",
@@ -219,6 +308,27 @@
     "owner": "william@cognitive-toolworks.com",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/compliance-fedramp-validator/SKILL.md"
+  },
+  {
+    "slug": "compliance-nist-validator",
+    "name": "NIST SP 800-53 Compliance Validator",
+    "summary": "Validate NIST SP 800-53 control implementation with evidence mapping, gap analysis, automated testing, and compliance reporting across 20 control families.",
+    "keywords": [
+      "nist",
+      "sp-800-53",
+      "compliance",
+      "security-controls",
+      "privacy-controls",
+      "evidence",
+      "gap-analysis",
+      "oscal",
+      "automation",
+      "assessment",
+      "nist-800-53a"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/compliance-nist-validator/SKILL.md"
   },
   {
     "slug": "compliance-oscal-validator",
@@ -361,6 +471,27 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/database-migration-generator/SKILL.md"
   },
   {
+    "slug": "database-mongodb-architect",
+    "name": "MongoDB Database Architect",
+    "summary": "Design MongoDB architectures with document modeling, indexing (ESR rule), sharding, aggregation pipelines, replica sets, and WiredTiger tuning.",
+    "keywords": [
+      "mongodb",
+      "nosql",
+      "document-database",
+      "schema-design",
+      "indexing",
+      "sharding",
+      "aggregation",
+      "replica-set",
+      "wiredtiger",
+      "performance-tuning",
+      "mongodb-8"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/database-mongodb-architect/SKILL.md"
+  },
+  {
     "slug": "database-optimization-analyzer",
     "name": "Database Optimization Analyzer",
     "summary": "Optimize SQL and NoSQL databases with schema design, query performance tuning, and indexing strategies.",
@@ -380,6 +511,46 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/database-optimization-analyzer/SKILL.md"
+  },
+  {
+    "slug": "database-postgres-architect",
+    "name": "PostgreSQL Database Architect",
+    "summary": "Design high-performance PostgreSQL databases with schema optimization, indexing strategies, partitioning, replication, and PostgreSQL 17 tuning.",
+    "keywords": [
+      "postgresql",
+      "database architecture",
+      "schema design",
+      "indexing",
+      "partitioning",
+      "query optimization",
+      "replication",
+      "high availability",
+      "performance tuning"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/database-postgres-architect/SKILL.md"
+  },
+  {
+    "slug": "database-redis-architect",
+    "name": "Redis Database Architect",
+    "summary": "Design Redis architectures with caching patterns, data structures, eviction policies, persistence (RDB/AOF), and high availability (Sentinel/Cluster).",
+    "keywords": [
+      "redis",
+      "caching",
+      "in-memory",
+      "key-value",
+      "data-structures",
+      "eviction",
+      "persistence",
+      "high-availability",
+      "sentinel",
+      "cluster",
+      "redis-8"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/database-redis-architect/SKILL.md"
   },
   {
     "slug": "database-schema-designer",
@@ -531,6 +702,48 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/finops-cost-analyzer/SKILL.md"
   },
   {
+    "slug": "finops-multicloud-optimizer",
+    "name": "Multi-Cloud Cost Optimizer",
+    "summary": "Optimize costs across AWS, GCP, Azure with cross-cloud waste detection, workload placement, commitment balancing, and unified FinOps.",
+    "keywords": [
+      "multi-cloud cost optimization",
+      "cross-cloud finops",
+      "workload placement",
+      "commitment optimization",
+      "cloud cost arbitrage",
+      "multi-cloud waste detection",
+      "unified cost allocation",
+      "egress cost optimization"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/finops-multicloud-optimizer/SKILL.md"
+  },
+  {
+    "slug": "frontend-accessibility-validator",
+    "name": "Frontend Accessibility Validator",
+    "summary": "Validate web accessibility compliance with WCAG 2.2 (Level A/AA/AAA), ARIA attributes, color contrast, keyboard navigation, screen reader support, and automated testing via axe-core/Pa11y.",
+    "keywords": [
+      "accessibility",
+      "a11y",
+      "wcag",
+      "wcag-2.2",
+      "aria",
+      "screen-reader",
+      "keyboard-navigation",
+      "color-contrast",
+      "semantic-html",
+      "axe-core",
+      "pa11y",
+      "lighthouse",
+      "ada-compliance",
+      "section-508"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/frontend-accessibility-validator/SKILL.md"
+  },
+  {
     "slug": "frontend-designsystem-validator",
     "name": "UX Design System Validator",
     "summary": "Validate design systems for accessibility (WCAG), responsive design, and component consistency with design token analysis.",
@@ -673,6 +886,53 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/microservices-pattern-architect/SKILL.md"
   },
   {
+    "slug": "messaging-kafka-architect",
+    "name": "Apache Kafka Architecture Designer",
+    "summary": "Design Apache Kafka architectures with exactly-once semantics, producer/consumer patterns, Kafka Streams, Schema Registry, KRaft mode, and performance tuning.",
+    "keywords": [
+      "kafka",
+      "apache-kafka",
+      "event-streaming",
+      "message-broker",
+      "exactly-once",
+      "kafka-streams",
+      "ksqldb",
+      "schema-registry",
+      "avro",
+      "kraft-mode",
+      "performance-tuning",
+      "event-sourcing",
+      "cqrs",
+      "saga-pattern",
+      "distributed-systems"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/messaging-kafka-architect/SKILL.md"
+  },
+  {
+    "slug": "messaging-rabbitmq-architect",
+    "name": "RabbitMQ Architecture Designer",
+    "summary": "Design RabbitMQ architectures with exchange types (direct, topic, fanout, headers), quorum queues, routing patterns, clustering, dead letter exchanges, and AMQP best practices.",
+    "keywords": [
+      "rabbitmq",
+      "amqp",
+      "message-queue",
+      "exchange",
+      "routing",
+      "quorum-queues",
+      "clustering",
+      "dead-letter-exchange",
+      "publisher-confirms",
+      "consumer-acknowledgments",
+      "message-broker",
+      "event-driven"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/messaging-rabbitmq-architect/SKILL.md"
+  },
+  {
     "slug": "mlops-lifecycle-manager",
     "name": "MLOps Lifecycle Manager",
     "summary": "Manage ML model lifecycle from development to deployment with experiment tracking, versioning, monitoring, and automated retraining workflows.",
@@ -735,6 +995,31 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/observability-slo-calculator/SKILL.md"
   },
   {
+    "slug": "observability-prometheus-configurator",
+    "name": "Prometheus Configuration Specialist",
+    "summary": "Configure Prometheus monitoring with alerting rules, recording rules, service discovery (Kubernetes, Consul, EC2), federation, PromQL optimization, and Alertmanager integration.",
+    "keywords": [
+      "prometheus",
+      "monitoring",
+      "observability",
+      "alerting",
+      "recording-rules",
+      "service-discovery",
+      "kubernetes-sd",
+      "promql",
+      "federation",
+      "alertmanager",
+      "metrics",
+      "relabeling",
+      "cardinality",
+      "burn-rate",
+      "slo"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/observability-prometheus-configurator/SKILL.md"
+  },
+  {
     "slug": "observability-stack-configurator",
     "name": "Observability Stack Configurator",
     "summary": "Configure comprehensive observability with metrics, logging, tracing, and alerting using Prometheus, OpenTelemetry, CloudWatch, and Grafana.",
@@ -753,6 +1038,29 @@
     "owner": "william@cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/observability-stack-configurator/SKILL.md"
+  },
+  {
+    "slug": "observability-unified-dashboard",
+    "name": "Observability Unified Dashboard",
+    "summary": "Design unified observability dashboards with golden signals (latency, traffic, errors, saturation), OpenTelemetry correlation, SLO tracking, and Grafana 11 auto-correlations.",
+    "keywords": [
+      "observability",
+      "golden signals",
+      "OpenTelemetry",
+      "Grafana",
+      "SLO",
+      "SLI",
+      "unified dashboard",
+      "metrics",
+      "logs",
+      "traces",
+      "correlation",
+      "alerting",
+      "SRE"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/observability-unified-dashboard/SKILL.md"
   },
   {
     "slug": "quality-standards-analyzer",
@@ -846,6 +1154,25 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/security-appsec-validator/SKILL.md"
+  },
+  {
+    "slug": "security-assessment-orchestrator",
+    "name": "Security Assessment Orchestrator",
+    "summary": "Comprehensive security assessment across application, cloud, container, IAM, network, OS, supply chain, and zero trust using NIST CSF 2.0.",
+    "keywords": [
+      "security assessment",
+      "nist csf",
+      "security orchestration",
+      "risk scoring",
+      "cvss",
+      "security posture",
+      "vulnerability management",
+      "compliance",
+      "security maturity"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/security-assessment-orchestrator/SKILL.md"
   },
   {
     "slug": "security-cloud-analyzer",

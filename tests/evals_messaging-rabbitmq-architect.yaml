@@ -1,0 +1,257 @@
+scenarios:
+  - name: basic-rabbitmq-topology-single-queue
+    description: "Basic RabbitMQ topology with topic exchange and quorum queue (T1 fast path)"
+    input:
+      message_flow: "order-service publishes OrderCreated → order-processing-queue"
+      rabbitmq_version: "4.2"
+      exchange_type: "topic"
+      queue_type: "quorum"
+    expected_recommendations:
+      topology:
+        exchanges:
+          - name: "orders-exchange"
+            type: "topic"
+            durable: true
+        queues:
+          - name: "order-processing-queue"
+            type: "quorum"
+            arguments:
+              x-queue-type: "quorum"
+              x-quorum-initial-group-size: 3
+              x-delivery-limit: 20
+        bindings:
+          - exchange: "orders-exchange"
+            queue: "order-processing-queue"
+            routing_key: "order.created"
+      publisher_config:
+        confirms: true
+        delivery_mode: 2  # persistent
+      consumer_config:
+        ack_mode: "manual"
+        prefetch_count: 10
+      note: "T1 configuration with single topic exchange, quorum queue for durability, publisher confirms for reliability."
+    token_tier: T1
+
+  - name: multi-exchange-dlx-error-handling
+    description: "Multi-exchange topology with dead letter exchange for error handling"
+    input:
+      message_flows:
+        - "order-service → orders-exchange → order-processing-queue"
+        - "payment-service → payments-exchange → payment-processing-queue"
+      error_handling: "DLX for failed messages"
+      rabbitmq_version: "4.2"
+      queue_type: "quorum"
+    expected_recommendations:
+      topology:
+        exchanges:
+          - name: "orders-exchange"
+            type: "topic"
+          - name: "payments-exchange"
+            type: "topic"
+          - name: "dlx-exchange"
+            type: "topic"
+        queues:
+          - name: "order-processing-queue"
+            type: "quorum"
+            arguments:
+              x-queue-type: "quorum"
+              x-delivery-limit: 20
+          - name: "payment-processing-queue"
+            type: "quorum"
+            arguments:
+              x-queue-type: "quorum"
+              x-delivery-limit: 20
+          - name: "dlx-order-queue"
+            type: "quorum"
+            note: "Manual inspection queue for failed orders"
+          - name: "dlx-payment-queue"
+            type: "quorum"
+            note: "Manual inspection queue for failed payments"
+        bindings:
+          - exchange: "orders-exchange"
+            queue: "order-processing-queue"
+            routing_key: "order.created"
+          - exchange: "payments-exchange"
+            queue: "payment-processing-queue"
+            routing_key: "payment.processed"
+          - exchange: "dlx-exchange"
+            queue: "dlx-order-queue"
+            routing_key: "order.processing.failed"
+          - exchange: "dlx-exchange"
+            queue: "dlx-payment-queue"
+            routing_key: "payment.processing.failed"
+      policies:
+        - name: "order-dlx-policy"
+          pattern: "order-processing-queue"
+          definition:
+            dead-letter-exchange: "dlx-exchange"
+            dead-letter-routing-key: "order.processing.failed"
+            delivery-limit: 20
+        - name: "payment-dlx-policy"
+          pattern: "payment-processing-queue"
+          definition:
+            dead-letter-exchange: "dlx-exchange"
+            dead-letter-routing-key: "payment.processing.failed"
+            delivery-limit: 20
+      consumer_error_handling:
+        transient_error: "nack + requeue=true (network timeout, downstream unavailable)"
+        permanent_error: "nack + requeue=false → DLX (invalid data, schema mismatch)"
+        delivery_limit: "After 20 redeliveries → automatic DLX routing"
+    token_tier: T2
+
+  - name: topic-routing-patterns-wildcards
+    description: "Topic exchange with wildcard routing patterns for event distribution"
+    input:
+      exchange_type: "topic"
+      routing_patterns:
+        - "order.created → order-processing-queue"
+        - "order.# → order-audit-queue (all order events)"
+        - "audit.events.# → compliance-queue (all audit events)"
+      rabbitmq_version: "4.2"
+    expected_recommendations:
+      topic_wildcards:
+        star: "* matches exactly one word (e.g., order.*.created matches order.online.created, not order.created)"
+        hash: "# matches zero or more words (e.g., order.# matches order, order.created, order.online.created)"
+      bindings:
+        - exchange: "events-exchange"
+          queue: "order-processing-queue"
+          routing_key: "order.created"
+          note: "Exact match"
+        - exchange: "events-exchange"
+          queue: "order-audit-queue"
+          routing_key: "order.#"
+          note: "All order events (order.created, order.cancelled, order.shipped)"
+        - exchange: "events-exchange"
+          queue: "compliance-queue"
+          routing_key: "audit.events.#"
+          note: "All audit events (audit.events.users.signup, audit.events.admin.login)"
+      example_routing:
+        - routing_key: "order.created"
+          matches: ["order-processing-queue", "order-audit-queue"]
+        - routing_key: "order.cancelled"
+          matches: ["order-audit-queue"]
+        - routing_key: "audit.events.users.signup"
+          matches: ["compliance-queue"]
+      use_cases:
+        - "Event bus with hierarchical routing"
+        - "Audit logging (capture all events matching pattern)"
+        - "Multi-consumer distribution (same event to processing + audit queues)"
+    token_tier: T2
+
+  - name: clustering-quorum-queue-replication
+    description: "3-node cluster with quorum queue replication for high availability"
+    input:
+      cluster_size: 3
+      queue_type: "quorum"
+      replication_factor: 3
+      rabbitmq_version: "4.2"
+      use_case: "High availability order processing"
+    expected_recommendations:
+      cluster_topology:
+        nodes:
+          - "rabbit@node1.example.com"
+          - "rabbit@node2.example.com"
+          - "rabbit@node3.example.com"
+        erlang_cookie: "same on all nodes (authentication)"
+        network_requirements:
+          - "Port 4369 (epmd)"
+          - "Port 25672 (inter-node communication)"
+          - "Port 5672 (AMQP)"
+          - "Hostname resolution between all nodes"
+      quorum_queue_replication:
+        algorithm: "Raft consensus"
+        leader_election: "Automatic (handles writes)"
+        follower_replication: "Synchronous (Raft log replication)"
+        fault_tolerance: "Survives 1 node failure in 3-node cluster (majority = 2/3)"
+        configuration:
+          x-queue-type: "quorum"
+          x-quorum-initial-group-size: 3
+      best_practices:
+        - "Use odd number of nodes (3, 5, 7) for Raft consensus"
+        - "Avoid 2-node clusters (no clear majority during network partition)"
+        - "Quorum queues automatically distribute across cluster nodes"
+        - "Leader election automatic on node failure (RTO <10s)"
+      failure_scenarios:
+        one_node_down: "Cluster continues (2/3 majority), quorum queue still available"
+        two_nodes_down: "Cluster unavailable (no majority), quorum queue unavailable"
+    token_tier: T3
+
+  - name: stream-queues-high-throughput
+    description: "Stream queues for high-throughput event streaming (millions of messages/sec)"
+    input:
+      use_case: "Audit log streaming"
+      throughput: "1 million events/sec"
+      retention: "7 days"
+      consumer_pattern: "Multiple consumers reading from same offset"
+      rabbitmq_version: "4.2"
+    expected_recommendations:
+      stream_queue_config:
+        x-queue-type: "stream"
+        x-max-age: "7D"
+        x-stream-max-segment-size-bytes: 500000000  # 500MB segments
+      stream_characteristics:
+        - "Append-only log (like Kafka topics)"
+        - "Multiple consumers can read from same offset"
+        - "Retention based on size or time (not per-consumer)"
+        - "RabbitMQ 4.2: SQL filter expressions (4M+ msg/sec filtering with Bloom filters)"
+      consumer_offset_tracking:
+        offset_types: ["first", "last", "next", "timestamp"]
+        server_side_storage: "Offset stored on server (like Kafka consumer groups)"
+        example: "consumer.attach(stream='audit-log', offset='last')"
+      when_to_use_streams:
+        - "High throughput (>10k msg/sec)"
+        - "Multiple consumers need to read same messages"
+        - "Audit logs or event sourcing (retention required)"
+        - "Replay capability (read from historical offset)"
+      when_not_to_use_streams:
+        - "Traditional queue pattern (single consumer per message)"
+        - "Message deletion after consumption required"
+        - "Complex routing logic (use topic exchange instead)"
+    token_tier: T3
+
+  - name: retry-backoff-pattern-dlx-ttl
+    description: "Retry with exponential backoff using DLX + TTL queues"
+    input:
+      use_case: "Order processing with retry on transient failures"
+      retry_strategy: "Exponential backoff (5s, 30s, 300s)"
+      max_retries: 3
+      rabbitmq_version: "4.2"
+    expected_recommendations:
+      retry_topology:
+        main_queue: "order-processing-queue"
+        retry_queues:
+          - name: "retry-order-5s"
+            ttl: 5000
+            dead_letter_exchange: "orders-exchange"
+            dead_letter_routing_key: "order.created"
+          - name: "retry-order-30s"
+            ttl: 30000
+            dead_letter_exchange: "orders-exchange"
+            dead_letter_routing_key: "order.created"
+          - name: "retry-order-300s"
+            ttl: 300000
+            dead_letter_exchange: "orders-exchange"
+            dead_letter_routing_key: "order.created"
+        final_dlx_queue: "dlx-order-processing-queue"
+      retry_flow:
+        step_1: "Consumer processes message from order-processing-queue"
+        step_2_failure: "Transient error → nack + requeue=false → DLX routes to retry-order-5s"
+        step_3_ttl_expiry: "After 5s TTL, message expires → DLX routes back to order-processing-queue"
+        step_4_retry: "Consumer retries message (retry_count=1)"
+        step_5_repeated_failure: "After 3 retries (5s, 30s, 300s), delivery limit exceeded → final DLX"
+      consumer_logic:
+        - "Track retry_count in message headers (x-death header contains retry history)"
+        - "Transient error (network timeout) → route to retry queue"
+        - "Permanent error (invalid data) → route to final DLX (no retry)"
+      benefits:
+        - "Exponential backoff reduces load during downstream outages"
+        - "No custom retry logic in consumer code (handled by RabbitMQ)"
+        - "Failed messages automatically retried without blocking main queue"
+    token_tier: T2
+
+  - name: insufficient-data-error
+    description: "Error case: no message flow provided"
+    input:
+      rabbitmq_version: "4.2"
+    expected_error: "Insufficient data: missing 'message_flow' or 'message_flows'. Cannot design RabbitMQ topology without publisher → exchange → queue → consumer flow. Please provide: (1) At least one message flow (e.g., order-service → orders-exchange → order-processing-queue), (2) Exchange type (direct, topic, fanout, headers), (3) Queue type (classic, quorum, streams)."
+    token_tier: T1

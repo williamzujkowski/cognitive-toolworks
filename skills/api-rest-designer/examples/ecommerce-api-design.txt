@@ -1,0 +1,29 @@
+# E-commerce REST API Design (Richardson Level 2)
+
+INPUT: domain: {User, Order, Product}, use_cases: [List orders, Create order, Search products], versioning: URI, pagination: cursor, auth: OAuth2 JWT
+
+OUTPUT (T2 Design):
+
+RICHARDSON LEVEL: 2 (HTTP verbs + multiple resources, no HATEOAS)
+VERSIONING: URI-based (/v1/users, /v2/users), support 2 concurrent versions, deprecate v1 after 6mo
+
+RESOURCES & HTTP METHODS:
+/v1/users → GET (list, ?limit=20&after=cursor), POST (create, 201+Location), /users/{id} → GET (200|404), PUT, PATCH, DELETE (204)
+/v1/orders → GET (list, ?userId=123&status=completed&after=cursor), POST (create, 201+Location), /orders/{id} → GET, PUT, PATCH, DELETE
+/v1/products → GET (list, ?q=laptop&limit=20&after=cursor), POST (create)
+
+PAGINATION (Cursor-Based):
+Request: GET /v1/orders?limit=20&after=cursorXYZ&status=completed
+Response: {data: [Order], pagination: {nextCursor: "abc123", hasMore: true, count: 20}}
+Benefit: No page drift (new orders don't shift results), efficient (no offset scan)
+
+SECURITY (OAuth2 + OWASP Top 10):
+Auth: Bearer JWT in Authorization header, validate on every request
+API1 BOLA: Validate userId in JWT matches /users/{id} access
+API4 Rate Limit: 100 req/min per user via X-RateLimit headers (429 if exceeded)
+API8 Misconfiguration: Generic 500 errors in prod (no stack traces)
+
+ERROR FORMAT (RFC 7807):
+{type: "https://api.example.com/errors/validation", title: "Validation Error", status: 400, detail: "Email required", instance: "/v1/users", errors: [{field: "email", message: "Required"}]}
+
+IDEMPOTENCY: POST /v1/orders supports Idempotency-Key header to prevent duplicate orders

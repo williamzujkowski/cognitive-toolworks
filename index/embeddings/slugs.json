@@ -19,6 +19,7 @@
   "data-pipeline-designer",
   "database-migration-generator",
   "database-optimization-analyzer",
+  "database-schema-designer",
   "devops-cicd-generator",
   "devops-deployment-designer",
   "devops-drift-detector",
@@ -61,5 +62,6 @@
   "tooling-csharp-generator",
   "tooling-java-generator",
   "tooling-python-generator",
-  "tooling-typescript-generator"
+  "tooling-typescript-generator",
+  "ux-wireframe-designer"
 ]

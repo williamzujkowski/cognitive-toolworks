@@ -1,0 +1,36 @@
+# Kubernetes Prometheus Configuration with Service Discovery and Alerting
+
+INPUT: targets: Kubernetes pods with prometheus.io/scrape annotation, alerts: API latency p95>500ms + error rate>1%, recording_rules: pre-compute p95/p99 latency
+
+OUTPUT (T2 Configuration):
+
+## prometheus.yml (Service Discovery + Relabeling)
+global: {scrape_interval: 15s, evaluation_interval: 15s, external_labels: {cluster: prod-us-east-1}}
+scrape_configs:
+  - job_name: kubernetes-pods
+    kubernetes_sd_configs: [{role: pod}]
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape], action: keep, regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port], action: replace, target_label: __address__, regex: ([^:]+)(?::\d+)?;(\d+), replacement: $1:$2
+      - source_labels: [__meta_kubernetes_namespace], target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_pod_name], target_label: kubernetes_pod
+    metric_relabel_configs:
+      - source_labels: [user_id], action: labeldrop  # Drop high-cardinality label
+
+## recording_rules.yml (Pre-Compute Latency Percentiles)
+groups:
+  - name: api_latency, interval: 30s
+    rules:
+      - record: job:http_request_duration_seconds:p95
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (job, le))
+      - record: job:http_request_duration_seconds:p99
+        expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (job, le))
+
+## alerts.yml (Latency + Error Rate)
+groups:
+  - name: api_alerts
+    rules:
+      - alert: HighLatency, expr: job:http_request_duration_seconds:p95 > 0.5, for: 5m, labels: {severity: warning}, annotations: {summary: "API latency p95 >500ms"}
+      - alert: HighErrorRate, expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.01, for: 2m, labels: {severity: critical}, annotations: {summary: "Error rate >1%"}
+
+CARDINALITY: user_id label dropped to avoid 10M+ time series, retain only job/namespace/pod (estimated 5k time series)

@@ -8,8 +8,8 @@
 
 ## Current State (Baseline)
 
-**Skills**: 61
-**Agents**: 14
+**Skills**: 65
+**Agents**: 18
 **Language Coverage**: Python (comprehensive), Go (scaffolding), Rust (analysis)
 **Design Coverage**: API design, architecture decisions, microservices patterns
 

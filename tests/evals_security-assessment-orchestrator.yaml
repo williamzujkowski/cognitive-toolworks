@@ -1,0 +1,129 @@
+scenarios:
+  - name: quick-scan-critical-only
+    description: "T1 quick scan for critical vulnerabilities only"
+    input:
+      assessment_scope: application
+      target_environment: production
+      compliance_requirements: none
+      business_context:
+        asset_criticality: standard
+        internet_facing: true
+      depth_level: quick-scan
+    expected_findings_count: "<10 (critical only, CVSS ≥7.0)"
+    expected_skills_invoked: ["security-appsec-validator"]
+    expected_cri: "Should calculate Critical Risk Index"
+    expected_output_sections: ["executive_summary", "top_5_risks"]
+    token_tier: T1
+
+  - name: comprehensive-fullstack-nist-csf
+    description: "T2 comprehensive full-stack assessment with NIST CSF compliance"
+    input:
+      assessment_scope: full-stack
+      target_environment: production
+      compliance_requirements: nist-csf
+      business_context:
+        asset_criticality: mission-critical
+        data_sensitivity: pii-phi
+        internet_facing: true
+      depth_level: comprehensive
+    expected_skills_invoked:
+      [
+        "security-appsec-validator",
+        "security-cloud-analyzer",
+        "security-container-validator",
+        "security-crypto-validator",
+        "security-iam-reviewer",
+        "security-network-validator",
+        "security-os-validator",
+        "security-supplychain-validator",
+        "security-zerotrust-architect",
+        "security-zerotrust-assessor",
+      ]
+    expected_nist_csf_functions: ["Govern", "Identify", "Protect", "Detect", "Respond", "Recover"]
+    expected_maturity_score: "0-10 scale with per-function breakdown"
+    expected_attack_paths: "Correlated findings across domains"
+    expected_roadmap_phases: 3
+    token_tier: T2
+
+  - name: cloud-only-cis-benchmarks
+    description: "Cloud infrastructure security with CIS Benchmark compliance"
+    input:
+      assessment_scope: cloud
+      target_environment: all
+      compliance_requirements: cis
+      business_context:
+        asset_criticality: standard
+        cloud_provider: aws
+      depth_level: standard
+    expected_skills_invoked: ["security-cloud-analyzer", "security-iam-reviewer", "security-network-validator"]
+    expected_compliance_framework: "CIS AWS Foundations Benchmark"
+    expected_findings_categories: ["storage", "iam", "network", "encryption"]
+    token_tier: T2
+
+  - name: attack-path-correlation
+    description: "Identify correlated findings forming exploitable attack paths"
+    input:
+      assessment_scope: full-stack
+      target_environment: production
+      compliance_requirements: none
+      business_context:
+        asset_criticality: mission-critical
+        internet_facing: true
+      depth_level: comprehensive
+    expected_attack_paths:
+      - description: "Public S3 + overpermissive IAM + weak crypto → data breach"
+        findings: ["CLOUD-*", "IAM-*", "CRYPTO-*"]
+        exploitability: "high"
+        combined_risk_score: ">15.0"
+    expected_correlation_logic: "Chain findings across security-cloud-analyzer, security-iam-reviewer, security-crypto-validator"
+    token_tier: T2
+
+  - name: maturity-assessment-gaps
+    description: "Security maturity assessment identifying Respond/Recover gaps"
+    input:
+      assessment_scope: infrastructure
+      target_environment: production
+      compliance_requirements: nist-csf
+      business_context:
+        asset_criticality: mission-critical
+      depth_level: comprehensive
+    expected_maturity_assessment:
+      govern: ">6.0 (mature governance)"
+      protect: ">5.0 (adequate protection)"
+      detect: ">4.0 (basic detection)"
+      respond: "<4.0 (gap - ad-hoc incident response)"
+      recover: "<4.0 (gap - no tested DR/BC)"
+    expected_recommendations: "Improve Respond and Recover functions to Walk tier (4-6)"
+    token_tier: T2
+
+  - name: insufficient-scope-error
+    description: "Error case: scope too narrow, should use specific skill directly"
+    input:
+      assessment_scope: application
+      target_environment: dev
+      compliance_requirements: none
+      depth_level: quick-scan
+    expected_warning: "Consider using security-appsec-validator directly for single-domain assessment"
+    expected_skills_invoked: ["security-appsec-validator"]
+    token_tier: T1
+
+  - name: enterprise-governance-t3
+    description: "T3 enterprise assessment with CRQ and board metrics"
+    input:
+      assessment_scope: full-stack
+      target_environment: production
+      compliance_requirements: nist-csf
+      business_context:
+        asset_criticality: mission-critical
+        data_sensitivity: pii-phi
+        internet_facing: true
+        annual_revenue: "$500M"
+      depth_level: comprehensive
+    expected_t3_features:
+      - "Cyber Risk Quantification (CRQ) with ALE calculation"
+      - "Security ROI analysis (remediation cost vs breach cost)"
+      - "Board-level metrics (trend analysis, benchmark comparison)"
+      - "Continuous monitoring strategy with SLA targets"
+      - "Incident response readiness assessment"
+    expected_compliance_mapping: ["SOC 2", "ISO 27001", "PCI-DSS"]
+    token_tier: T3

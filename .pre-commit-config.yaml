@@ -80,6 +80,16 @@ repos:
       - id: markdownlint
         args: [--fix, --disable, MD013, MD033, MD041]  # Disable line-length, HTML, first-line-h1
 
+  # Local custom validators
+  - repo: local
+    hooks:
+      - id: validate-examples
+        name: Validate skill examples
+        entry: python3 tooling/validate_examples.py
+        language: system
+        pass_filenames: false
+        files: ^skills/.*/examples/.*$
+
 # Configuration for pre-commit.ci (if using)
 ci:
   autofix_commit_msg: |
