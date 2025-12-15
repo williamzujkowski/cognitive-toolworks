@@ -470,7 +470,7 @@ class TestMain:
         import analyze_coverage
 
         def patched_load() -> list[dict[str, Any]]:
-            with open(index_file) as f:
+            with index_file.open() as f:
                 result: list[dict[str, Any]] = json.load(f)
                 return result
 
@@ -504,7 +504,7 @@ class TestMain:
         import analyze_coverage
 
         def patched_load() -> list[dict[str, Any]]:
-            with open(index_file) as f:
+            with index_file.open() as f:
                 result: list[dict[str, Any]] = json.load(f)
                 return result
 

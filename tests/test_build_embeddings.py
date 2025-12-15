@@ -6,9 +6,7 @@ import json
 import pickle
 import sys
 from pathlib import Path
-from typing import Any
-
-import pytest
+from typing import TYPE_CHECKING, Any
 
 # Add tooling to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "tooling"))
@@ -20,6 +18,9 @@ from build_embeddings import (
     main,
     save_embeddings,
 )
+
+if TYPE_CHECKING:
+    import pytest
 
 
 class TestLoadSkillsIndex:
@@ -266,8 +267,8 @@ class TestSaveEmbeddings:
 
         # Load vectorizer
         # S301: Pickle files are from trusted test data (not user input)
-        with open(output_dir / "vectorizer.pkl", "rb") as f:
-            loaded_vectorizer = pickle.load(f)  # noqa: S301
+        with (output_dir / "vectorizer.pkl").open("rb") as f:
+            loaded_vectorizer = pickle.load(f)
 
         # Should be able to transform text
         test_vec = loaded_vectorizer.transform(["security"])
@@ -282,8 +283,8 @@ class TestSaveEmbeddings:
 
         # Load vectors
         # S301: Pickle files are from trusted test data (not user input)
-        with open(output_dir / "vectors.pkl", "rb") as f:
-            loaded_vectors = pickle.load(f)  # noqa: S301
+        with (output_dir / "vectors.pkl").open("rb") as f:
+            loaded_vectors = pickle.load(f)
 
         # Should have same shape
         assert loaded_vectors.shape == embeddings["vectors"].shape
@@ -296,7 +297,7 @@ class TestSaveEmbeddings:
         save_embeddings(embeddings, output_dir)
 
         # Load and verify slugs
-        with open(output_dir / "slugs.json") as f:
+        with (output_dir / "slugs.json").open() as f:
             slugs = json.load(f)
 
         assert isinstance(slugs, list)
@@ -311,7 +312,7 @@ class TestSaveEmbeddings:
         save_embeddings(embeddings, output_dir)
 
         # Load and verify metadata
-        with open(output_dir / "metadata.json") as f:
+        with (output_dir / "metadata.json").open() as f:
             metadata = json.load(f)
 
         assert isinstance(metadata, dict)
@@ -453,13 +454,13 @@ class TestIntegration:
 
         # Verify we can load and use them
         # S301: Pickle files are from trusted test data (not user input)
-        with open(output_dir / "vectorizer.pkl", "rb") as f:
-            vectorizer = pickle.load(f)  # noqa: S301
+        with (output_dir / "vectorizer.pkl").open("rb") as f:
+            vectorizer = pickle.load(f)
 
-        with open(output_dir / "vectors.pkl", "rb") as f:
-            vectors = pickle.load(f)  # noqa: S301
+        with (output_dir / "vectors.pkl").open("rb") as f:
+            vectors = pickle.load(f)
 
-        with open(output_dir / "slugs.json") as f:
+        with (output_dir / "slugs.json").open() as f:
             slugs = json.load(f)
 
         # Test query transformation
