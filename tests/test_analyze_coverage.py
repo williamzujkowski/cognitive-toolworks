@@ -148,7 +148,7 @@ class TestAnalyzeCoverage:
             {"slug": "api-design-validator"},
             {"slug": "kubernetes-manifest-generator"},
         ]
-        by_tier, by_domain, domain_tier_map = analyze_coverage(skills)
+        by_tier, _by_domain, _domain_tier_map = analyze_coverage(skills)
 
         assert len(by_tier["Core"]) == 1
         assert len(by_tier["Domain"]) == 1
@@ -163,7 +163,7 @@ class TestAnalyzeCoverage:
             {"slug": "api-design-validator"},
             {"slug": "api-contract-testing"},
         ]
-        by_tier, by_domain, domain_tier_map = analyze_coverage(skills)
+        _by_tier, by_domain, _domain_tier_map = analyze_coverage(skills)
 
         assert by_domain["Security"] == 3
         assert by_domain["Api"] == 2
