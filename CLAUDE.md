@@ -559,8 +559,16 @@ Do not open SKILL.md unless requested.
 | Check status | `gh pr status` |
 | Monitor CI | `gh pr checks` |
 | Merge | `gh pr merge --squash` |
+| Auto-merge | `gh pr merge --squash --auto` |
+| Admin merge | `gh pr merge --squash --admin` |
 
 **PR Workflow**: Issue created → Branch → Commit → Push → `gh pr create` (link issue) → CI passes → Merge
+
+**Auto-Merge Strategy**:
+* **Enable auto-merge**: `gh pr merge --auto --squash` — merges when CI passes
+* **Admin override**: `gh pr merge --admin --squash` — bypass CI for trusted changes
+* **When to auto-merge**: Clean PRs with passing local hooks, low-risk changes
+* **When to admin merge**: CI flaky/outdated, urgent fixes, trusted contributor changes
 
 **PR-Issue Integration**:
 * Always link PRs to issues: `Closes #N`, `Fixes #N`, or `Resolves #N` in PR description
