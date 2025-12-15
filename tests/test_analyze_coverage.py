@@ -100,10 +100,10 @@ class TestCategorizeSkill:
 
     def test_domain_capitalization(self) -> None:
         """Domain names are capitalized."""
-        tier, domain = categorize_skill("database-schema-designer")
+        _tier, domain = categorize_skill("database-schema-designer")
         assert domain == "Database"
 
-        tier, domain = categorize_skill("testing-unit-generator")
+        _tier, domain = categorize_skill("testing-unit-generator")
         assert domain == "Testing"
 
     def test_uncategorized_skill(self) -> None:
@@ -124,7 +124,7 @@ class TestAnalyzeCoverage:
 
     def test_empty_skills_list(self) -> None:
         """Handle empty skills list."""
-        by_tier, by_domain, domain_tier_map = analyze_coverage([])
+        by_tier, by_domain, _domain_tier_map = analyze_coverage([])
 
         assert by_tier["Core"] == []
         assert by_tier["Domain"] == []
