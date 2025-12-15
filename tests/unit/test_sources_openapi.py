@@ -44,7 +44,7 @@ class TestOpenAPIIntrospector:
 
     def test_validate_spec_unsupported_version(self) -> None:
         """Test validation fails for unsupported OpenAPI versions."""
-        with pytest.raises(ValueError, match="Only OpenAPI 3.x supported"):
+        with pytest.raises(ValueError, match=r"Only OpenAPI 3.x supported"):
             OpenAPIIntrospector({"openapi": "2.0", "info": {}, "paths": {}})
 
     def test_validate_spec_missing_info(self) -> None:

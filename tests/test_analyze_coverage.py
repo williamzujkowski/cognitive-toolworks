@@ -175,7 +175,7 @@ class TestAnalyzeCoverage:
             {"slug": "testing-integration-designer"},
             {"slug": "e2e-testing-generator"},
         ]
-        by_tier, by_domain, domain_tier_map = analyze_coverage(skills)
+        _by_tier, _by_domain, domain_tier_map = analyze_coverage(skills)
 
         # First two are Domain tier
         assert len(domain_tier_map["Domain"]["Testing"]) == 2
@@ -189,7 +189,7 @@ class TestAnalyzeCoverage:
             {"slug": "database-schema-designer"},
             {"slug": "testing-unit-generator"},
         ]
-        by_tier, by_domain, domain_tier_map = analyze_coverage(skills)
+        by_tier, _by_domain, domain_tier_map = analyze_coverage(skills)
 
         assert len(by_tier["Domain"]) == 3
         assert len(domain_tier_map["Domain"]) == 3
