@@ -10,5 +10,14 @@ This module provides adapters for:
 """
 
 from cognitive_toolworks.sources.mcp import MCPIntrospector
+from cognitive_toolworks.sources.openapi import OpenAPIIntrospector
+from cognitive_toolworks.sources.readme import ReadmeParser
+from cognitive_toolworks.sources.scripts import ScriptAnalyzer, analyze_script
 
-__all__ = ["MCPIntrospector"]
+__all__ = [
+    "MCPIntrospector",
+    "OpenAPIIntrospector",
+    "ReadmeParser",
+    "ScriptAnalyzer",
+    "analyze_script",
+]

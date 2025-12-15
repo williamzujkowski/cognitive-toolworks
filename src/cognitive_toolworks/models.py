@@ -86,7 +86,7 @@ class SkillMetadata:
         return issues
 
     def to_yaml(self) -> str:
-        """Convert to YAML frontmatter string."""
+        """Convert to YAML frontmatter string (Anthropic format)."""
         lines = ["---"]
         lines.append(f"name: {self.name}")
         lines.append(f'description: "{self.description}"')
@@ -98,6 +98,33 @@ class SkillMetadata:
             lines.append("dependencies:")
             for dep in self.dependencies:
                 lines.append(f"  - {dep}")
+
+        if self.license:
+            lines.append(f"license: {self.license}")
+
+        lines.append("---")
+        return "\n".join(lines)
+
+    def to_openai_yaml(self) -> str:
+        """Convert to YAML frontmatter string (OpenAI Codex CLI format)."""
+        lines = ["---"]
+        lines.append(f"name: {self.name}")
+        lines.append(f'description: "{self.description}"')
+
+        # OpenAI format includes category
+        if self.category:
+            lines.append(f"category: {self.category}")
+
+        if self.allowed_tools:
+            lines.append(f"allowed-tools: {', '.join(self.allowed_tools)}")
+
+        if self.dependencies:
+            lines.append("dependencies:")
+            for dep in self.dependencies:
+                lines.append(f"  - {dep}")
+
+        if self.version:
+            lines.append(f"version: {self.version}")
 
         if self.license:
             lines.append(f"license: {self.license}")
@@ -419,4 +446,81 @@ class SemanticAnalysis:
             "error_scenarios": self.error_scenarios,
             "security_considerations": self.security_considerations,
             "recommended_use_cases": self.recommended_use_cases,
+        }
+
+
+@dataclass
+class EndpointDefinition:
+    """Definition of an API endpoint from OpenAPI spec."""
+
+    path: str
+    method: str  # GET, POST, PUT, DELETE, PATCH, etc.
+    summary: str
+    description: str
+    parameters: list[dict[str, Any]] = field(default_factory=list)
+    request_body: dict[str, Any] | None = None
+    responses: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            "path": self.path,
+            "method": self.method,
+            "summary": self.summary,
+            "description": self.description,
+            "parameters": self.parameters,
+            "request_body": self.request_body,
+            "responses": self.responses,
+        }
+
+
+@dataclass
+class OpenAPIAnalysis:
+    """Analysis result from OpenAPI specification introspection."""
+
+    api_name: str
+    base_url: str
+    endpoints: list[EndpointDefinition]
+    schemas: dict[str, Any]
+    authentication: dict[str, Any]
+    capabilities: list[str]
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            "api_name": self.api_name,
+            "base_url": self.base_url,
+            "endpoints": [e.to_dict() for e in self.endpoints],
+            "schemas": self.schemas,
+            "authentication": self.authentication,
+            "capabilities": self.capabilities,
+        }
+
+
+@dataclass
+class ReadmeAnalysis:
+    """Analysis result from parsing README/documentation files."""
+
+    project_name: str
+    description: str
+    installation: str | None = None
+    usage_examples: list[dict[str, str]] = field(default_factory=list)
+    features: list[str] = field(default_factory=list)
+    api_reference: str | None = None
+    dependencies: list[str] = field(default_factory=list)
+    badges: list[dict[str, str]] = field(default_factory=list)
+    sections: dict[str, str] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            "project_name": self.project_name,
+            "description": self.description,
+            "installation": self.installation,
+            "usage_examples": self.usage_examples,
+            "features": self.features,
+            "api_reference": self.api_reference,
+            "dependencies": self.dependencies,
+            "badges": self.badges,
+            "sections": self.sections,
         }
