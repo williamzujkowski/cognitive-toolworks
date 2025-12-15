@@ -11,7 +11,7 @@ import pickle
 from pathlib import Path
 from typing import Any
 
-import numpy as np  # type: ignore[import-untyped]
+import numpy as np
 from sklearn.metrics.pairwise import (  # type: ignore[import-untyped]
     cosine_similarity,
 )
