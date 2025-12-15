@@ -372,9 +372,42 @@ class SkillGenerator:
 
         return name
 
-    def render_skill(self, skill: SkillContent) -> str:
-        """Render SkillContent to markdown string."""
-        return skill.to_markdown()
+    def render_skill(
+        self, skill: SkillContent, platform: Platform | None = None
+    ) -> str:
+        """
+        Render SkillContent to markdown string using platform-specific template.
+
+        Args:
+            skill: SkillContent to render.
+            platform: Target platform (defaults to config.platform).
+
+        Returns:
+            Rendered markdown string.
+        """
+        platform = platform or self.config.platform
+
+        # Select template based on platform
+        if platform == Platform.OPENAI:
+            template_name = "skill_openai.md.j2"
+        elif platform == Platform.ANTHROPIC:
+            template_name = "skill_anthropic.md.j2"
+        else:  # UNIVERSAL - use Anthropic as it's more restrictive
+            template_name = "skill_anthropic.md.j2"
+
+        template = self._jinja_env.get_template(template_name)
+
+        return template.render(
+            metadata=skill.metadata,
+            overview=skill.overview,
+            when_to_use=skill.when_to_use,
+            quick_reference=skill.quick_reference,
+            instructions=skill.instructions,
+            examples=skill.examples,
+            guidelines=skill.guidelines,
+            troubleshooting=skill.troubleshooting,
+            references=skill.references,
+        )
 
     def save_skill(self, skill: SkillContent, output_dir: Path) -> Path:
         """Save skill to output directory."""
