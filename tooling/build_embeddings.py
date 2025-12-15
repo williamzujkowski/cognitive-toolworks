@@ -11,7 +11,9 @@ import pickle
 from pathlib import Path
 from typing import Any
 
-from sklearn.feature_extraction.text import TfidfVectorizer  # type: ignore[import-not-found,import-untyped]
+from sklearn.feature_extraction.text import (
+    TfidfVectorizer,  # type: ignore[import-not-found,import-untyped]
+)
 
 
 def load_skills_index() -> list[dict[str, Any]]:

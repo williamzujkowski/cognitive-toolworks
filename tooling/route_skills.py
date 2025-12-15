@@ -12,7 +12,9 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np  # type: ignore[import-not-found,import-untyped]
-from sklearn.metrics.pairwise import cosine_similarity  # type: ignore[import-not-found,import-untyped]
+from sklearn.metrics.pairwise import (
+    cosine_similarity,  # type: ignore[import-not-found,import-untyped]
+)
 
 
 class SkillRouter:
