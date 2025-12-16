@@ -10,7 +10,7 @@ readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.11"
 authors = [
-    { name = "William Zujkowski", email = "william@example.com" }
+    { name = "William Zujkowski", email = "william.zujkowski@gmail.com" }
 ]
 keywords = [
     "ai",
@@ -93,6 +93,9 @@ include = [
     "/src",
     "/skills",
     "/tests",
+    "/CHANGELOG.md",
+    "/README.md",
+    "/LICENSE",
 ]
 
 [tool.black]

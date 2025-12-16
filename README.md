@@ -3,8 +3,10 @@
 > Generate cross-platform agent artifacts (SKILL.md, AGENTS.md) using LLM intelligence.
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![PyPI version](https://img.shields.io/pypi/v/cognitive-toolworks.svg)](https://pypi.org/project/cognitive-toolworks/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Status: Beta](https://img.shields.io/badge/status-beta-yellow.svg)](https://github.com/williamzujkowski/cognitive-toolworks)
+[![Tests](https://github.com/williamzujkowski/cognitive-toolworks/workflows/tests/badge.svg)](https://github.com/williamzujkowski/cognitive-toolworks/actions)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Transform MCP servers and repositories into **SKILL.md** and **AGENTS.md** files compatible with Claude, Codex, and other agents.
 
@@ -20,8 +22,8 @@ Transform MCP servers and repositories into **SKILL.md** and **AGENTS.md** files
 ## 🚀 Quick Start
 
 ```bash
-# Install
-pip install -e .
+# Install from PyPI
+pip install cognitive-toolworks
 
 # Set API key
 export ANTHROPIC_API_KEY=sk-ant-...
@@ -33,24 +35,32 @@ ct generate skill --from-mcp ./github-mcp.json --output ./github-skill/
 ct generate agents-md --repo . --output ./AGENTS.md
 
 # Analyze existing skill
-ct analyze ./my-skill/SKILL.md --full-report
+ct analyze ./my-skill/ --full-report
 ```
+
+**Full walkthrough**: [docs/QUICKSTART.md](docs/QUICKSTART.md)
 
 ## 📦 Installation
 
 ```bash
-# Clone and install
+# From PyPI (recommended)
+pip install cognitive-toolworks
+
+# With development dependencies (for contributors)
 git clone https://github.com/williamzujkowski/cognitive-toolworks.git
 cd cognitive-toolworks
-pip install -e .
-
-# With development dependencies
 pip install -e ".[dev]"
 ```
 
 **Requirements**:
 - Python 3.11+
 - `ANTHROPIC_API_KEY` environment variable for LLM generation
+
+## 📖 Documentation
+
+- **[Quick Start Guide](docs/QUICKSTART.md)**: Get started in 5 minutes
+- **[CLI Reference](docs/CLI_REFERENCE.md)**: Complete command documentation
+- **[Coverage Matrix](docs/COVERAGE_MATRIX.md)**: Feature coverage and roadmap
 
 ## 📖 Usage
 
@@ -105,6 +115,8 @@ ct optimize ./my-skill/ --legacy
 # Security scan
 ct security-scan ./skills/ --recursive
 ```
+
+**See full CLI reference**: [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)
 
 ## 📁 Output Formats
 
