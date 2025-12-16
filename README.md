@@ -8,33 +8,60 @@
 
 Transform MCP servers and repositories into **SKILL.md** and **AGENTS.md** files compatible with Claude, Codex, and other agents.
 
-> **Status**: Active development. MCP and OpenAPI generation are stable. README source support is planned.
+> **Status**: Beta. MCP introspection and skill generation work. OpenAPI introspection functional. README support planned.
 
 ## 🎯 What It Does
 
-- **Generate SKILL.md from MCP servers**: Introspect MCP server capabilities and generate structured skill files
-- **Generate SKILL.md from OpenAPI specs**: Parse OpenAPI 3.x specifications and create agent skills
-- **Generate AGENTS.md from repos**: Analyze repositories and create agent configuration files
-- **Validate cross-platform**: Check skills against Anthropic and OpenAI specifications
-- **Analyze & optimize**: Token counting, security scanning, coverage analysis, LLM-powered optimization
+**Working Features**:
+- **Discover Skills**: Browse, search, and inspect skills with `ct ls`, `ct search`, and `ct show`
+- **MCP Introspection**: Extract tool definitions from MCP servers (`ct introspect mcp`)
+- **Skill Generation**: Generate SKILL.md from MCP servers with LLM assistance (`ct generate skill --from-mcp`)
+- **Validation**: Check skills against Anthropic/OpenAI specs, token budgets, and security rules
+- **Analysis**: Token counting, security scanning, quality gates
+
+**Experimental**:
+- **OpenAPI Introspection**: Extract endpoints from OpenAPI specs (`ct introspect openapi`)
+- **Optimization**: LLM-powered skill trimming (`ct optimize`)
+
+**Beta**:
+- **AGENTS.md Generation**: Analyze repos and generate agent configs (`ct generate agents-md`, `ct analyze-repo`)
+
+**Planned**:
+- **README Source**: Generate skills from README files
 
 ## 🚀 Quick Start
 
+**No API Key Required**:
 ```bash
 # Install
 pip install -e .
 
-# Set API key
+# Browse and discover skills
+ct ls                           # List all skills
+ct search kubernetes            # Search for skills
+ct show api-graphql-designer    # View skill details
+
+# Validate and analyze
+ct validate ./my-skill/         # Check against specs
+ct analyze ./my-skill/          # Quality and token analysis
+ct security-scan ./skills/      # Security checks
+
+# Introspect sources
+ct introspect mcp config.json --output analysis.json
+```
+
+**Requires ANTHROPIC_API_KEY**:
+```bash
 export ANTHROPIC_API_KEY=sk-ant-...
 
-# Generate skill from MCP server
+# Generate skill from MCP
 ct generate skill --from-mcp ./github-mcp.json --output ./github-skill/
 
-# Generate AGENTS.md for your repo
+# Generate AGENTS.md
 ct generate agents-md --repo . --output ./AGENTS.md
 
-# Analyze existing skill
-ct analyze ./my-skill/SKILL.md --full-report
+# Optimize existing skills
+ct optimize ./my-skill/ --tier T2 --in-place
 ```
 
 ## 📦 Installation
@@ -51,14 +78,14 @@ pip install -e ".[dev]"
 
 **Requirements**:
 - Python 3.11+
-- `ANTHROPIC_API_KEY` environment variable for LLM generation
+- `ANTHROPIC_API_KEY` for LLM-powered generation and optimization (not required for discovery, validation, or analysis)
 
 ## 📖 Usage
 
-### Generate Skill from MCP Server
+### Introspect and Generate from MCP
 
 ```bash
-# Create MCP config
+# Step 1: Create MCP config
 cat > github-mcp.json << 'EOF'
 {
   "name": "github",
@@ -68,21 +95,21 @@ cat > github-mcp.json << 'EOF'
 }
 EOF
 
-# Generate skill
+# Step 2: Introspect to extract tool definitions (no API key)
+ct introspect mcp github-mcp.json --output github-analysis.json
+
+# Step 3: Generate SKILL.md with LLM (requires ANTHROPIC_API_KEY)
+export ANTHROPIC_API_KEY=sk-ant-...
 ct generate skill \
   --from-mcp github-mcp.json \
   --platform universal \
   --output ./github-skill/
-```
 
-### Generate AGENTS.md
-
-```bash
-# Analyze repo and generate AGENTS.md
-ct generate agents-md --repo . --output ./AGENTS.md
-
-# Also generate llms.txt
-ct generate agents-md --repo . --with-llms-txt
+# Or use pre-analyzed data
+ct generate skill \
+  --from-analysis github-analysis.json \
+  --name github \
+  --output ./github-skill/
 ```
 
 ### Discover & Browse Skills
@@ -109,26 +136,22 @@ ct ls --format simple      # Simple text
 ct search graphql --format json
 ```
 
-### Analyze & Validate
+### Validate, Analyze & Optimize
 
 ```bash
-# Full quality analysis
+# Validate skill structure and rules (no API key)
+ct validate ./my-skill/
+ct validate ./my-skill/ --platforms anthropic,openai --verbose
+
+# Quality and token analysis (no API key)
 ct analyze ./my-skill/ --full-report
 
-# Validate against platforms
-ct validate ./my-skill/ --platforms anthropic,openai
-
-# Optimize for progressive disclosure (LLM-powered)
-ct optimize ./my-skill/ --tier T2 --dry-run
-
-# Optimize in-place
-ct optimize ./my-skill/ --tier T2 --in-place
-
-# Legacy whitespace-only optimization
-ct optimize ./my-skill/ --legacy
-
-# Security scan
+# Security scanning (no API key)
 ct security-scan ./skills/ --recursive
+
+# LLM-powered optimization (requires ANTHROPIC_API_KEY)
+ct optimize ./my-skill/ --tier T2 --dry-run   # Preview changes
+ct optimize ./my-skill/ --tier T2 --in-place  # Apply changes
 ```
 
 ## 📁 Output Formats
@@ -176,11 +199,19 @@ Sources          →   LLM Analysis   →   Generation   →   Validation
                      Workflows          llms.txt
 ```
 
+**Implementation Status**:
+
+1. **Phase 1 (Stable)**: MCP introspection, skill generation with LLM fallback
+2. **Phase 2 (Stable)**: Eval runner, quality gates, validation framework
+3. **Phase 3 (Stable)**: Discovery commands (ls, search, show), skill browsing
+4. **Beta**: AGENTS.md generation, repository analysis
+5. **Future**: README source support, multi-agent orchestration
+
 **Design Principles**:
 
-1. **Progressive Disclosure**: Level 1 (~100 tokens) → Level 2 (<5k tokens) → Level 3 (unbounded)
-2. **Cross-Platform**: Generate once, validate for multiple platforms
-3. **Security-First**: Built-in pattern detection for credentials, shell injection, file access
+- **Progressive Disclosure**: T1 (≤2k tokens) → T2 (≤6k tokens) → T3 (≤12k tokens)
+- **Cross-Platform**: Generate once, validate for Anthropic and OpenAI
+- **Security-First**: Pattern detection for credentials, shell injection, file access
 
 ## 🔒 Security
 
@@ -197,8 +228,10 @@ ct security-scan ./skills/ --recursive
 ## 🔧 Configuration
 
 ```bash
-# Required
+# Required for LLM-powered features only (generate, optimize)
 export ANTHROPIC_API_KEY=sk-ant-...
+
+# Discovery, validation, analysis, and security scanning work without API key
 ```
 
 ## 🤝 Contributing
