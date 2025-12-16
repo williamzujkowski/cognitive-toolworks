@@ -8,14 +8,15 @@
 
 Transform MCP servers and repositories into **SKILL.md** and **AGENTS.md** files compatible with Claude, Codex, and other agents.
 
-> **Status**: Active development. MCP generation is stable; other sources (OpenAPI, README) are planned.
+> **Status**: Active development. MCP and OpenAPI generation are stable. README source support is planned.
 
 ## 🎯 What It Does
 
 - **Generate SKILL.md from MCP servers**: Introspect MCP server capabilities and generate structured skill files
+- **Generate SKILL.md from OpenAPI specs**: Parse OpenAPI 3.x specifications and create agent skills
 - **Generate AGENTS.md from repos**: Analyze repositories and create agent configuration files
 - **Validate cross-platform**: Check skills against Anthropic and OpenAI specifications
-- **Analyze & optimize**: Token counting, security scanning, coverage analysis
+- **Analyze & optimize**: Token counting, security scanning, coverage analysis, LLM-powered optimization
 
 ## 🚀 Quick Start
 
