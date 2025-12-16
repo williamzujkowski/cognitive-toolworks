@@ -221,8 +221,6 @@ ct validate ./skill/ --verbose                       # Detailed validation
 CT_DEBUG=1 ct generate skill ...                     # Enable debug logging
 ct introspect mcp ./config.json --raw               # Raw introspection output
 
-# Benchmarking
-ct benchmark ./skills/ --iterations 10              # Performance testing
 ```
 
 ## Architecture Notes
@@ -243,4 +241,3 @@ Source → Introspector → Analyzer → Generator → Validator → Optimizer �
 ### Claude-Flow Integration
 - Workflows in `.claude-flow/workflows/`
 - Agent definitions in `.claude-flow/agents/`
-- Use `--orchestrated` flag to enable multi-agent mode
