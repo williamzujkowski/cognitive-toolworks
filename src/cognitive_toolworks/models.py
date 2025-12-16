@@ -524,3 +524,132 @@ class ReadmeAnalysis:
             "badges": self.badges,
             "sections": self.sections,
         }
+
+
+class CompatibilitySeverity(str, Enum):
+    """Severity of compatibility issues."""
+
+    ERROR = "error"  # Blocks platform compatibility
+    WARNING = "warning"  # Should fix for compatibility
+    INFO = "info"  # Suggestion for improvement
+
+
+@dataclass
+class CompatibilityIssue:
+    """A compatibility issue found in a skill."""
+
+    severity: CompatibilitySeverity
+    platform: Platform
+    field: str
+    message: str
+    fix_suggestion: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            "severity": self.severity.value,
+            "platform": self.platform.value,
+            "field": self.field,
+            "message": self.message,
+            "fix": self.fix_suggestion,
+        }
+
+
+@dataclass
+class CompatibilityReport:
+    """Cross-platform compatibility analysis report."""
+
+    is_anthropic_compatible: bool
+    is_openai_compatible: bool
+    issues: list[CompatibilityIssue] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
+
+    @property
+    def is_universal(self) -> bool:
+        """Check if skill is compatible with both platforms."""
+        return self.is_anthropic_compatible and self.is_openai_compatible
+
+    @property
+    def anthropic_issues(self) -> list[CompatibilityIssue]:
+        """Get only Anthropic-specific issues."""
+        return [i for i in self.issues if i.platform == Platform.ANTHROPIC]
+
+    @property
+    def openai_issues(self) -> list[CompatibilityIssue]:
+        """Get only OpenAI-specific issues."""
+        return [i for i in self.issues if i.platform == Platform.OPENAI]
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            "is_anthropic_compatible": self.is_anthropic_compatible,
+            "is_openai_compatible": self.is_openai_compatible,
+            "is_universal": self.is_universal,
+            "issues": [i.to_dict() for i in self.issues],
+            "recommendations": self.recommendations,
+            "counts": {
+                "total": len(self.issues),
+                "anthropic": len(self.anthropic_issues),
+                "openai": len(self.openai_issues),
+                "errors": len(
+                    [i for i in self.issues if i.severity == CompatibilitySeverity.ERROR]
+                ),
+                "warnings": len(
+                    [i for i in self.issues if i.severity == CompatibilitySeverity.WARNING]
+                ),
+            },
+        }
+
+
+@dataclass
+class PageInfo:
+    """Information about a documentation page."""
+
+    title: str
+    url: str
+    content: str
+    parent: str | None = None
+    children: list[str] = field(default_factory=list)
+    level: int = 0
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            "title": self.title,
+            "url": self.url,
+            "content": self.content,
+            "parent": self.parent,
+            "children": self.children,
+            "level": self.level,
+        }
+
+
+@dataclass
+class DocsAnalysis:
+    """Analysis result from parsing documentation sites."""
+
+    site_name: str
+    base_url: str
+    pages: list[PageInfo] = field(default_factory=list)
+    page_hierarchy: dict[str, list[str]] = field(default_factory=dict)
+    code_examples: list[dict[str, str]] = field(default_factory=list)
+    api_references: list[dict[str, Any]] = field(default_factory=list)
+    installation_instructions: list[str] = field(default_factory=list)
+    usage_patterns: list[dict[str, str]] = field(default_factory=list)
+    navigation_structure: dict[str, Any] = field(default_factory=dict)
+    search_index: dict[str, str] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            "site_name": self.site_name,
+            "base_url": self.base_url,
+            "pages": [p.to_dict() for p in self.pages],
+            "page_hierarchy": self.page_hierarchy,
+            "code_examples": self.code_examples,
+            "api_references": self.api_references,
+            "installation_instructions": self.installation_instructions,
+            "usage_patterns": self.usage_patterns,
+            "navigation_structure": self.navigation_structure,
+            "search_index": self.search_index,
+        }

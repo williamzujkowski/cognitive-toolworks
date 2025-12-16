@@ -172,9 +172,7 @@ class ScriptAnalyzer:
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 func_info = self._extract_python_function(node)
-                if not func_info.name.startswith("_") or func_info.name.startswith(
-                    "__"
-                ):
+                if not func_info.name.startswith("_") or func_info.name.startswith("__"):
                     functions.append(func_info)
 
         # Extract classes
@@ -269,9 +267,7 @@ class ScriptAnalyzer:
             line_number=node.lineno,
         )
 
-    def _extract_python_cli(
-        self, _tree: ast.Module, content: str
-    ) -> list[dict[str, Any]]:
+    def _extract_python_cli(self, _tree: ast.Module, content: str) -> list[dict[str, Any]]:
         """Extract CLI command definitions."""
         commands = []
 
@@ -367,9 +363,7 @@ class ScriptAnalyzer:
 
         return deps
 
-    def _analyze_js_ts(
-        self, path: Path, content: str, language: ScriptLanguage
-    ) -> ScriptAnalysis:
+    def _analyze_js_ts(self, path: Path, content: str, language: ScriptLanguage) -> ScriptAnalysis:
         """Analyze a JavaScript/TypeScript file using regex patterns."""
         description = ""
 
@@ -438,9 +432,7 @@ class ScriptAnalyzer:
 
         # Extract exports
         exports = []
-        export_pattern = (
-            r"export\s+(?:const|let|var|function|class|async\s+function)\s+(\w+)"
-        )
+        export_pattern = r"export\s+(?:const|let|var|function|class|async\s+function)\s+(\w+)"
         for match in re.finditer(export_pattern, content):
             exports.append(match.group(1))
 
@@ -537,9 +529,7 @@ class ScriptAnalyzer:
 
         # Filter out common non-env vars
         filtered = {
-            v
-            for v in env_vars
-            if v not in ("PATH", "HOME", "USER", "PWD", "SHELL") and len(v) > 2
+            v for v in env_vars if v not in ("PATH", "HOME", "USER", "PWD", "SHELL") and len(v) > 2
         }
 
         return sorted(filtered)

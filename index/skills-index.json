@@ -61,7 +61,7 @@
   {
     "slug": "api-rest-designer",
     "name": "REST API Designer",
-    "summary": "Design RESTful APIs with OpenAPI 3.1/3.2, resource modeling, HTTP semantics, versioning strategies, pagination patterns, HATEOAS, and OWASP API Security compliance.",
+    "summary": "Design RESTful APIs with OpenAPI 3.1/3.2, resource modeling, HTTP semantics, versioning strategies, pagination patterns, HATEOAS, and OWASP API Security complia",
     "keywords": [
       "rest-api",
       "openapi",
@@ -722,7 +722,7 @@
   {
     "slug": "frontend-accessibility-validator",
     "name": "Frontend Accessibility Validator",
-    "summary": "Validate web accessibility compliance with WCAG 2.2 (Level A/AA/AAA), ARIA attributes, color contrast, keyboard navigation, screen reader support, and automated testing via axe-core/Pa11y.",
+    "summary": "Validate web accessibility compliance with WCAG 2.2 (Level A/AA/AAA), ARIA attributes, color contrast, keyboard navigation, screen reader support, and automated",
     "keywords": [
       "accessibility",
       "a11y",
@@ -863,6 +863,51 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/kubernetes-servicemesh-configurator/SKILL.md"
   },
   {
+    "slug": "messaging-kafka-architect",
+    "name": "Kafka Messaging Architect",
+    "summary": "Design Apache Kafka architectures with producer/consumer patterns, exactly-once semantics, Kafka Streams, ksqlDB, Schema Registry (Avro/Protobuf), performance t",
+    "keywords": [
+      "kafka",
+      "messaging",
+      "event-streaming",
+      "kafka-streams",
+      "ksqldb",
+      "schema-registry",
+      "avro",
+      "protobuf",
+      "exactly-once",
+      "consumer-groups",
+      "kraft",
+      "performance-tuning",
+      "event-driven"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/messaging-kafka-architect/SKILL.md"
+  },
+  {
+    "slug": "messaging-rabbitmq-architect",
+    "name": "RabbitMQ Architecture Designer",
+    "summary": "Design RabbitMQ architectures with exchange types (direct, topic, fanout, headers), quorum queues, routing patterns, clustering, dead letter exchanges, and AMQP",
+    "keywords": [
+      "rabbitmq",
+      "amqp",
+      "message-queue",
+      "exchange",
+      "routing",
+      "quorum-queues",
+      "clustering",
+      "dead-letter-exchange",
+      "publisher-confirms",
+      "consumer-acknowledgments",
+      "message-broker",
+      "event-driven"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/messaging-rabbitmq-architect/SKILL.md"
+  },
+  {
     "slug": "microservices-pattern-architect",
     "name": "Microservices Pattern Architect",
     "summary": "Apply microservices patterns (Saga, CQRS, Event Sourcing, Circuit Breaker, API Gateway, Service Discovery) with implementation guidance and templates.",
@@ -884,53 +929,6 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/microservices-pattern-architect/SKILL.md"
-  },
-  {
-    "slug": "messaging-kafka-architect",
-    "name": "Apache Kafka Architecture Designer",
-    "summary": "Design Apache Kafka architectures with exactly-once semantics, producer/consumer patterns, Kafka Streams, Schema Registry, KRaft mode, and performance tuning.",
-    "keywords": [
-      "kafka",
-      "apache-kafka",
-      "event-streaming",
-      "message-broker",
-      "exactly-once",
-      "kafka-streams",
-      "ksqldb",
-      "schema-registry",
-      "avro",
-      "kraft-mode",
-      "performance-tuning",
-      "event-sourcing",
-      "cqrs",
-      "saga-pattern",
-      "distributed-systems"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/messaging-kafka-architect/SKILL.md"
-  },
-  {
-    "slug": "messaging-rabbitmq-architect",
-    "name": "RabbitMQ Architecture Designer",
-    "summary": "Design RabbitMQ architectures with exchange types (direct, topic, fanout, headers), quorum queues, routing patterns, clustering, dead letter exchanges, and AMQP best practices.",
-    "keywords": [
-      "rabbitmq",
-      "amqp",
-      "message-queue",
-      "exchange",
-      "routing",
-      "quorum-queues",
-      "clustering",
-      "dead-letter-exchange",
-      "publisher-confirms",
-      "consumer-acknowledgments",
-      "message-broker",
-      "event-driven"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/messaging-rabbitmq-architect/SKILL.md"
   },
   {
     "slug": "mlops-lifecycle-manager",
@@ -975,29 +973,9 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/mobile-cicd-generator/SKILL.md"
   },
   {
-    "slug": "observability-slo-calculator",
-    "name": "SRE SLO/SLI Calculator",
-    "summary": "Define and calculate SLIs, SLOs, SLAs, and error budgets with monitoring integration for site reliability engineering.",
-    "keywords": [
-      "sre",
-      "slo",
-      "sli",
-      "sla",
-      "error-budget",
-      "reliability",
-      "monitoring",
-      "prometheus",
-      "observability",
-      "availability"
-    ],
-    "owner": "william@cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/observability-slo-calculator/SKILL.md"
-  },
-  {
     "slug": "observability-prometheus-configurator",
     "name": "Prometheus Configuration Specialist",
-    "summary": "Configure Prometheus monitoring with alerting rules, recording rules, service discovery (Kubernetes, Consul, EC2), federation, PromQL optimization, and Alertmanager integration.",
+    "summary": "Configure Prometheus monitoring with alerting rules, recording rules, service discovery (Kubernetes, Consul, EC2), federation, PromQL optimization, and Alertman",
     "keywords": [
       "prometheus",
       "monitoring",
@@ -1018,6 +996,26 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/observability-prometheus-configurator/SKILL.md"
+  },
+  {
+    "slug": "observability-slo-calculator",
+    "name": "SRE SLO/SLI Calculator",
+    "summary": "Define and calculate SLIs, SLOs, SLAs, and error budgets with monitoring integration for site reliability engineering.",
+    "keywords": [
+      "sre",
+      "slo",
+      "sli",
+      "sla",
+      "error-budget",
+      "reliability",
+      "monitoring",
+      "prometheus",
+      "observability",
+      "availability"
+    ],
+    "owner": "william@cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/observability-slo-calculator/SKILL.md"
   },
   {
     "slug": "observability-stack-configurator",
@@ -1042,7 +1040,7 @@
   {
     "slug": "observability-unified-dashboard",
     "name": "Observability Unified Dashboard",
-    "summary": "Design unified observability dashboards with golden signals (latency, traffic, errors, saturation), OpenTelemetry correlation, SLO tracking, and Grafana 11 auto-correlations.",
+    "summary": "Design unified observability dashboards with golden signals (latency, traffic, errors, saturation), OpenTelemetry correlation, SLO tracking, and Grafana 11 auto",
     "keywords": [
       "observability",
       "golden signals",

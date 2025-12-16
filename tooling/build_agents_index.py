@@ -64,7 +64,7 @@ def extract_front_matter(md_text: str) -> dict[str, Any]:
 def main() -> int:
     """Build agents-index.json from all AGENT.md files"""
     ap = argparse.ArgumentParser(description="Build agents-index.json from AGENT.md files")
-    ap.add_argument("--root", type=Path, default=Path("."), help="Repo root")
+    ap.add_argument("--root", type=Path, default=Path(), help="Repo root")
     ap.add_argument(
         "--out",
         type=Path,

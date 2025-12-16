@@ -100,10 +100,10 @@ class TestCategorizeSkill:
 
     def test_domain_capitalization(self) -> None:
         """Domain names are capitalized."""
-        tier, domain = categorize_skill("database-schema-designer")
+        _tier, domain = categorize_skill("database-schema-designer")
         assert domain == "Database"
 
-        tier, domain = categorize_skill("testing-unit-generator")
+        _tier, domain = categorize_skill("testing-unit-generator")
         assert domain == "Testing"
 
     def test_uncategorized_skill(self) -> None:
@@ -124,7 +124,7 @@ class TestAnalyzeCoverage:
 
     def test_empty_skills_list(self) -> None:
         """Handle empty skills list."""
-        by_tier, by_domain, domain_tier_map = analyze_coverage([])
+        by_tier, by_domain, _domain_tier_map = analyze_coverage([])
 
         assert by_tier["Core"] == []
         assert by_tier["Domain"] == []
@@ -148,7 +148,7 @@ class TestAnalyzeCoverage:
             {"slug": "api-design-validator"},
             {"slug": "kubernetes-manifest-generator"},
         ]
-        by_tier, by_domain, domain_tier_map = analyze_coverage(skills)
+        by_tier, _by_domain, _domain_tier_map = analyze_coverage(skills)
 
         assert len(by_tier["Core"]) == 1
         assert len(by_tier["Domain"]) == 1
@@ -163,7 +163,7 @@ class TestAnalyzeCoverage:
             {"slug": "api-design-validator"},
             {"slug": "api-contract-testing"},
         ]
-        by_tier, by_domain, domain_tier_map = analyze_coverage(skills)
+        _by_tier, by_domain, _domain_tier_map = analyze_coverage(skills)
 
         assert by_domain["Security"] == 3
         assert by_domain["Api"] == 2
@@ -175,7 +175,7 @@ class TestAnalyzeCoverage:
             {"slug": "testing-integration-designer"},
             {"slug": "e2e-testing-generator"},
         ]
-        by_tier, by_domain, domain_tier_map = analyze_coverage(skills)
+        _by_tier, _by_domain, domain_tier_map = analyze_coverage(skills)
 
         # First two are Domain tier
         assert len(domain_tier_map["Domain"]["Testing"]) == 2
@@ -189,7 +189,7 @@ class TestAnalyzeCoverage:
             {"slug": "database-schema-designer"},
             {"slug": "testing-unit-generator"},
         ]
-        by_tier, by_domain, domain_tier_map = analyze_coverage(skills)
+        by_tier, _by_domain, domain_tier_map = analyze_coverage(skills)
 
         assert len(by_tier["Domain"]) == 3
         assert len(domain_tier_map["Domain"]) == 3
@@ -470,7 +470,7 @@ class TestMain:
         import analyze_coverage
 
         def patched_load() -> list[dict[str, Any]]:
-            with open(index_file) as f:
+            with index_file.open() as f:
                 result: list[dict[str, Any]] = json.load(f)
                 return result
 
@@ -504,7 +504,7 @@ class TestMain:
         import analyze_coverage
 
         def patched_load() -> list[dict[str, Any]]:
-            with open(index_file) as f:
+            with index_file.open() as f:
                 result: list[dict[str, Any]] = json.load(f)
                 return result
 

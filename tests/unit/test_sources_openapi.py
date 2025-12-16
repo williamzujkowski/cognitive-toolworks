@@ -44,7 +44,7 @@ class TestOpenAPIIntrospector:
 
     def test_validate_spec_unsupported_version(self) -> None:
         """Test validation fails for unsupported OpenAPI versions."""
-        with pytest.raises(ValueError, match="Only OpenAPI 3.x supported"):
+        with pytest.raises(ValueError, match=r"Only OpenAPI 3.x supported"):
             OpenAPIIntrospector({"openapi": "2.0", "info": {}, "paths": {}})
 
     def test_validate_spec_missing_info(self) -> None:
@@ -158,9 +158,7 @@ class TestOpenAPIIntrospector:
                         "summary": "Create user",
                         "requestBody": {
                             "required": True,
-                            "content": {
-                                "application/json": {"schema": {"type": "object"}}
-                            },
+                            "content": {"application/json": {"schema": {"type": "object"}}},
                         },
                         "responses": {},
                     }
@@ -263,9 +261,7 @@ class TestOpenAPIIntrospector:
 
     def test_from_file_yaml(self) -> None:
         """Test loading from YAML file."""
-        spec_path = (
-            Path(__file__).parent.parent / "fixtures" / "openapi" / "sample_api.yaml"
-        )
+        spec_path = Path(__file__).parent.parent / "fixtures" / "openapi" / "sample_api.yaml"
         introspector = OpenAPIIntrospector.from_file(spec_path)
 
         assert introspector.spec["info"]["title"] == "Sample API"
@@ -326,9 +322,7 @@ class TestIntrospectOpenAPI:
 
     def test_introspect_from_file(self) -> None:
         """Test introspecting from file path."""
-        spec_path = (
-            Path(__file__).parent.parent / "fixtures" / "openapi" / "sample_api.yaml"
-        )
+        spec_path = Path(__file__).parent.parent / "fixtures" / "openapi" / "sample_api.yaml"
         analysis = introspect_openapi(str(spec_path))
 
         assert analysis.api_name == "Sample API v1.0"
@@ -375,9 +369,7 @@ class TestEndpointDefinition:
 
     def test_to_dict(self) -> None:
         """Test converting endpoint to dictionary."""
-        spec_path = (
-            Path(__file__).parent.parent / "fixtures" / "openapi" / "sample_api.yaml"
-        )
+        spec_path = Path(__file__).parent.parent / "fixtures" / "openapi" / "sample_api.yaml"
         analysis = introspect_openapi(str(spec_path))
         endpoint = analysis.endpoints[0]
 
@@ -396,9 +388,7 @@ class TestOpenAPIAnalysis:
 
     def test_to_dict(self) -> None:
         """Test converting analysis to dictionary."""
-        spec_path = (
-            Path(__file__).parent.parent / "fixtures" / "openapi" / "sample_api.yaml"
-        )
+        spec_path = Path(__file__).parent.parent / "fixtures" / "openapi" / "sample_api.yaml"
         analysis = introspect_openapi(str(spec_path))
 
         data = analysis.to_dict()

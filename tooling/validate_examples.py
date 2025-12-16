@@ -64,7 +64,7 @@ SECRET_PATTERNS = [
 def count_lines(file_path: Path) -> int:
     """Count non-empty lines in a file (excluding blank lines)."""
     try:
-        with open(file_path, encoding="utf-8", errors="ignore") as f:
+        with file_path.open(encoding="utf-8", errors="ignore") as f:
             # Count all lines (including blank) for consistency with existing examples
             return sum(1 for _ in f)
     except Exception as e:
@@ -76,7 +76,7 @@ def check_secrets(file_path: Path) -> list[tuple[int, str, str]]:
     """Check file for hardcoded secrets. Returns list of (line_num, pattern_name, line_content)."""
     findings = []
     try:
-        with open(file_path, encoding="utf-8", errors="ignore") as f:
+        with file_path.open(encoding="utf-8", errors="ignore") as f:
             for line_num, line in enumerate(f, start=1):
                 # Skip commented lines (common in code examples)
                 stripped = line.strip()

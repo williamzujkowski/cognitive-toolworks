@@ -35,16 +35,16 @@ class TestSkillRouter:
         vectors = vectorizer.fit_transform(texts)
 
         # Save vectorizer
-        with open(embeddings_dir / "vectorizer.pkl", "wb") as f:
+        with (embeddings_dir / "vectorizer.pkl").open("wb") as f:
             pickle.dump(vectorizer, f)
 
         # Save vectors
-        with open(embeddings_dir / "vectors.pkl", "wb") as f:
+        with (embeddings_dir / "vectors.pkl").open("wb") as f:
             pickle.dump(vectors, f)
 
         # Save slugs
         slugs = ["security-validator", "kubernetes-deploy", "api-designer"]
-        with open(embeddings_dir / "slugs.json", "w") as f:
+        with (embeddings_dir / "slugs.json").open("w") as f:
             json.dump(slugs, f)
 
         # Save metadata
@@ -53,7 +53,7 @@ class TestSkillRouter:
             "embedding_dim": vectors.shape[1],
             "model": "TfidfVectorizer",
         }
-        with open(embeddings_dir / "metadata.json", "w") as f:
+        with (embeddings_dir / "metadata.json").open("w") as f:
             json.dump(metadata, f)
 
         return embeddings_dir
@@ -223,13 +223,13 @@ class TestMain:
         vectors = vectorizer.fit_transform(texts)
 
         # Save files
-        with open(embeddings_dir / "vectorizer.pkl", "wb") as f:
+        with (embeddings_dir / "vectorizer.pkl").open("wb") as f:
             pickle.dump(vectorizer, f)
-        with open(embeddings_dir / "vectors.pkl", "wb") as f:
+        with (embeddings_dir / "vectors.pkl").open("wb") as f:
             pickle.dump(vectors, f)
-        with open(embeddings_dir / "slugs.json", "w") as f:
+        with (embeddings_dir / "slugs.json").open("w") as f:
             json.dump(["security-validator", "k8s-deploy", "api-designer"], f)
-        with open(embeddings_dir / "metadata.json", "w") as f:
+        with (embeddings_dir / "metadata.json").open("w") as f:
             json.dump({"total_skills": 3}, f)
 
         return embeddings_dir
@@ -333,9 +333,9 @@ class TestIntegration:
         vectorizer = TfidfVectorizer()
         vectors = vectorizer.fit_transform(texts)
 
-        with open(embeddings_dir / "vectorizer.pkl", "wb") as f:
+        with (embeddings_dir / "vectorizer.pkl").open("wb") as f:
             pickle.dump(vectorizer, f)
-        with open(embeddings_dir / "vectors.pkl", "wb") as f:
+        with (embeddings_dir / "vectors.pkl").open("wb") as f:
             pickle.dump(vectors, f)
 
         slugs = [
@@ -345,7 +345,7 @@ class TestIntegration:
             "terraform-cloud-provisioner",
             "cicd-pipeline-builder",
         ]
-        with open(embeddings_dir / "slugs.json", "w") as f:
+        with (embeddings_dir / "slugs.json").open("w") as f:
             json.dump(slugs, f)
 
         metadata = {
@@ -353,7 +353,7 @@ class TestIntegration:
             "embedding_dim": vectors.shape[1],
             "model": "TfidfVectorizer",
         }
-        with open(embeddings_dir / "metadata.json", "w") as f:
+        with (embeddings_dir / "metadata.json").open("w") as f:
             json.dump(metadata, f)
 
         return embeddings_dir

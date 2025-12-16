@@ -1,7 +1,7 @@
 ---
 name: REST API Designer
 slug: api-rest-designer
-description: Design RESTful APIs with OpenAPI 3.1/3.2, resource modeling, HTTP semantics, versioning strategies, pagination patterns, HATEOAS, and OWASP API Security compliance.
+description: Design RESTful APIs with OpenAPI 3.1/3.2, resource modeling, HTTP semantics, versioning, pagination, HATEOAS, and OWASP API Security.
 capabilities:
   - OpenAPI 3.1/3.2 specification generation (JSON Schema 2020-12, webhooks)
   - Resource modeling and URI design (collection, singleton, controller patterns)

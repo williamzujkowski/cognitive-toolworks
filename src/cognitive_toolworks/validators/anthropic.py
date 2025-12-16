@@ -77,9 +77,7 @@ class ValidationResult:
             "counts": {
                 "errors": len(self.errors),
                 "warnings": len(self.warnings),
-                "info": len(
-                    [i for i in self.issues if i.severity == ValidationSeverity.INFO]
-                ),
+                "info": len([i for i in self.issues if i.severity == ValidationSeverity.INFO]),
             },
         }
 
@@ -282,9 +280,7 @@ class AnthropicValidator:
 
         return issues
 
-    def _validate_allowed_tools(
-        self, allowed_tools: str | list | None
-    ) -> list[ValidationIssue]:
+    def _validate_allowed_tools(self, allowed_tools: str | list | None) -> list[ValidationIssue]:
         """Validate allowed-tools configuration."""
         issues: list[ValidationIssue] = []
 

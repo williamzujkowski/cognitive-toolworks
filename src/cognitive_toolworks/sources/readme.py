@@ -165,10 +165,7 @@ class ReadmeParser:
             url = match.group(2)
 
             # Check if this looks like a badge (shields.io, badge URLs, etc.)
-            if any(
-                badge_host in url
-                for badge_host in ["shields.io", "badge", "img.shields.io"]
-            ):
+            if any(badge_host in url for badge_host in ["shields.io", "badge", "img.shields.io"]):
                 # Check if not already added
                 if not any(b.get("image_url") == url for b in badges):
                     badges.append({"alt": alt, "image_url": url, "link": ""})

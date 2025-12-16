@@ -1,7 +1,7 @@
 ---
 name: Frontend Accessibility Validator
 slug: frontend-accessibility-validator
-description: Validate web accessibility compliance with WCAG 2.2 (Level A/AA/AAA), ARIA attributes, color contrast, keyboard navigation, screen reader support, and automated testing via axe-core/Pa11y.
+description: Validate WCAG 2.2 compliance (A/AA/AAA) with ARIA, color contrast, keyboard navigation, screen readers, and automated testing via axe-core/Pa11y.
 capabilities:
   - WCAG 2.2 compliance validation (Level A, AA, AAA with 9 new success criteria)
   - ARIA attributes and roles verification (landmarks, widgets, live regions)

@@ -89,8 +89,8 @@ def run_dbt_models(models):
     import subprocess
 
     # S603/S607: Controlled command - dbt with specific model names (safe in this context)
-    result = subprocess.run(  # noqa: S603
-        ["dbt", "run", "--models", *models],  # noqa: S607
+    result = subprocess.run(
+        ["dbt", "run", "--models", *models],
         capture_output=True,
         check=False,
     )

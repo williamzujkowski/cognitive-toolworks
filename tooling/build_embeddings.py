@@ -11,13 +11,15 @@ import pickle
 from pathlib import Path
 from typing import Any
 
-from sklearn.feature_extraction.text import TfidfVectorizer  # type: ignore[import-untyped]
+from sklearn.feature_extraction.text import (  # type: ignore[import-untyped]
+    TfidfVectorizer,
+)
 
 
 def load_skills_index() -> list[dict[str, Any]]:
     """Load skills index"""
     index_path = Path(__file__).parent.parent / "index" / "skills-index.json"
-    with open(index_path) as f:
+    with index_path.open() as f:
         result: list[dict[str, Any]] = json.load(f)
         return result
 
@@ -85,19 +87,19 @@ def save_embeddings(embeddings: dict[str, Any], output_dir: Path | str) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Save vectorizer (needed for query embedding)
-    with open(output_dir / "vectorizer.pkl", "wb") as f:
+    with (output_dir / "vectorizer.pkl").open("wb") as f:
         pickle.dump(embeddings["vectorizer"], f)
 
     # Save vectors as sparse matrix (more compact)
-    with open(output_dir / "vectors.pkl", "wb") as f:
+    with (output_dir / "vectors.pkl").open("wb") as f:
         pickle.dump(embeddings["vectors"], f)
 
     # Save slug mapping as JSON (human-readable)
-    with open(output_dir / "slugs.json", "w") as f:
+    with (output_dir / "slugs.json").open("w") as f:
         json.dump(embeddings["slugs"], f, indent=2)
 
     # Save metadata
-    with open(output_dir / "metadata.json", "w") as f:
+    with (output_dir / "metadata.json").open("w") as f:
         json.dump(embeddings["metadata"], f, indent=2)
 
 

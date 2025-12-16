@@ -224,7 +224,7 @@ class TestBuildDependencyGraph:
             analyze_agent_dependencies, "__file__", str(repo_root / "tooling" / "script.py")
         )
 
-        dependencies, skill_usage = build_dependency_graph()
+        dependencies, _skill_usage = build_dependency_graph()
 
         # Verify dependencies structure
         assert "test-agent" in dependencies
@@ -252,7 +252,7 @@ class TestBuildDependencyGraph:
             analyze_agent_dependencies, "__file__", str(repo_root / "tooling" / "script.py")
         )
 
-        dependencies, skill_usage = build_dependency_graph()
+        _dependencies, skill_usage = build_dependency_graph()
 
         # skill-alpha used by test-agent
         assert skill_usage["skill-alpha"] == ["test-agent"]

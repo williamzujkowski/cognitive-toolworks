@@ -57,7 +57,7 @@ def extract_front_matter(md_text: str) -> dict[str, Any]:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Build skills-index.json from SKILL.md files")
-    ap.add_argument("--root", type=Path, default=Path("."), help="Repo root")
+    ap.add_argument("--root", type=Path, default=Path(), help="Repo root")
     ap.add_argument(
         "--out",
         type=Path,
@@ -116,9 +116,7 @@ def main() -> int:
         print("\nRebuilding embeddings...")
         embeddings_script = Path(__file__).parent / "build_embeddings.py"
         # S603: Subprocess call is safe - controlled script path and executable
-        result = subprocess.run(  # noqa: S603
-            [sys.executable, str(embeddings_script)], cwd=root, check=False
-        )
+        result = subprocess.run([sys.executable, str(embeddings_script)], cwd=root, check=False)
         if result.returncode != 0:
             msg = "Failed to build embeddings"
             print(f"ERROR: {msg}", file=sys.stderr)

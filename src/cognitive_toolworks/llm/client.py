@@ -197,9 +197,7 @@ class LLMClient:
                 await asyncio.sleep(self.config.retry_delay * (attempt + 1))
                 continue
 
-        raise RuntimeError(
-            f"Failed after {self.config.max_retries} retries: {last_error}"
-        )
+        raise RuntimeError(f"Failed after {self.config.max_retries} retries: {last_error}")
 
     async def _generate_openai(
         self,
@@ -275,9 +273,7 @@ class LLMClient:
         system = get_prompt(f"{analysis_type}_analysis_system")
         prompt = get_prompt(f"{analysis_type}_analysis").format(content=content)
 
-        response = await self.generate(
-            prompt, system=system, json_output=True, **kwargs
-        )
+        response = await self.generate(prompt, system=system, json_output=True, **kwargs)
         return response.as_json
 
 

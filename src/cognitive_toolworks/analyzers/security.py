@@ -76,8 +76,7 @@ class SecurityReport:
     def passed(self) -> bool:
         """Check if security scan passed (no high/critical issues)."""
         return not any(
-            issue.severity in (Severity.CRITICAL, Severity.HIGH)
-            for issue in self.issues
+            issue.severity in (Severity.CRITICAL, Severity.HIGH) for issue in self.issues
         )
 
     @property
@@ -195,9 +194,7 @@ class SecurityAnalyzer:
         for patterns, issue_type in pattern_groups:
             for pattern, severity, description in patterns:
                 compiled = re.compile(pattern, re.IGNORECASE)
-                self._compiled_patterns.append(
-                    (compiled, severity, description, issue_type)
-                )
+                self._compiled_patterns.append((compiled, severity, description, issue_type))
 
     def analyze(self, content: str) -> SecurityReport:
         """
@@ -244,9 +241,7 @@ class SecurityAnalyzer:
         content = path.read_text()
         return self.analyze(content)
 
-    def analyze_directory(
-        self, path: Path, recursive: bool = False
-    ) -> dict[str, SecurityReport]:
+    def analyze_directory(self, path: Path, recursive: bool = False) -> dict[str, SecurityReport]:
         """Analyze all skills in a directory."""
         reports: dict[str, SecurityReport] = {}
 
@@ -262,9 +257,7 @@ class SecurityAnalyzer:
 
         # Check for dangerous tool combinations
         dangerous_tools = ["Bash", "Write", "Edit"]
-        has_dangerous = sum(
-            1 for tool in dangerous_tools if tool.lower() in content.lower()
-        )
+        has_dangerous = sum(1 for tool in dangerous_tools if tool.lower() in content.lower())
 
         if has_dangerous >= 3 and "allowed-tools" not in content.lower():
             issues.append(
@@ -307,9 +300,7 @@ class SecurityAnalyzer:
             IssueType.PERMISSION_ESCALATION: "Apply principle of least privilege",
             IssueType.UNSAFE_PATTERN: "Remove unsafe flags and verify security implications",
         }
-        return recommendations.get(
-            issue_type, "Review and address the security concern"
-        )
+        return recommendations.get(issue_type, "Review and address the security concern")
 
     def _calculate_score(self, issues: list[SecurityIssue]) -> float:
         """Calculate security score (0-1, higher is better)."""

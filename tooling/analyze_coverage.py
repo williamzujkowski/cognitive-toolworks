@@ -15,7 +15,7 @@ from typing import Any
 def load_skills_index() -> list[dict[str, Any]]:
     """Load and parse skills index"""
     index_path = Path(__file__).parent.parent / "index" / "skills-index.json"
-    with open(index_path) as f:
+    with index_path.open() as f:
         result: list[dict[str, Any]] = json.load(f)
         return result
 

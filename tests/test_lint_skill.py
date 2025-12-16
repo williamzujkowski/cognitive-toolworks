@@ -8,10 +8,10 @@ from textwrap import dedent
 from unittest.mock import Mock, patch
 from urllib.error import HTTPError, URLError
 
-import pytest
-
 # Add tooling to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "tooling"))
+
+from typing import TYPE_CHECKING
 
 from lint_skill import (
     REQUIRED_SECTIONS_ORDER,
@@ -26,6 +26,9 @@ from lint_skill import (
     main,
     read_text,
 )
+
+if TYPE_CHECKING:
+    import pytest
 
 
 class TestReadText:
