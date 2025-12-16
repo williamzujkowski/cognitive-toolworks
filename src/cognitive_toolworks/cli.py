@@ -101,10 +101,6 @@ def generate_skill(
         bool,
         typer.Option("--optimize", help="Run optimization pass"),
     ] = True,
-    orchestrated: Annotated[
-        bool,
-        typer.Option("--orchestrated", help="Use claude-flow multi-agent orchestration"),
-    ] = False,
     dry_run: Annotated[
         bool,
         typer.Option("--dry-run", help="Preview without writing files"),
@@ -117,6 +113,8 @@ def generate_skill(
         ct generate skill --from-mcp ./github-mcp.json
         ct generate skill --from-openapi https://api.example.com/openapi.json
         ct generate skill --from-readme ./README.md --name my-tool
+
+    Note: OpenAPI support is functional. README support is planned.
     """
     # Validate exactly one source is provided
     sources = [from_mcp, from_openapi, from_readme, from_analysis]
@@ -156,10 +154,7 @@ def generate_skill(
 
         # Step 2: Generate
         task = progress.add_task("[cyan]Generating skill...", total=None)
-        if orchestrated:
-            skill_content = _generate_orchestrated(analysis, platform, examples, token_budget)
-        else:
-            skill_content = _generate_skill(analysis, platform, examples, token_budget)
+        skill_content = _generate_skill(analysis, platform, examples, token_budget)
         progress.update(task, completed=True)
 
         # Step 3: Optimize
@@ -601,20 +596,6 @@ def version() -> None:
     console.print(f"cognitive-toolworks v{__version__}")
 
 
-@app.command("benchmark")
-def benchmark(
-    path: Annotated[Path, typer.Argument(help="Path to skills directory")],
-    _iterations: Annotated[
-        int,
-        typer.Option("--iterations", "-n", help="Number of iterations"),
-    ] = 5,
-) -> None:
-    """Benchmark skill loading and analysis performance."""
-    console.print(f"[cyan]Benchmarking {path}...[/]")
-    # TODO: Implement benchmarking
-    console.print("[yellow]Benchmarking not yet implemented[/]")
-
-
 # --- Helper Functions (implementations) ---
 
 
@@ -685,15 +666,6 @@ def _generate_skill(analysis: dict, _platform: Platform, _examples: int, _token_
     )
 
     return skill.to_markdown()
-
-
-def _generate_orchestrated(
-    analysis: dict, _platform: Platform, _examples: int, _token_budget: int
-) -> str:
-    """Generate skill using claude-flow orchestration."""
-    # For now, fall back to regular generation
-    # TODO: Implement full claude-flow integration
-    return _generate_skill(analysis, _platform, _examples, _token_budget)
 
 
 def _optimize_skill_legacy(content: str) -> str:
