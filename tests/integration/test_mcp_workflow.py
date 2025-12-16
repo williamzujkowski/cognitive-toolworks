@@ -192,9 +192,7 @@ description: MCP server tools
         assert metrics.efficiency_score > 0.3
 
     @pytest.mark.asyncio
-    async def test_skill_generation_from_mcp_mock(
-        self, sample_mcp_analysis: MCPAnalysis
-    ) -> None:
+    async def test_skill_generation_from_mcp_mock(self, sample_mcp_analysis: MCPAnalysis) -> None:
         """Test SkillGenerator with mocked LLM responses."""
         # This test is simplified - it tests the structure without requiring actual LLM calls
         # In a real scenario, you'd either mock the entire LLM or use actual API calls

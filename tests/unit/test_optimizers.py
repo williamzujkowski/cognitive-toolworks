@@ -480,7 +480,9 @@ class TestCLIIntegration:
     """Tests for CLI integration with optimizers."""
 
     @pytest.mark.asyncio
-    async def test_optimize_skill_with_llm(self, tmp_path: object, sample_skill: SkillContent) -> None:
+    async def test_optimize_skill_with_llm(
+        self, tmp_path: object, sample_skill: SkillContent
+    ) -> None:
         """Test CLI helper function for LLM optimization."""
         from pathlib import Path
 
@@ -518,7 +520,9 @@ class TestCLIIntegration:
         mock_client.generate = AsyncMock(return_value=mock_response)
 
         # Patch the LLMClient to use our mock
-        with patch("cognitive_toolworks.optimizers.progressive.LLMClient", return_value=mock_client):
+        with patch(
+            "cognitive_toolworks.optimizers.progressive.LLMClient", return_value=mock_client
+        ):
             result = await _optimize_skill_with_llm(skill_path, dry_run=True)
 
         # Verify result structure
