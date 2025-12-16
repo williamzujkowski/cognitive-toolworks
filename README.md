@@ -2,9 +2,9 @@
 
 > Generate cross-platform agent artifacts (SKILL.md, AGENTS.md) using LLM intelligence.
 
+[![Version 2.0.0](https://img.shields.io/badge/version-2.0.0-green.svg)](https://github.com/williamzujkowski/cognitive-toolworks/releases/tag/v2.0.0)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Status: Beta](https://img.shields.io/badge/status-beta-yellow.svg)](https://github.com/williamzujkowski/cognitive-toolworks)
 
 Transform MCP servers and repositories into **SKILL.md** and **AGENTS.md** files compatible with Claude, Codex, and other agents.
 
