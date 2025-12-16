@@ -587,6 +587,235 @@ def security_scan(
         raise typer.Exit(1)
 
 
+# --- Discovery Commands ---
+
+
+@app.command("ls")
+def list_skills(
+    domain: Annotated[
+        str | None,
+        typer.Option(
+            "--domain", "-d", help="Filter by domain prefix (e.g., security, cloud, testing)"
+        ),
+    ] = None,
+    format: Annotated[
+        str,
+        typer.Option("--format", "-f", help="Output format: table, json, or simple"),
+    ] = "table",
+) -> None:
+    """
+    List all skills from the skills index.
+
+    Examples:
+        ct ls                        # List all skills
+        ct ls --domain security      # List security-* skills
+        ct ls --format json          # Output as JSON
+        ct ls --format simple        # Simple text output
+    """
+    from cognitive_toolworks.discovery import SkillIndex
+
+    try:
+        index = SkillIndex()
+        skills = index.list_skills(domain=domain)
+
+        if not skills:
+            domain_msg = f" with domain '{domain}'" if domain else ""
+            console.print(f"[yellow]No skills found{domain_msg}[/]")
+            return
+
+        if format == "json":
+            # JSON output
+            data = [
+                {
+                    "slug": s.slug,
+                    "name": s.name,
+                    "summary": s.summary,
+                    "keywords": s.keywords,
+                    "version": s.version,
+                }
+                for s in skills
+            ]
+            console.print_json(data=data)
+        elif format == "simple":
+            # Simple text output
+            for skill in skills:
+                console.print(f"{skill.slug}: {skill.name}")
+        else:
+            # Rich table output (default)
+            table = Table(title=f"Skills{f' (domain: {domain})' if domain else ''}")
+            table.add_column("Slug", style="cyan", no_wrap=True)
+            table.add_column("Name", style="green")
+            table.add_column("Summary", style="white")
+
+            for skill in skills:
+                # Truncate summary if too long
+                summary = skill.summary
+                if len(summary) > 80:
+                    summary = summary[:77] + "..."
+                table.add_row(skill.slug, skill.name, summary)
+
+            console.print(table)
+            console.print(f"\n[dim]Total: {len(skills)} skills[/]")
+
+    except FileNotFoundError as e:
+        console.print(f"[red]Error: {e}[/]")
+        raise typer.Exit(1) from None
+
+
+@app.command("search")
+def search_skills(
+    query: Annotated[str, typer.Argument(help="Search query (searches name, summary, keywords)")],
+    format: Annotated[
+        str,
+        typer.Option("--format", "-f", help="Output format: table, json, or simple"),
+    ] = "table",
+) -> None:
+    """
+    Search skills by keyword.
+
+    Searches in skill name, summary, keywords, and slug.
+
+    Examples:
+        ct search kubernetes        # Find skills mentioning kubernetes
+        ct search "API security"    # Find API security skills
+        ct search graphql --format json
+    """
+    from cognitive_toolworks.discovery import SkillIndex
+
+    try:
+        index = SkillIndex()
+        skills = index.search_skills(query)
+
+        if not skills:
+            console.print(f"[yellow]No skills found matching '{query}'[/]")
+            return
+
+        if format == "json":
+            # JSON output
+            data = [
+                {
+                    "slug": s.slug,
+                    "name": s.name,
+                    "summary": s.summary,
+                    "keywords": s.keywords,
+                    "version": s.version,
+                }
+                for s in skills
+            ]
+            console.print_json(data=data)
+        elif format == "simple":
+            # Simple text output
+            for skill in skills:
+                console.print(f"{skill.slug}: {skill.name}")
+        else:
+            # Rich table output (default)
+            table = Table(title=f"Search Results for '{query}'")
+            table.add_column("Slug", style="cyan", no_wrap=True)
+            table.add_column("Name", style="green")
+            table.add_column("Summary", style="white")
+
+            for skill in skills:
+                # Truncate summary if too long
+                summary = skill.summary
+                if len(summary) > 80:
+                    summary = summary[:77] + "..."
+                table.add_row(skill.slug, skill.name, summary)
+
+            console.print(table)
+            console.print(f"\n[dim]Found {len(skills)} matching skills[/]")
+
+    except FileNotFoundError as e:
+        console.print(f"[red]Error: {e}[/]")
+        raise typer.Exit(1) from None
+
+
+@app.command("show")
+def show_skill(
+    slug: Annotated[str, typer.Argument(help="Skill slug to display")],
+    full: Annotated[
+        bool,
+        typer.Option("--full", help="Show entire SKILL.md content"),
+    ] = False,
+) -> None:
+    """
+    Show details for a specific skill.
+
+    By default shows metadata and purpose section.
+    Use --full to display the entire SKILL.md file.
+
+    Examples:
+        ct show security-appsec-validator
+        ct show api-graphql-designer --full
+    """
+    from cognitive_toolworks.discovery import SkillIndex
+
+    try:
+        index = SkillIndex()
+        skill = index.get_skill(slug)
+
+        if not skill:
+            console.print(f"[red]Error: Skill '{slug}' not found[/]")
+            console.print("[yellow]Use 'ct search' to find available skills[/]")
+            raise typer.Exit(1)
+
+        # Always show metadata
+        metadata_table = Table(title=skill.name, show_header=False, box=None)
+        metadata_table.add_column("Field", style="cyan")
+        metadata_table.add_column("Value", style="white")
+
+        metadata_table.add_row("Slug", skill.slug)
+        metadata_table.add_row("Version", skill.version)
+        metadata_table.add_row("Owner", skill.owner)
+        metadata_table.add_row("Summary", skill.summary)
+
+        if skill.keywords:
+            keywords_str = ", ".join(skill.keywords[:10])
+            if len(skill.keywords) > 10:
+                keywords_str += f" (+{len(skill.keywords) - 10} more)"
+            metadata_table.add_row("Keywords", keywords_str)
+
+        console.print(metadata_table)
+
+        if full:
+            # Read and display full SKILL.md
+            skill_path = Path(skill.entry)
+            if skill_path.exists():
+                console.print(f"\n[cyan]Full content ({skill_path}):[/]\n")
+                content = skill_path.read_text()
+                console.print(Panel(content, title="SKILL.md", border_style="blue"))
+            else:
+                console.print(f"[yellow]Warning: SKILL.md not found at {skill_path}[/]")
+        else:
+            # Try to extract and show Purpose section
+            skill_path = Path(skill.entry)
+            if skill_path.exists():
+                content = skill_path.read_text()
+                # Extract Purpose & When-To-Use section
+                lines = content.split("\n")
+                purpose_lines = []
+                in_purpose = False
+                for line in lines:
+                    if line.startswith("## Purpose") or line.startswith("## When to Use"):
+                        in_purpose = True
+                        purpose_lines.append(line)
+                    elif in_purpose and line.startswith("## "):
+                        # Hit next section
+                        break
+                    elif in_purpose:
+                        purpose_lines.append(line)
+
+                if purpose_lines:
+                    console.print("\n")
+                    console.print(
+                        Panel("\n".join(purpose_lines), title="Purpose", border_style="green")
+                    )
+                    console.print("\n[dim]Use --full to see entire SKILL.md[/]")
+
+    except FileNotFoundError as e:
+        console.print(f"[red]Error: {e}[/]")
+        raise typer.Exit(1) from None
+
+
 # --- Utility Commands ---
 
 
@@ -601,7 +830,9 @@ def version() -> None:
 # --- Helper Functions (implementations) ---
 
 
-def _introspect_source(source_type: SourceType, source_path: Path | str, **_kwargs: object) -> dict[str, object]:
+def _introspect_source(
+    source_type: SourceType, source_path: Path | str, **_kwargs: object
+) -> dict[str, object]:
     """Introspect a source to extract information."""
     import asyncio
 

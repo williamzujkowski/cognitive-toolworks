@@ -85,6 +85,30 @@ ct generate agents-md --repo . --output ./AGENTS.md
 ct generate agents-md --repo . --with-llms-txt
 ```
 
+### Discover & Browse Skills
+
+```bash
+# List all skills
+ct ls
+
+# List skills by domain
+ct ls --domain security
+ct ls --domain cloud
+
+# Search for skills
+ct search kubernetes
+ct search "API security"
+
+# Show skill details
+ct show api-graphql-designer
+ct show security-appsec-validator --full
+
+# Output formats
+ct ls --format json        # JSON output
+ct ls --format simple      # Simple text
+ct search graphql --format json
+```
+
 ### Analyze & Validate
 
 ```bash
