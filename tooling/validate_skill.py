@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import argparse
+import ast
+import json
 import re
 import sys
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +14,13 @@ try:
     import yaml  # type: ignore[import-untyped,unused-ignore]
 except Exception:  # pragma: no cover
     yaml = None  # type: ignore[assignment]
+
+try:
+    from urllib.parse import urlparse
+    from urllib.request import Request, urlopen
+except Exception:  # pragma: no cover
+    urlparse = None  # type: ignore[assignment]
+    urlopen = None  # type: ignore[assignment]
 
 FRONT_MATTER_DELIM = re.compile(r"^---\s*$")
 REQ_META_KEYS = {
@@ -54,6 +63,7 @@ SECRET_PATTERNS = [
 class SkillValidationIssue:
     path: Path
     message: str
+    severity: str = "error"  # error or warning
 
 
 @dataclass
@@ -145,7 +155,90 @@ def scan_secrets(text: str) -> str | None:
     return None
 
 
-def validate_skill_file(path: Path) -> list[SkillValidationIssue]:
+def extract_urls(text: str) -> list[str]:
+    """Extract all HTTP/HTTPS URLs from text."""
+    url_pattern = re.compile(r"https?://[^\s\)\]\"'<>]+")
+    return url_pattern.findall(text)
+
+
+def validate_url(url: str, timeout: int = 5) -> tuple[bool, str]:
+    """Check if URL is accessible. Returns (is_valid, message)."""
+    if urlopen is None:
+        return False, "URL validation unavailable (urllib not found)"
+
+    try:
+        # Clean up URL (remove trailing punctuation)
+        url = url.rstrip(".,;:!?")
+
+        # Basic URL structure check
+        parsed = urlparse(url)
+        if not parsed.scheme or not parsed.netloc:
+            return False, f"Invalid URL structure: {url}"
+
+        # Try to fetch with a HEAD request first (faster)
+        req = Request(url, method="HEAD")
+        req.add_header("User-Agent", "Mozilla/5.0 (SkillValidator/1.0)")
+
+        with urlopen(req, timeout=timeout) as response:
+            if response.status == 200:
+                return True, "OK"
+            return False, f"HTTP {response.status}"
+    except Exception as e:
+        # Return as warning, not error - links might be temporarily down
+        return False, str(e)
+
+
+def extract_code_blocks_with_lang(text: str) -> list[tuple[str, str]]:
+    """Extract code blocks with their language tags. Returns [(lang, code), ...]."""
+    blocks: list[tuple[str, str]] = []
+    pattern = re.compile(r"^```(\w+)?\s*$", re.MULTILINE)
+    lines = text.splitlines()
+
+    i = 0
+    while i < len(lines):
+        match = pattern.match(lines[i])
+        if match:
+            lang = match.group(1) or ""
+            code_lines = []
+            i += 1
+            while i < len(lines) and not lines[i].startswith("```"):
+                code_lines.append(lines[i])
+                i += 1
+            blocks.append((lang, "\n".join(code_lines)))
+        i += 1
+
+    return blocks
+
+
+def validate_code_syntax(lang: str, code: str) -> tuple[bool, str]:
+    """Validate code syntax for supported languages. Returns (is_valid, message)."""
+    lang = lang.lower()
+
+    if lang in ("python", "py"):
+        try:
+            ast.parse(code)
+            return True, "Valid Python"
+        except SyntaxError as e:
+            return False, f"Python syntax error: {e.msg} at line {e.lineno}"
+
+    # Add more languages as needed
+    # For now, other languages pass validation
+    return True, f"Syntax check not implemented for {lang}"
+
+
+def check_todo_markers(text: str) -> list[str]:
+    """Find TODO markers that should not be in committed skills."""
+    todo_pattern = re.compile(r"\[TODO:([^\]]+)\]")
+    matches = todo_pattern.findall(text)
+    return matches
+
+
+def validate_skill_file(
+    path: Path,
+    check_links: bool = False,
+    check_syntax: bool = False,
+    check_todos: bool = False,
+) -> list[SkillValidationIssue]:
     issues: list[SkillValidationIssue] = []
     try:
         fm = extract_front_matter(read_text(path))
@@ -155,6 +248,7 @@ def validate_skill_file(path: Path) -> list[SkillValidationIssue]:
 
     meta = fm.meta
     body = fm.body
+    full_text = read_text(path)
 
     # Required metadata keys
     missing = sorted(k for k in REQ_META_KEYS if k not in meta)
@@ -214,6 +308,50 @@ def validate_skill_file(path: Path) -> list[SkillValidationIssue]:
     if sec:
         issues.append(SkillValidationIssue(path, sec))
 
+    # Quality gates (optional, enabled via flags)
+
+    # Check for TODO markers (strict mode)
+    if check_todos:
+        todos = check_todo_markers(full_text)
+        if todos:
+            for todo in todos:
+                issues.append(
+                    SkillValidationIssue(
+                        path,
+                        f"TODO marker found (not allowed in committed skills): {todo}",
+                        severity="error",
+                    )
+                )
+
+    # Validate URLs (strict mode)
+    if check_links:
+        urls = extract_urls(full_text)
+        for url in urls:
+            is_valid, msg = validate_url(url)
+            if not is_valid:
+                issues.append(
+                    SkillValidationIssue(
+                        path,
+                        f"Link validation failed for {url}: {msg}",
+                        severity="warning",  # Warning not error - links can be temporarily down
+                    )
+                )
+
+    # Validate code syntax in examples (strict mode)
+    if check_syntax:
+        code_blocks = extract_code_blocks_with_lang(body)
+        for lang, code in code_blocks:
+            if lang:  # Only check blocks with language tags
+                is_valid, msg = validate_code_syntax(lang, code)
+                if not is_valid:
+                    issues.append(
+                        SkillValidationIssue(
+                            path,
+                            f"Code syntax validation failed: {msg}",
+                            severity="error",
+                        )
+                    )
+
     return issues
 
 
@@ -225,35 +363,103 @@ def main() -> int:
         default=Path(),
         help="Repo root (default: .)",
     )
+    ap.add_argument(
+        "--strict",
+        action="store_true",
+        help="Enable strict mode: check links, syntax, and fail on warnings",
+    )
+    ap.add_argument(
+        "--check-links",
+        action="store_true",
+        help="Validate all HTTP/HTTPS URLs (implies warnings)",
+    )
+    ap.add_argument(
+        "--check-syntax",
+        action="store_true",
+        help="Validate code syntax in examples",
+    )
+    ap.add_argument(
+        "--check-todos",
+        action="store_true",
+        help="Fail on TODO markers in committed skills",
+    )
+    ap.add_argument(
+        "--json",
+        action="store_true",
+        help="Output results as JSON for CI parsing",
+    )
     args = ap.parse_args()
+
+    # Strict mode enables all checks and fails on warnings
+    check_links = args.strict or args.check_links
+    check_syntax = args.strict or args.check_syntax
+    check_todos = args.strict or args.check_todos
+    fail_on_warnings = args.strict
 
     root: Path = args.root.resolve()
     skills_dir = root / "skills"
     if not skills_dir.exists():
-        print(f"ERROR: skills dir not found: {skills_dir}", file=sys.stderr)
+        if not args.json:
+            print(f"ERROR: skills dir not found: {skills_dir}", file=sys.stderr)
         return 2
 
     md_files = sorted(skills_dir.glob("*/SKILL.md"))
     if not md_files:
-        print("No skills found.")
+        if args.json:
+            print(json.dumps({"status": "success", "skills": 0, "issues": []}))
+        else:
+            print("No skills found.")
         return 0
 
     total_issues: list[SkillValidationIssue] = []
+    results_by_file: dict[str, list[dict[str, str]]] = {}
+
     for p in md_files:
-        issues = validate_skill_file(p)
+        issues = validate_skill_file(
+            p,
+            check_links=check_links,
+            check_syntax=check_syntax,
+            check_todos=check_todos,
+        )
         if issues:
-            for isue in issues:
-                print(f"[FAIL] {isue.path}: {isue.message}")
+            results_by_file[str(p)] = [
+                {"severity": isue.severity, "message": isue.message} for isue in issues
+            ]
+            if not args.json:
+                for isue in issues:
+                    severity_label = "WARN" if isue.severity == "warning" else "FAIL"
+                    print(f"[{severity_label}] {isue.path}: {isue.message}")
             total_issues.extend(issues)
         else:
-            print(f"[OK]   {p}")
+            if not args.json:
+                print(f"[OK]   {p}")
 
-    if total_issues:
-        print(
-            f"\n{len(total_issues)} issue(s) found across {len(md_files)} file(s).", file=sys.stderr
-        )
+    # Separate errors and warnings
+    errors = [i for i in total_issues if i.severity == "error"]
+    warnings = [i for i in total_issues if i.severity == "warning"]
+
+    if args.json:
+        output = {
+            "status": "failed" if (errors or (fail_on_warnings and warnings)) else "success",
+            "skills_checked": len(md_files),
+            "errors": len(errors),
+            "warnings": len(warnings),
+            "files": results_by_file,
+        }
+        print(json.dumps(output, indent=2))
+    else:
+        if errors or warnings:
+            print(
+                f"\n{len(errors)} error(s), {len(warnings)} warning(s) found across {len(md_files)} file(s).",
+                file=sys.stderr,
+            )
+        else:
+            print(f"\nAll {len(md_files)} skill(s) passed validation.")
+
+    # Exit codes: 0 = success, 1 = errors found, 2 = system error
+    # In strict mode, warnings also cause failure
+    if errors or (fail_on_warnings and warnings):
         return 1
-    print(f"\nAll {len(md_files)} skill(s) passed validation.")
     return 0
 
 
