@@ -474,3 +474,61 @@ class TestOptimizerBudgets:
         assert T1_BUDGET == 2000
         assert T2_BUDGET == 6000
         assert T3_BUDGET == 12000
+
+
+class TestCLIIntegration:
+    """Tests for CLI integration with optimizers."""
+
+    @pytest.mark.asyncio
+    async def test_optimize_skill_with_llm(self, tmp_path: object, sample_skill: SkillContent) -> None:
+        """Test CLI helper function for LLM optimization."""
+        from pathlib import Path
+
+        from cognitive_toolworks.cli import _optimize_skill_with_llm
+
+        # Create a temporary SKILL.md file
+        skill_dir = Path(tmp_path) / "test-skill"
+        skill_dir.mkdir()
+        skill_path = skill_dir / "SKILL.md"
+        skill_path.write_text(sample_skill.to_markdown())
+
+        # Mock the optimizer to avoid actual LLM calls
+        import json
+        from unittest.mock import AsyncMock, patch
+
+        mock_analysis = {
+            "tier_assignments": {"frontmatter": "T1"},
+            "content_to_move": [],
+            "content_to_condense": [],
+            "content_to_remove": [],
+            "recommended_changes": ["Test change"],
+            "estimated_tokens_after": 1500,
+        }
+
+        mock_response = LLMResponse(
+            content=json.dumps(mock_analysis),
+            model="claude-test",
+            tokens_used=100,
+            stop_reason="end_turn",
+        )
+
+        mock_client = AsyncMock()
+        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_client.__aexit__ = AsyncMock()
+        mock_client.generate = AsyncMock(return_value=mock_response)
+
+        # Patch the LLMClient to use our mock
+        with patch("cognitive_toolworks.optimizers.progressive.LLMClient", return_value=mock_client):
+            result = await _optimize_skill_with_llm(skill_path, dry_run=True)
+
+        # Verify result structure
+        assert "content" in result
+        assert "original_tokens" in result
+        assert "optimized_tokens" in result
+        assert "reduction_pct" in result
+        assert "within_budget" in result
+        assert "changes" in result
+
+        # Verify that content is a string
+        assert isinstance(result["content"], str)
+        assert isinstance(result["changes"], list)

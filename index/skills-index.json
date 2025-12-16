@@ -61,7 +61,7 @@
   {
     "slug": "api-rest-designer",
     "name": "REST API Designer",
-    "summary": "Design RESTful APIs with OpenAPI 3.1/3.2, resource modeling, HTTP semantics, versioning strategies, pagination patterns, HATEOAS, and OWASP API Security complia",
+    "summary": "Design RESTful APIs with OpenAPI 3.1/3.2, resource modeling, HTTP semantics, versioning, pagination, HATEOAS, and OWASP API Security.",
     "keywords": [
       "rest-api",
       "openapi",
@@ -722,7 +722,7 @@
   {
     "slug": "frontend-accessibility-validator",
     "name": "Frontend Accessibility Validator",
-    "summary": "Validate web accessibility compliance with WCAG 2.2 (Level A/AA/AAA), ARIA attributes, color contrast, keyboard navigation, screen reader support, and automated",
+    "summary": "Validate WCAG 2.2 compliance (A/AA/AAA) with ARIA, color contrast, keyboard navigation, screen readers, and automated testing via axe-core/Pa11y.",
     "keywords": [
       "accessibility",
       "a11y",
@@ -784,6 +784,26 @@
     "owner": "cognitive-toolworks",
     "version": "1.0.0",
     "entry": "/home/william/git/cognitive-toolworks/skills/frontend-framework-advisor/SKILL.md"
+  },
+  {
+    "slug": "frontend-performance-optimizer",
+    "name": "Frontend Performance Optimizer",
+    "summary": "Analyzes and optimizes frontend performance using Core Web Vitals, bundle analysis, lazy loading, image optimization, and caching strategies",
+    "keywords": [
+      "performance",
+      "frontend",
+      "web-vitals",
+      "optimization",
+      "bundle-analysis",
+      "lazy-loading",
+      "caching",
+      "LCP",
+      "FID",
+      "CLS"
+    ],
+    "owner": "cognitive-toolworks",
+    "version": "1.0.0",
+    "entry": "/home/william/git/cognitive-toolworks/skills/frontend-performance-optimizer/SKILL.md"
   },
   {
     "slug": "integration-messagequeue-designer",
@@ -865,7 +885,7 @@
   {
     "slug": "messaging-kafka-architect",
     "name": "Kafka Messaging Architect",
-    "summary": "Design Apache Kafka architectures with producer/consumer patterns, exactly-once semantics, Kafka Streams, ksqlDB, Schema Registry (Avro/Protobuf), performance t",
+    "summary": "Design Kafka architectures with exactly-once semantics, Kafka Streams, ksqlDB, Schema Registry (Avro/Protobuf), performance tuning, and KRaft.",
     "keywords": [
       "kafka",
       "messaging",
@@ -888,7 +908,7 @@
   {
     "slug": "messaging-rabbitmq-architect",
     "name": "RabbitMQ Architecture Designer",
-    "summary": "Design RabbitMQ architectures with exchange types (direct, topic, fanout, headers), quorum queues, routing patterns, clustering, dead letter exchanges, and AMQP",
+    "summary": "Design RabbitMQ architectures with exchanges, quorum queues, routing patterns, clustering, dead letter exchanges, and AMQP best practices.",
     "keywords": [
       "rabbitmq",
       "amqp",
@@ -975,7 +995,7 @@
   {
     "slug": "observability-prometheus-configurator",
     "name": "Prometheus Configuration Specialist",
-    "summary": "Configure Prometheus monitoring with alerting rules, recording rules, service discovery (Kubernetes, Consul, EC2), federation, PromQL optimization, and Alertman",
+    "summary": "Configure Prometheus with alerting, recording rules, service discovery (K8s, Consul, EC2), federation, PromQL optimization, and Alertmanager.",
     "keywords": [
       "prometheus",
       "monitoring",
@@ -1040,7 +1060,7 @@
   {
     "slug": "observability-unified-dashboard",
     "name": "Observability Unified Dashboard",
-    "summary": "Design unified observability dashboards with golden signals (latency, traffic, errors, saturation), OpenTelemetry correlation, SLO tracking, and Grafana 11 auto",
+    "summary": "Design unified dashboards with golden signals, OpenTelemetry correlation, SLO tracking, and Grafana 11 auto-correlations for metrics/logs/traces.",
     "keywords": [
       "observability",
       "golden signals",

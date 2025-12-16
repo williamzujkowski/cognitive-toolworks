@@ -93,8 +93,14 @@ ct analyze ./my-skill/ --full-report
 # Validate against platforms
 ct validate ./my-skill/ --platforms anthropic,openai
 
-# Optimize token usage
-ct optimize ./my-skill/ --target-tokens 5000
+# Optimize for progressive disclosure (LLM-powered)
+ct optimize ./my-skill/ --tier T2 --dry-run
+
+# Optimize in-place
+ct optimize ./my-skill/ --tier T2 --in-place
+
+# Legacy whitespace-only optimization
+ct optimize ./my-skill/ --legacy
 
 # Security scan
 ct security-scan ./skills/ --recursive

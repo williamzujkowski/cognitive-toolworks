@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
+import httpx
 import yaml
 
 from cognitive_toolworks.models import EndpointDefinition, OpenAPIAnalysis
@@ -66,27 +67,75 @@ class OpenAPIIntrospector:
         return cls(spec)
 
     @classmethod
-    def from_url(cls, url: str) -> OpenAPIIntrospector:
+    def from_url(
+        cls,
+        url: str,
+        headers: dict[str, str] | None = None,
+        timeout: float = 30.0,
+    ) -> OpenAPIIntrospector:
         """
         Load OpenAPI spec from a URL.
 
         Args:
             url: URL to OpenAPI specification.
+            headers: Optional authentication or custom headers.
+            timeout: Request timeout in seconds (default: 30.0).
 
         Returns:
             OpenAPIIntrospector instance.
 
         Raises:
-            ValueError: If URL is invalid or cannot be fetched.
-            NotImplementedError: URL loading not yet implemented.
+            ValueError: If URL is invalid, cannot be fetched, or content is invalid.
         """
         # Parse URL to validate
         parsed = urlparse(url)
         if not parsed.scheme or not parsed.netloc:
             raise ValueError(f"Invalid URL: {url}")
 
-        # TODO: Implement URL fetching with requests
-        raise NotImplementedError("URL loading will be implemented with requests")
+        if parsed.scheme not in ("http", "https"):
+            raise ValueError(f"URL must use http or https scheme: {url}")
+
+        # Fetch the spec from the URL
+        try:
+            response = httpx.get(url, headers=headers, timeout=timeout, follow_redirects=True)
+            response.raise_for_status()
+        except httpx.TimeoutException as e:
+            raise ValueError(f"Request timeout after {timeout}s: {url}") from e
+        except httpx.HTTPStatusError as e:
+            raise ValueError(f"HTTP {e.response.status_code} error fetching {url}") from e
+        except httpx.RequestError as e:
+            raise ValueError(f"Network error fetching {url}: {e}") from e
+
+        content = response.text
+        content_type = response.headers.get("content-type", "").lower()
+
+        # Parse based on Content-Type or attempt both formats
+        spec = None
+
+        if "application/json" in content_type or "json" in content_type:
+            try:
+                spec = json.loads(content)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Invalid JSON in response from {url}") from e
+        elif "yaml" in content_type or "yml" in content_type:
+            try:
+                spec = yaml.safe_load(content)
+            except yaml.YAMLError as e:
+                raise ValueError(f"Invalid YAML in response from {url}") from e
+        else:
+            # Try JSON first, then YAML
+            try:
+                spec = json.loads(content)
+            except json.JSONDecodeError:
+                try:
+                    spec = yaml.safe_load(content)
+                except yaml.YAMLError as e:
+                    raise ValueError(f"Could not parse response from {url} as JSON or YAML") from e
+
+        if spec is None:
+            raise ValueError(f"Failed to parse OpenAPI spec from {url}")
+
+        return cls(spec)
 
     def _validate_spec(self) -> None:
         """

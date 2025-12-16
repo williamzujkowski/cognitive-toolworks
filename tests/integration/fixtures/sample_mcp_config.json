@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "test-server": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"],
+      "transport": "stdio",
+      "env": {}
+    }
+  }
+}

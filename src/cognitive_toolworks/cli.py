@@ -165,7 +165,7 @@ def generate_skill(
         # Step 3: Optimize
         if optimize:
             task = progress.add_task("[cyan]Optimizing...", total=None)
-            skill_content = _optimize_skill(skill_content, token_budget)
+            skill_content = _optimize_skill_legacy(skill_content)
             progress.update(task, completed=True)
 
         # Step 4: Validate
@@ -446,32 +446,53 @@ def validate(
 @app.command("optimize")
 def optimize(
     path: Annotated[Path, typer.Argument(help="Path to skill or SKILL.md")],
-    target_tokens: Annotated[
-        int,
-        typer.Option("--target-tokens", "-t", help="Target token count for Level 2"),
-    ] = 5000,
-    aggressive: Annotated[
+    tier: Annotated[
+        str,
+        typer.Option("--tier", "-t", help="Target tier: T1 (2k), T2 (6k), or T3 (12k)"),
+    ] = "T2",
+    dry_run: Annotated[
         bool,
-        typer.Option("--aggressive", help="Aggressive optimization (may lose some detail)"),
+        typer.Option("--dry-run", help="Preview changes without writing"),
     ] = False,
     in_place: Annotated[
         bool,
         typer.Option("--in-place", "-i", help="Modify file in place"),
     ] = False,
+    legacy: Annotated[
+        bool,
+        typer.Option("--legacy", help="Use legacy whitespace-only optimization"),
+    ] = False,
 ) -> None:
     """
-    Optimize a skill for token efficiency.
+    Optimize a skill for progressive disclosure and token efficiency.
+
+    Uses LLM-powered optimization to restructure content into T1/T2/T3 tiers:
+    - T1 (≤2k tokens): Metadata, purpose, triggers, quick reference
+    - T2 (≤6k tokens): Core procedures, decision rules, common examples
+    - T3 (≤12k tokens): Detailed references, advanced examples
 
     Strategies:
     - Remove redundant content
     - Use imperative voice
     - Move detailed content to references
     - Consolidate examples
+    - Restructure for progressive disclosure
+
+    Use --dry-run to preview optimizations without making changes.
+    Use --legacy for simple whitespace-only optimization.
     """
+    import asyncio
+
     skill_path = path / "SKILL.md" if path.is_dir() else path
 
     if not skill_path.exists():
         console.print(f"[red]Error: {skill_path} not found[/]")
+        raise typer.Exit(1)
+
+    # Validate tier
+    tier_upper = tier.upper()
+    if tier_upper not in ["T1", "T2", "T3"]:
+        console.print(f"[red]Error: Invalid tier '{tier}'. Must be T1, T2, or T3[/]")
         raise typer.Exit(1)
 
     content = skill_path.read_text()
@@ -479,19 +500,56 @@ def optimize(
 
     console.print(f"[cyan]Optimizing {skill_path}...[/]")
     console.print(f"  Original: {original_tokens} tokens")
+    console.print(f"  Target tier: {tier_upper}")
 
-    optimized = _optimize_skill(content, target_tokens, aggressive)
-    new_tokens = _count_tokens(optimized)
+    if legacy:
+        # Legacy optimization: just remove whitespace
+        console.print("[yellow]Using legacy whitespace-only optimization[/]")
+        optimized = _optimize_skill_legacy(content)
+        new_tokens = _count_tokens(optimized)
+        console.print(f"  Optimized: {new_tokens} tokens ({original_tokens - new_tokens} saved)")
+        changes = ["Removed duplicate newlines"]
+    else:
+        # LLM-powered optimization
+        if dry_run:
+            console.print("[yellow]Dry run mode: analyzing only[/]")
 
-    console.print(f"  Optimized: {new_tokens} tokens ({original_tokens - new_tokens} saved)")
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console,
+        ) as progress:
+            task = progress.add_task("Running LLM optimization...", total=None)
+            result = asyncio.run(_optimize_skill_with_llm(skill_path, dry_run))
+            progress.update(task, completed=True)
 
-    if in_place:
+        optimized = result["content"]
+        new_tokens = result["optimized_tokens"]
+        changes = result["changes"]
+
+        console.print(f"  Optimized: {new_tokens} tokens ({original_tokens - new_tokens} saved)")
+        console.print(f"  Reduction: {result['reduction_pct']:.1f}%")
+
+        if result["within_budget"]:
+            console.print(f"[green]  ✓ Within {tier_upper} budget[/]")
+        else:
+            console.print(f"[yellow]  ⚠ Exceeds {tier_upper} budget[/]")
+
+    # Display changes
+    console.print("\n[cyan]Changes made:[/]")
+    for change in changes:
+        console.print(f"  • {change}")
+
+    # Write output
+    if dry_run:
+        console.print("\n[yellow]Dry run complete - no files modified[/]")
+    elif in_place:
         skill_path.write_text(optimized)
-        console.print(f"[green]✅ Updated {skill_path}[/]")
+        console.print(f"\n[green]✅ Updated {skill_path}[/]")
     else:
         output_path = skill_path.with_suffix(".optimized.md")
         output_path.write_text(optimized)
-        console.print(f"[green]✅ Saved to {output_path}[/]")
+        console.print(f"\n[green]✅ Saved to {output_path}[/]")
 
 
 # --- Security Commands ---
@@ -575,6 +633,23 @@ def _introspect_source(source_type: SourceType, source_path, **_kwargs) -> dict:
             "resources": [],
             "capabilities": [],
         }
+    elif source_type == SourceType.OPENAPI:
+        from cognitive_toolworks.sources.openapi import introspect_openapi
+
+        # source_path can be either a Path or str (URL)
+        path_or_url = str(source_path)
+        analysis = introspect_openapi(path_or_url)
+
+        # Convert to dict format expected by the rest of the CLI
+        return {
+            "source_type": source_type.value,
+            "api_name": analysis.api_name,
+            "base_url": analysis.base_url,
+            "endpoints": [e.to_dict() for e in analysis.endpoints],
+            "schemas": analysis.schemas,
+            "authentication": analysis.authentication,
+            "capabilities": analysis.capabilities,
+        }
     return {
         "source_type": source_type.value,
         "tools": [],
@@ -598,9 +673,10 @@ def _generate_skill(analysis: dict, _platform: Platform, _examples: int, _token_
         description=f"Auto-generated skill from {analysis.get('source_type', 'unknown')} source",
     )
 
+    source_type = analysis.get("source_type", "unknown")
     skill = SkillContent(
         metadata=metadata,
-        overview=f"This skill was generated from a {analysis.get('source_type', 'unknown')} source.",
+        overview=f"This skill was generated from a {source_type} source.",
         when_to_use=[f"Use this skill when working with {name}"],
         quick_reference="See instructions below for usage.",
         instructions="Configure and use this skill according to your needs.",
@@ -620,9 +696,13 @@ def _generate_orchestrated(
     return _generate_skill(analysis, _platform, _examples, _token_budget)
 
 
-def _optimize_skill(content: str, _token_budget: int, _aggressive: bool = False) -> str:
-    """Optimize skill for token efficiency."""
-    # Basic optimization: remove extra whitespace
+def _optimize_skill_legacy(content: str) -> str:
+    """
+    Legacy optimization: remove extra whitespace.
+
+    This is a simple optimization that just removes duplicate newlines.
+    For LLM-powered optimization, use _optimize_skill_with_llm.
+    """
     lines = content.split("\n")
     optimized = []
     prev_empty = False
@@ -635,6 +715,46 @@ def _optimize_skill(content: str, _token_budget: int, _aggressive: bool = False)
         prev_empty = is_empty
 
     return "\n".join(optimized)
+
+
+async def _optimize_skill_with_llm(skill_path: Path, dry_run: bool) -> dict[str, object]:
+    """
+    Optimize skill using ProgressiveDisclosureOptimizer.
+
+    Args:
+        skill_path: Path to SKILL.md file
+        dry_run: If True, analyze only without rewriting
+
+    Returns:
+        Dictionary with optimization results
+    """
+    from cognitive_toolworks.generators.skill import SkillGenerator
+    from cognitive_toolworks.optimizers.progressive import ProgressiveDisclosureOptimizer
+
+    # Read and parse the skill
+    content = skill_path.read_text()
+
+    # Parse markdown to SkillContent
+    # Use SkillGenerator's parser
+    generator = SkillGenerator()
+    skill_name = skill_path.parent.name if skill_path.parent.name != "." else "skill"
+    skill_content = generator._parse_skill_markdown(content, skill_name)
+
+    # Run optimization
+    optimizer = ProgressiveDisclosureOptimizer(dry_run=dry_run)
+    result = await optimizer.optimize(skill_content)
+
+    # Return optimized markdown
+    optimized_markdown = result.optimized_skill.to_markdown()
+
+    return {
+        "content": optimized_markdown,
+        "original_tokens": result.original_tokens,
+        "optimized_tokens": result.optimized_tokens,
+        "reduction_pct": result.reduction_percentage,
+        "within_budget": result.within_budget,
+        "changes": result.changes_made,
+    }
 
 
 def _validate_skill(content: str, _platform: Platform) -> dict:

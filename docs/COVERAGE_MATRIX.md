@@ -1,30 +1,30 @@
 # Skill Coverage Matrix Analysis
 
-**Total Skills**: 65
+**Total Skills**: 81
 **Analysis Date**: $(date -I)
 
 ## Coverage by Tier
 
 | Tier | Count | Percentage |
 |------|-------|------------|
-| Core | 4 | 6.2% |
-| Domain | 48 | 73.8% |
-| Specialized | 13 | 20.0% |
+| Core | 4 | 4.9% |
+| Domain | 63 | 77.8% |
+| Specialized | 14 | 17.3% |
 
 ## Coverage by Domain (Top 10)
 
 | Domain | Count | Skills (sample) |
 |--------|-------|-----------------|
-| Security | 10 | security-appsec-validator, security-cloud-analyzer, security-container-validator, ... |
-| Cloud | 5 | cloud-aws-architect, cloud-edge-architect, cloud-kubernetes-integrator, ... |
+| Security | 11 | security-appsec-validator, security-assessment-orchestrator, security-cloud-analyzer, ... |
+| Cloud | 8 | cloud-aws-architect, cloud-azure-architect, cloud-edge-architect, ... |
+| Database | 6 | database-migration-generator, database-mongodb-architect, database-optimization-analyzer, ... |
 | Testing | 5 | testing-chaos-designer, testing-integration-designer, testing-load-designer, ... |
+| Api | 4 | api-contract-testing, api-design-validator, api-graphql-designer, ... |
+| Compliance | 4 | compliance-automation-engine, compliance-fedramp-validator, compliance-nist-validator, ... |
 | Core | 4 | core-agent-authoring, core-codex-delegator, core-gemini-delegator, ... |
 | Devops | 4 | devops-cicd-generator, devops-deployment-designer, devops-drift-detector, ... |
-| Tooling | 4 | tooling-csharp-generator, tooling-java-generator, tooling-python-generator, ... |
-| Api | 3 | api-contract-testing, api-design-validator, api-graphql-designer |
-| Compliance | 3 | compliance-automation-engine, compliance-fedramp-validator, compliance-oscal-validator |
-| Database | 3 | database-migration-generator, database-optimization-analyzer, database-schema-designer |
-| Kubernetes | 3 | kubernetes-helm-builder, kubernetes-manifest-generator, kubernetes-servicemesh-configurator |
+| Frontend | 4 | frontend-accessibility-validator, frontend-designsystem-validator, frontend-framework-advisor, ... |
+| Observability | 4 | observability-prometheus-configurator, observability-slo-calculator, observability-stack-configurator, ... |
 
 ## Detailed Tier Breakdown
 
@@ -35,20 +35,24 @@
 - `core-gemini-delegator`
 - `core-skill-authoring`
 
-### Domain (48 skills)
+### Domain (63 skills)
 
-**Api** (3):
+**Api** (4):
   - `api-contract-testing`
   - `api-design-validator`
   - `api-graphql-designer`
+  - `api-rest-designer`
 
 **Architecture** (1):
   - `architecture-decision-framework`
 
-**Cloud** (4):
+**Cloud** (7):
   - `cloud-aws-architect`
+  - `cloud-azure-architect`
   - `cloud-edge-architect`
+  - `cloud-gcp-architect`
   - `cloud-multicloud-advisor`
+  - `cloud-provider-advisor`
   - `cloud-serverless-designer`
 
 **Container** (1):
@@ -57,9 +61,12 @@
 **Data** (1):
   - `data-pipeline-designer`
 
-**Database** (3):
+**Database** (6):
   - `database-migration-generator`
+  - `database-mongodb-architect`
   - `database-optimization-analyzer`
+  - `database-postgres-architect`
+  - `database-redis-architect`
   - `database-schema-designer`
 
 **Devops** (4):
@@ -71,15 +78,22 @@
 **Documentation** (1):
   - `documentation-content-generator`
 
-**Finops** (1):
+**Finops** (2):
   - `finops-cost-analyzer`
+  - `finops-multicloud-optimizer`
 
-**Frontend** (2):
+**Frontend** (4):
+  - `frontend-accessibility-validator`
   - `frontend-designsystem-validator`
   - `frontend-framework-advisor`
+  - `frontend-performance-optimizer`
 
 **Integration** (1):
   - `integration-messagequeue-designer`
+
+**Messaging** (2):
+  - `messaging-kafka-architect`
+  - `messaging-rabbitmq-architect`
 
 **Microservices** (1):
   - `microservices-pattern-architect`
@@ -87,8 +101,10 @@
 **Mlops** (1):
   - `mlops-lifecycle-manager`
 
-**Observability** (1):
+**Observability** (3):
+  - `observability-prometheus-configurator`
   - `observability-stack-configurator`
+  - `observability-unified-dashboard`
 
 **Quality** (1):
   - `quality-standards-analyzer`
@@ -99,8 +115,9 @@
 **Secrets** (1):
   - `secrets-management-integrator`
 
-**Security** (10):
+**Security** (11):
   - `security-appsec-validator`
+  - `security-assessment-orchestrator`
   - `security-cloud-analyzer`
   - `security-container-validator`
   - `security-crypto-validator`
@@ -127,14 +144,15 @@
 **Ux** (1):
   - `ux-wireframe-designer`
 
-### Specialized (13 skills)
+### Specialized (14 skills)
 
 **Cloud** (1):
   - `cloud-kubernetes-integrator`
 
-**Compliance** (3):
+**Compliance** (4):
   - `compliance-automation-engine`
   - `compliance-fedramp-validator`
+  - `compliance-nist-validator`
   - `compliance-oscal-validator`
 
 **E2e** (1):
@@ -178,7 +196,7 @@
 - ⚠️ Missing: Performance profiling, mutation testing, visual regression
 
 **Observability:**
-- ✅ Observability skills: 1
+- ✅ Observability skills: 3
 - ⚠️ Missing: APM-specific (Datadog, New Relic), cost attribution
 
 ### Recommendations
@@ -201,32 +219,33 @@
 ## Domain Coverage Heat Map
 
 ```
-Security             [10] ████████████████████████████████████████
-Cloud                [ 5] ████████████████████
-Testing              [ 5] ████████████████████
-Devops               [ 4] ████████████████
-Tooling              [ 4] ████████████████
-Api                  [ 3] ████████████
-Compliance           [ 3] ████████████
-Database             [ 3] ████████████
-Kubernetes           [ 3] ████████████
-Frontend             [ 2] ████████
-Observability        [ 2] ████████
-Architecture         [ 1] ████
-Container            [ 1] ████
-Data                 [ 1] ████
-Documentation        [ 1] ████
-E2e                  [ 1] ████
-Finops               [ 1] ████
-Integration          [ 1] ████
-Microservices        [ 1] ████
-Mlops                [ 1] ████
-Mobile               [ 1] ████
-Quality              [ 1] ████
-Resilience           [ 1] ████
-Rust                 [ 1] ████
-Secrets              [ 1] ████
-Slo                  [ 1] ████
-Terraform            [ 1] ████
-Ux                   [ 1] ████
+Security             [11] ████████████████████████████████████████
+Cloud                [ 8] █████████████████████████████
+Database             [ 6] █████████████████████
+Testing              [ 5] ██████████████████
+Api                  [ 4] ██████████████
+Compliance           [ 4] ██████████████
+Devops               [ 4] ██████████████
+Frontend             [ 4] ██████████████
+Observability        [ 4] ██████████████
+Tooling              [ 4] ██████████████
+Kubernetes           [ 3] ██████████
+Finops               [ 2] ███████
+Messaging            [ 2] ███████
+Architecture         [ 1] ███
+Container            [ 1] ███
+Data                 [ 1] ███
+Documentation        [ 1] ███
+E2e                  [ 1] ███
+Integration          [ 1] ███
+Microservices        [ 1] ███
+Mlops                [ 1] ███
+Mobile               [ 1] ███
+Quality              [ 1] ███
+Resilience           [ 1] ███
+Rust                 [ 1] ███
+Secrets              [ 1] ███
+Slo                  [ 1] ███
+Terraform            [ 1] ███
+Ux                   [ 1] ███
 ```

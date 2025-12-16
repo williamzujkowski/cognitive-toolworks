@@ -3,7 +3,9 @@
 import json
 import tempfile
 from pathlib import Path
+from unittest.mock import Mock, patch
 
+import httpx
 import pytest
 
 from cognitive_toolworks.sources.openapi import (
@@ -306,15 +308,204 @@ class TestOpenAPIIntrospector:
         finally:
             path.unlink()
 
-    def test_from_url_raises_not_implemented(self) -> None:
-        """Test that URL loading raises NotImplementedError."""
-        with pytest.raises(NotImplementedError):
-            OpenAPIIntrospector.from_url("https://example.com/openapi.json")
-
     def test_from_url_invalid_url(self) -> None:
         """Test that invalid URLs raise ValueError."""
         with pytest.raises(ValueError, match="Invalid URL"):
             OpenAPIIntrospector.from_url("not-a-url")
+
+    def test_from_url_invalid_scheme(self) -> None:
+        """Test that URLs with invalid schemes raise ValueError."""
+        with pytest.raises(ValueError, match="must use http or https"):
+            OpenAPIIntrospector.from_url("ftp://example.com/openapi.json")
+
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_from_url_json_success(self, mock_get: Mock, sample_spec: dict) -> None:
+        """Test successful fetching of JSON OpenAPI spec from URL."""
+        # Mock successful response
+        mock_response = Mock()
+        mock_response.text = json.dumps(sample_spec)
+        mock_response.headers = {"content-type": "application/json"}
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Fetch from URL
+        introspector = OpenAPIIntrospector.from_url("https://example.com/openapi.json")
+
+        # Verify
+        assert introspector.spec == sample_spec
+        mock_get.assert_called_once_with(
+            "https://example.com/openapi.json",
+            headers=None,
+            timeout=30.0,
+            follow_redirects=True,
+        )
+
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_from_url_yaml_success(self, mock_get: Mock, sample_spec: dict) -> None:
+        """Test successful fetching of YAML OpenAPI spec from URL."""
+        import yaml
+
+        # Mock successful response
+        mock_response = Mock()
+        mock_response.text = yaml.dump(sample_spec)
+        mock_response.headers = {"content-type": "application/yaml"}
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Fetch from URL
+        introspector = OpenAPIIntrospector.from_url("https://example.com/openapi.yaml")
+
+        # Verify
+        assert introspector.spec == sample_spec
+
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_from_url_with_headers(self, mock_get: Mock, sample_spec: dict) -> None:
+        """Test URL fetching with custom headers."""
+        # Mock successful response
+        mock_response = Mock()
+        mock_response.text = json.dumps(sample_spec)
+        mock_response.headers = {"content-type": "application/json"}
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Fetch with auth header
+        headers = {"Authorization": "Bearer token123"}
+        OpenAPIIntrospector.from_url("https://example.com/openapi.json", headers=headers)
+
+        # Verify headers were passed
+        mock_get.assert_called_once_with(
+            "https://example.com/openapi.json",
+            headers=headers,
+            timeout=30.0,
+            follow_redirects=True,
+        )
+
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_from_url_with_timeout(self, mock_get: Mock, sample_spec: dict) -> None:
+        """Test URL fetching with custom timeout."""
+        # Mock successful response
+        mock_response = Mock()
+        mock_response.text = json.dumps(sample_spec)
+        mock_response.headers = {"content-type": "application/json"}
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Fetch with custom timeout
+        OpenAPIIntrospector.from_url("https://example.com/openapi.json", timeout=60.0)
+
+        # Verify timeout was passed
+        mock_get.assert_called_once_with(
+            "https://example.com/openapi.json",
+            headers=None,
+            timeout=60.0,
+            follow_redirects=True,
+        )
+
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_from_url_no_content_type_json(self, mock_get: Mock, sample_spec: dict) -> None:
+        """Test URL fetching without content-type header (JSON content)."""
+        # Mock successful response without content-type
+        mock_response = Mock()
+        mock_response.text = json.dumps(sample_spec)
+        mock_response.headers = {}
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Should still work by trying to parse as JSON
+        introspector = OpenAPIIntrospector.from_url("https://example.com/openapi.json")
+        assert introspector.spec == sample_spec
+
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_from_url_no_content_type_yaml(self, mock_get: Mock, sample_spec: dict) -> None:
+        """Test URL fetching without content-type header (YAML content)."""
+        import yaml
+
+        # Mock successful response without content-type
+        mock_response = Mock()
+        mock_response.text = yaml.dump(sample_spec)
+        mock_response.headers = {}
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Should work by trying YAML after JSON fails
+        introspector = OpenAPIIntrospector.from_url("https://example.com/openapi.yaml")
+        assert introspector.spec == sample_spec
+
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_from_url_timeout_error(self, mock_get: Mock) -> None:
+        """Test URL fetching with timeout."""
+        # Mock timeout
+        mock_get.side_effect = httpx.TimeoutException("Connection timeout")
+
+        # Should raise ValueError with timeout message
+        with pytest.raises(ValueError, match="Request timeout"):
+            OpenAPIIntrospector.from_url("https://example.com/openapi.json")
+
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_from_url_http_error(self, mock_get: Mock) -> None:
+        """Test URL fetching with HTTP error."""
+        # Mock 404 error
+        mock_response = Mock()
+        mock_response.status_code = 404
+        mock_get.side_effect = httpx.HTTPStatusError(
+            "Not Found", request=Mock(), response=mock_response
+        )
+
+        # Should raise ValueError with HTTP error
+        with pytest.raises(ValueError, match="HTTP 404 error"):
+            OpenAPIIntrospector.from_url("https://example.com/openapi.json")
+
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_from_url_network_error(self, mock_get: Mock) -> None:
+        """Test URL fetching with network error."""
+        # Mock network error
+        mock_get.side_effect = httpx.ConnectError("Connection refused")
+
+        # Should raise ValueError with network error
+        with pytest.raises(ValueError, match="Network error"):
+            OpenAPIIntrospector.from_url("https://example.com/openapi.json")
+
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_from_url_invalid_json(self, mock_get: Mock) -> None:
+        """Test URL fetching with invalid JSON content."""
+        # Mock response with invalid JSON
+        mock_response = Mock()
+        mock_response.text = "{invalid json"
+        mock_response.headers = {"content-type": "application/json"}
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Should raise ValueError
+        with pytest.raises(ValueError, match="Invalid JSON"):
+            OpenAPIIntrospector.from_url("https://example.com/openapi.json")
+
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_from_url_invalid_yaml(self, mock_get: Mock) -> None:
+        """Test URL fetching with invalid YAML content."""
+        # Mock response with invalid YAML
+        mock_response = Mock()
+        mock_response.text = ":\n  - invalid:\nyaml"
+        mock_response.headers = {"content-type": "application/yaml"}
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Should raise ValueError
+        with pytest.raises(ValueError, match="Invalid YAML"):
+            OpenAPIIntrospector.from_url("https://example.com/openapi.yaml")
+
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_from_url_unparseable_content(self, mock_get: Mock) -> None:
+        """Test URL fetching with content that's neither JSON nor YAML."""
+        # Mock response with HTML content
+        mock_response = Mock()
+        mock_response.text = "<html><body>Not an API spec</body></html>"
+        mock_response.headers = {}
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Should raise ValueError during validation (YAML parser accepts HTML as string)
+        with pytest.raises(ValueError, match="OpenAPI spec must be a dictionary"):
+            OpenAPIIntrospector.from_url("https://example.com/openapi.json")
 
 
 class TestIntrospectOpenAPI:
@@ -358,10 +549,32 @@ class TestIntrospectOpenAPI:
         assert "schemas" in analysis.capabilities
         assert "authentication" in analysis.capabilities
 
-    def test_introspect_url_not_implemented(self) -> None:
-        """Test that URL introspection raises NotImplementedError."""
-        with pytest.raises(NotImplementedError):
-            introspect_openapi("https://example.com/openapi.json")
+    @patch("cognitive_toolworks.sources.openapi.httpx.get")
+    def test_introspect_url_success(self, mock_get: Mock) -> None:
+        """Test introspecting from URL."""
+        spec = {
+            "openapi": "3.0.0",
+            "info": {"title": "URL API", "version": "1.0"},
+            "paths": {
+                "/test": {
+                    "get": {"summary": "Test endpoint", "responses": {"200": {"description": "OK"}}}
+                }
+            },
+        }
+
+        # Mock successful response
+        mock_response = Mock()
+        mock_response.text = json.dumps(spec)
+        mock_response.headers = {"content-type": "application/json"}
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Introspect from URL
+        analysis = introspect_openapi("https://example.com/openapi.json")
+
+        assert analysis.api_name == "URL API v1.0"
+        assert len(analysis.endpoints) == 1
+        assert analysis.endpoints[0].path == "/test"
 
 
 class TestEndpointDefinition:
