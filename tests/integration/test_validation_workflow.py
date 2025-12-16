@@ -119,7 +119,9 @@ class TestValidationWorkflow:
 
         # Should detect uppercase name issue
         name_issues = [
-            issue for issue in result.issues if issue.field == "name" or "name" in issue.message.lower()
+            issue
+            for issue in result.issues
+            if issue.field == "name" or "name" in issue.message.lower()
         ]
         assert len(name_issues) > 0
 
@@ -149,7 +151,9 @@ class TestValidationWorkflow:
         issues_with_fixes = [issue for issue in result.issues if issue.fix_suggestion]
         assert len(issues_with_fixes) > 0
 
-    def test_validation_roundtrip_with_fixes(self, invalid_skill_path: Path, tmp_path: Path) -> None:
+    def test_validation_roundtrip_with_fixes(
+        self, invalid_skill_path: Path, tmp_path: Path
+    ) -> None:
         """
         Test complete roundtrip: validate → fix → re-validate.
 
@@ -334,9 +338,7 @@ This is a test skill.
 
         # Critical errors should have fix suggestions
         critical_errors = [
-            issue
-            for issue in result.errors
-            if issue.severity == ValidationSeverity.ERROR
+            issue for issue in result.errors if issue.severity == ValidationSeverity.ERROR
         ]
         errors_with_fixes = [issue for issue in critical_errors if issue.fix_suggestion]
 
