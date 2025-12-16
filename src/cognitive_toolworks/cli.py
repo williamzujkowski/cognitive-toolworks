@@ -7,6 +7,8 @@ AI-Native Skill Forge: Generate cross-platform agent artifacts using LLM intelli
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 from enum import Enum
 from pathlib import Path
 from typing import Annotated
@@ -599,21 +601,39 @@ def version() -> None:
 # --- Helper Functions (implementations) ---
 
 
-def _introspect_source(source_type: SourceType, source_path, **_kwargs) -> dict:
+def _introspect_source(source_type: SourceType, source_path: Path | str, **_kwargs: object) -> dict[str, object]:
     """Introspect a source to extract information."""
+    import asyncio
+
     if source_type == SourceType.MCP:
         from cognitive_toolworks.sources.mcp import MCPConfig, MCPIntrospector
 
-        config = MCPConfig.from_json(Path(source_path))
-        MCPIntrospector(config)
-        # For now, return a placeholder since actual introspection needs running server
-        return {
-            "source_type": source_type.value,
-            "server_name": config.command,
-            "tools": [],
-            "resources": [],
-            "capabilities": [],
-        }
+        try:
+            config = MCPConfig.from_json(Path(source_path))
+            introspector = MCPIntrospector(config)
+            # Actually call the async introspection
+            analysis = asyncio.run(introspector.introspect())
+            result = analysis.to_dict()
+            result["source_type"] = source_type.value
+            return result
+        except FileNotFoundError:
+            console.print(f"[red]Error: MCP config file not found: {source_path}[/red]")
+            raise typer.Exit(1) from None
+        except json.JSONDecodeError as e:
+            console.print(f"[red]Error: Invalid JSON in MCP config: {e}[/red]")
+            raise typer.Exit(1) from None
+        except ValueError as e:
+            console.print(f"[red]Error: Invalid MCP config format: {e}[/red]")
+            raise typer.Exit(1) from None
+        except RuntimeError as e:
+            console.print(f"[red]Error: MCP server error: {e}[/red]")
+            raise typer.Exit(1) from None
+        except subprocess.TimeoutExpired:
+            console.print("[red]Error: MCP server timed out[/red]")
+            raise typer.Exit(1) from None
+        except Exception as e:
+            console.print(f"[red]Error: MCP introspection failed: {e}[/red]")
+            raise typer.Exit(1) from None
     elif source_type == SourceType.OPENAPI:
         from cognitive_toolworks.sources.openapi import introspect_openapi
 
@@ -639,12 +659,76 @@ def _introspect_source(source_type: SourceType, source_path, **_kwargs) -> dict:
     }
 
 
-def _generate_skill(analysis: dict, _platform: Platform, _examples: int, _token_budget: int) -> str:
-    """Generate skill content from analysis."""
+def _generate_skill(
+    analysis: dict[str, object],
+    platform: Platform,
+    examples: int,
+    token_budget: int,
+) -> str:
+    """Generate skill content from analysis using LLM when available."""
+    import asyncio
+
+    from cognitive_toolworks.generators.skill import GenerationConfig, SkillGenerator
+    from cognitive_toolworks.models import MCPAnalysis, MCPToolDefinition
+
+    # Check for API key
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        console.print(
+            "[yellow]Warning: ANTHROPIC_API_KEY not set. Using template-based generation.[/yellow]"
+        )
+        return _generate_skill_template(analysis)
+
+    try:
+        # Create generator with config
+        config = GenerationConfig(
+            platform=platform.value if platform != Platform.UNIVERSAL else "anthropic",
+            example_count=examples,
+            token_budget=token_budget,
+        )
+        generator = SkillGenerator(config=config)
+
+        source_type = str(analysis.get("source_type", "unknown"))
+
+        # Route to appropriate generation method
+        if source_type == "mcp":
+            # Reconstruct MCPAnalysis from dict
+            tools = [
+                MCPToolDefinition(
+                    name=t.get("name", ""),
+                    description=t.get("description", ""),
+                    input_schema=t.get("input_schema", {}),
+                )
+                for t in analysis.get("tools", [])  # type: ignore[union-attr]
+            ]
+            mcp_analysis = MCPAnalysis(
+                server_name=str(analysis.get("server_name", "unknown")),
+                tools=tools,
+                resources=list(analysis.get("resources", [])),  # type: ignore[arg-type]
+                capabilities=list(analysis.get("capabilities", [])),  # type: ignore[arg-type]
+            )
+            skill = asyncio.run(generator.generate_from_mcp(mcp_analysis))
+        else:
+            # For other sources, use template with semantic enrichment
+            console.print(
+                f"[yellow]LLM generation for {source_type} sources not yet implemented. "
+                "Using template.[/yellow]"
+            )
+            return _generate_skill_template(analysis)
+
+        return skill.to_markdown()
+
+    except Exception as e:
+        console.print(f"[yellow]LLM generation failed: {e}. Falling back to template.[/yellow]")
+        return _generate_skill_template(analysis)
+
+
+def _generate_skill_template(analysis: dict[str, object]) -> str:
+    """Generate skill using static template (fallback when LLM unavailable)."""
     from cognitive_toolworks.models import SkillContent, SkillMetadata
 
     # Create a basic skill structure from analysis
-    name = analysis.get("server_name", "generated-skill")
+    name = str(analysis.get("server_name", analysis.get("api_name", "generated-skill")))
     if "/" in name:
         name = name.split("/")[-1]
     name = name.lower().replace("_", "-").replace(" ", "-")
@@ -654,10 +738,13 @@ def _generate_skill(analysis: dict, _platform: Platform, _examples: int, _token_
         description=f"Auto-generated skill from {analysis.get('source_type', 'unknown')} source",
     )
 
-    source_type = analysis.get("source_type", "unknown")
+    source_type = str(analysis.get("source_type", "unknown"))
+    tools = analysis.get("tools", [])
+    tool_count = len(tools) if isinstance(tools, list) else 0
+
     skill = SkillContent(
         metadata=metadata,
-        overview=f"This skill was generated from a {source_type} source.",
+        overview=f"This skill was generated from a {source_type} source with {tool_count} tools.",
         when_to_use=[f"Use this skill when working with {name}"],
         quick_reference="See instructions below for usage.",
         instructions="Configure and use this skill according to your needs.",
