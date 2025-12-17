@@ -1,15 +1,15 @@
 # Skill Coverage Matrix Analysis
 
-**Total Skills**: 81
-**Analysis Date**: 2025-12-15
+**Total Skills**: 80
+**Analysis Date**: $(date -I)
 
 ## Coverage by Tier
 
 | Tier | Count | Percentage |
 |------|-------|------------|
-| Core | 4 | 4.9% |
-| Domain | 63 | 77.8% |
-| Specialized | 14 | 17.3% |
+| Core | 3 | 3.8% |
+| Domain | 63 | 78.8% |
+| Specialized | 14 | 17.5% |
 
 ## Coverage by Domain (Top 10)
 
@@ -21,16 +21,15 @@
 | Testing | 5 | testing-chaos-designer, testing-integration-designer, testing-load-designer, ... |
 | Api | 4 | api-contract-testing, api-design-validator, api-graphql-designer, ... |
 | Compliance | 4 | compliance-automation-engine, compliance-fedramp-validator, compliance-nist-validator, ... |
-| Core | 4 | core-agent-authoring, core-codex-delegator, core-gemini-delegator, ... |
 | Devops | 4 | devops-cicd-generator, devops-deployment-designer, devops-drift-detector, ... |
 | Frontend | 4 | frontend-accessibility-validator, frontend-designsystem-validator, frontend-framework-advisor, ... |
 | Observability | 4 | observability-prometheus-configurator, observability-slo-calculator, observability-stack-configurator, ... |
+| Tooling | 4 | tooling-csharp-generator, tooling-java-generator, tooling-python-generator, ... |
 
 ## Detailed Tier Breakdown
 
-### Core (4 skills)
+### Core (3 skills)
 
-- `core-agent-authoring`
 - `core-codex-delegator`
 - `core-gemini-delegator`
 - `core-skill-authoring`
@@ -180,38 +179,41 @@
 
 ## Gap Analysis
 
-### Current Coverage
+### Identified Coverage Gaps
 
 **Cloud Providers:**
 - ✅ AWS: `cloud-aws-architect` (comprehensive)
-- ✅ Azure: `cloud-azure-architect`
-- ✅ GCP: `cloud-gcp-architect`
+- ⚠️ Azure: No dedicated architect skill
+- ⚠️ GCP: No dedicated architect skill
 
 **Language-Specific Tooling:**
-- ✅ Rust: `rust-analyzer`
-- ✅ Java: `tooling-java-generator`
-- ✅ TypeScript: `tooling-typescript-generator`
-- ✅ C#: `tooling-csharp-generator`
-- ✅ Python: `tooling-python-generator`
+- ✅ Existing: rust
+- ⚠️ Missing: Java, TypeScript/JavaScript, C#, C++
 
 **Testing:**
 - ✅ Core testing skills: 5
-- ⚠️ Gaps: Performance profiling, mutation testing, visual regression
+- ⚠️ Missing: Performance profiling, mutation testing, visual regression
 
 **Observability:**
-- ✅ Observability skills: 4
-- ⚠️ Gaps: APM-specific (Datadog, New Relic), cost attribution
+- ✅ Observability skills: 3
+- ⚠️ Missing: APM-specific (Datadog, New Relic), cost attribution
 
 ### Recommendations
 
+**High Priority:**
+1. Add Azure/GCP cloud architect skills (parity with AWS)
+2. Add Java and TypeScript tooling specialists
+3. Create testing orchestrator agent (coordinates test strategy execution)
+
 **Medium Priority:**
-1. Performance profiling skill (language-agnostic)
-2. APM integration skill (Datadog, New Relic, etc.)
-3. Visual regression testing skill
+4. Performance profiling skill (language-agnostic)
+5. APM integration skill (Datadog, New Relic, etc.)
+6. Visual regression testing skill
 
 **Low Priority:**
-4. C++ build system specialist (CMake, Bazel)
-5. Mutation testing designer
+7. C#/.NET tooling specialist
+8. C++ build system specialist (CMake, Bazel)
+9. Mutation testing designer
 
 ## Domain Coverage Heat Map
 

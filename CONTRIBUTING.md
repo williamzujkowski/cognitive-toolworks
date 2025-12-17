@@ -151,5 +151,5 @@ By contributing, you agree that your contributions will be licensed under Apache
 ---
 
 **Maintained by**: cognitive-toolworks
-**Last Updated**: 2025-12-16T21:30:00-05:00
-**CLAUDE.md Version**: 1.7.0
+**Last Updated**: 2025-12-16T22:30:00-05:00
+**CLAUDE.md Version**: 1.8.0

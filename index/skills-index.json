@@ -367,22 +367,6 @@
     "entry": "/home/william/git/cognitive-toolworks/skills/container-image-optimizer/SKILL.md"
   },
   {
-    "slug": "core-agent-authoring",
-    "name": "Create Specialized Agent for Claude Code CLI",
-    "summary": "Generate comprehensive AGENT.md specs with system prompts, workflows, and tool restrictions following Claude Code CLI standards.",
-    "keywords": [
-      "agent-authoring",
-      "claude-code",
-      "system-prompt",
-      "workflow",
-      "orchestration",
-      "mcp"
-    ],
-    "owner": "cognitive-toolworks",
-    "version": "1.0.0",
-    "entry": "/home/william/git/cognitive-toolworks/skills/core-agent-authoring/SKILL.md"
-  },
-  {
     "slug": "core-codex-delegator",
     "name": "Codex CLI Delegation & Code Generation Routing",
     "summary": "Intelligently delegate code generation, boilerplate creation, and automation tasks to OpenAI Codex CLI for rapid prototyping and development.",

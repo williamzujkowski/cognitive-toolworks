@@ -6,12 +6,26 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+## Quick Start (60 seconds)
+
+```bash
+pip install -e .                    # Install
+ct ls                               # List 80 skills
+ct search kubernetes                # Find skills
+ct show <slug> --full               # View details
+ct validate ./skills/<slug>/        # Validate skill
+```
+
+**Need LLM generation?** Set `ANTHROPIC_API_KEY` then: `ct generate skill --from-mcp config.json`
+
+---
+
 Transform MCP servers and repositories into **SKILL.md** and **AGENTS.md** files compatible with Claude, Codex, Gemini, and other AI agents.
 
 ## What's Included
 
 This repository contains:
-- **81 production-ready skills** covering security, cloud, DevOps, testing, and more
+- **80 production-ready skills** covering security, cloud, DevOps, testing, and more
 - **18 orchestrator agents** that coordinate multiple skills for complex workflows
 - **CLI tooling** to generate, validate, and manage your own skills
 
@@ -38,14 +52,14 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -e .
 
 # Verify installation
-ct --version
+ct version
 ```
 
 ### Your First Commands
 
 ```bash
 # Explore available skills (no API key needed)
-ct ls                           # List all 81 skills
+ct ls                           # List all 80 skills
 ct search kubernetes            # Search for skills
 ct show security-appsec-validator  # View skill details
 
@@ -109,8 +123,8 @@ Agents are orchestrators that coordinate multiple skills to complete complex wor
 4. **Report**: Return structured results
 
 ```bash
-# List all agents
-ct ls --agents
+# View agents index
+cat index/agents-index.json | jq '.[] | .slug'
 
 # View agent details
 ct show cloud-aws-orchestrator --full
@@ -174,14 +188,13 @@ cp AGENTS.md GEMINI.md
 ```bash
 ct ls                              # List all skills
 ct ls --domain <domain>            # Filter by domain
-ct ls --agents                     # List agents instead
 ct ls --format json                # JSON output
 
 ct search <term>                   # Search skills/agents
 ct search <term> --format json     # JSON output
 
-ct show <slug>                     # View skill summary
-ct show <slug> --full              # View complete skill
+ct show <slug>                     # View skill/agent summary
+ct show <slug> --full              # View complete skill/agent
 ```
 
 ### Generation Commands
