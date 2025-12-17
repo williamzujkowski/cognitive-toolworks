@@ -280,6 +280,34 @@ Slash commands are defined in `.claude/commands/`.
 
 See [llms.txt](./llms.txt) for LLM-friendly project overview.
 
+## Instruction Files
+
+This repository maintains multiple instruction files for AI assistant compatibility:
+
+| File | Purpose | Tool Support |
+|------|---------|--------------|
+| [CLAUDE.md](./CLAUDE.md) | Authoritative rules for skills/agents library | Claude Code |
+| [AGENTS.md](./AGENTS.md) | Project development workflow | Codex, Cursor, Aider, 60k+ tools |
+| [GEMINI.md](./GEMINI.md) | Gemini CLI wrapper (imports AGENTS.md) | Gemini CLI |
+
+### File Relationships
+
+- **CLAUDE.md** contains meta-rules for building skills/agents (token budgets, naming conventions, validation)
+- **AGENTS.md** contains project development instructions (setup, testing, PR workflow)
+- **GEMINI.md** imports AGENTS.md using `@./AGENTS.md` syntax for Gemini CLI compatibility
+
+### When to Update Each
+
+- **CLAUDE.md**: Update when changing skills/agents standards, token budgets, or meta-rules
+- **AGENTS.md**: Update when changing dev workflow, testing, PR process, or coding conventions
+- **GEMINI.md**: Update only for Gemini-specific CLI features (rare)
+
+### Validation
+
+```bash
+python tooling/validate_instructions.py --all
+```
+
 ## Contributing
 
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
