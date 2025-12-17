@@ -9,8 +9,7 @@ Cognitive Toolworks is a Python library and CLI for generating, validating, and 
 - [CLAUDE.md](./CLAUDE.md): Authoritative rules for the repository (single source of truth)
 - [README.md](./README.md): Quick start guide and feature overview
 - [AGENTS.md](./AGENTS.md): Developer instructions for contributing
-- [docs/CLI_REFERENCE.md](./docs/CLI_REFERENCE.md): Complete CLI command reference
-- [docs/QUICKSTART.md](./docs/QUICKSTART.md): 5-minute getting started guide
+- [CONTRIBUTING.md](./CONTRIBUTING.md): Contribution guidelines
 
 ## Skills Library
 
@@ -39,7 +38,10 @@ ct show <slug>                     # View skill/agent details
 ct validate <path>                 # Validate against specs
 ct generate skill --from-mcp      # Generate from MCP server
 ct generate skill --from-readme   # Generate from README
+ct generate skill --from-openapi  # Generate from OpenAPI spec
 ct generate agents-md             # Generate AGENTS.md
+ct optimize <path>                # LLM-powered optimization
+ct security-scan <path>           # Security scanning
 ```
 
 ## Source Code
@@ -60,5 +62,3 @@ ct generate agents-md             # Generate AGENTS.md
 
 - [docs/COVERAGE_MATRIX.md](./docs/COVERAGE_MATRIX.md): Skills coverage matrix
 - [docs/AGENT_DEPENDENCIES.md](./docs/AGENT_DEPENDENCIES.md): Agent skill dependencies
-- [docs/EXPANSION_ROADMAP.md](./docs/EXPANSION_ROADMAP.md): Historical roadmap
-- [CHANGELOG.md](./CHANGELOG.md): Version history
