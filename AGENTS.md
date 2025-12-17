@@ -6,7 +6,7 @@
 
 Cognitive Toolworks is an LLM-powered platform for generating cross-platform agent artifacts (SKILL.md, AGENTS.md, llms.txt). It transforms MCP servers and repositories into skills compatible with Claude, Codex, and other agents.
 
-> **Status**: MCP generation stable. OpenAPI/README sources planned but not yet implemented.
+> **Status**: MCP, OpenAPI, and README generation stable. AGENTS.md and llms.txt generation available.
 
 ## Dev Environment
 
@@ -221,6 +221,33 @@ ct validate ./skill/ --verbose                       # Detailed validation
 CT_DEBUG=1 ct generate skill ...                     # Enable debug logging
 ct introspect mcp ./config.json --raw               # Raw introspection output
 
+```
+
+## Security Considerations
+
+### API Keys
+- Never commit API keys or secrets to the repository
+- Use environment variables for `ANTHROPIC_API_KEY`
+- The `.gitignore` excludes `.env` files
+
+### Skill Security
+- Built-in security scanner detects credential patterns
+- Skills should not contain hardcoded secrets
+- Shell commands are validated for injection risks
+- File access patterns are checked for safety
+
+### Pre-commit Hooks
+- `gitleaks` scans for secrets before commit
+- All commits are checked for credential patterns
+- See `.pre-commit-config.yaml` for full configuration
+
+### Validation
+```bash
+# Scan for security issues
+ct security-scan ./skills/ --recursive
+
+# Check specific skill
+ct validate ./my-skill/ --verbose
 ```
 
 ## Architecture Notes

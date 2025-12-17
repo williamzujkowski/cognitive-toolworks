@@ -8,7 +8,7 @@
 
 Transform MCP servers and repositories into **SKILL.md** and **AGENTS.md** files compatible with Claude, Codex, and other agents.
 
-> **Status**: Beta. MCP introspection and skill generation work. OpenAPI introspection functional. README support planned.
+> **Status**: Beta. MCP, OpenAPI, and README introspection functional. Skill generation and validation stable.
 
 ## 🎯 What It Does
 
@@ -26,7 +26,7 @@ Transform MCP servers and repositories into **SKILL.md** and **AGENTS.md** files
 **Beta**:
 - **AGENTS.md Generation**: Analyze repos and generate agent configs (`ct generate agents-md`, `ct analyze-repo`)
 
-**Working** (new):
+**Working** (no API key required):
 - **README Source**: Generate skills from README files (`ct generate skill --from-readme`)
 
 ## 🚀 Quick Start
@@ -204,8 +204,8 @@ Sources          →   LLM Analysis   →   Generation   →   Validation
 1. **Phase 1 (Stable)**: MCP introspection, skill generation with LLM fallback
 2. **Phase 2 (Stable)**: Eval runner, quality gates, validation framework
 3. **Phase 3 (Stable)**: Discovery commands (ls, search, show), skill browsing
-4. **Beta**: AGENTS.md generation, repository analysis
-5. **Future**: README source support, multi-agent orchestration
+4. **Phase 4 (Stable)**: README source, OpenAPI source support
+5. **Beta**: AGENTS.md generation, repository analysis, llms.txt generation
 
 **Design Principles**:
 
@@ -234,6 +234,24 @@ export ANTHROPIC_API_KEY=sk-ant-...
 # Discovery, validation, analysis, and security scanning work without API key
 ```
 
+## 🤖 Claude Code Integration
+
+This repository includes Claude Code slash commands for common operations:
+
+```bash
+# Available slash commands (in Claude Code CLI)
+/skill-validate   # Validate a skill against CLAUDE.md standards
+/skill-create     # Create a new skill with proper structure
+/skill-search     # Search skills index
+/generate-skill   # Generate skill from various sources
+/rebuild-index    # Rebuild skills and agents indices
+/run-maintenance  # Run full maintenance workflow
+```
+
+Slash commands are defined in `.claude/commands/` and can be customized.
+
+See [llms.txt](./llms.txt) for LLM-friendly project overview.
+
 ## 🤝 Contributing
 
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
@@ -261,6 +279,7 @@ Apache License 2.0 - see [LICENSE](LICENSE) for details.
 Built for the AI agent ecosystem:
 - [Anthropic Skills](https://github.com/anthropics/skills)
 - [AGENTS.md](https://agents.md/)
+- [llms.txt](https://llmstxt.org/)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
 
 ---

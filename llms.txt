@@ -1,0 +1,64 @@
+# Cognitive Toolworks
+
+> AI-Native Skill Forge: Generate cross-platform agent artifacts (SKILL.md, AGENTS.md) using LLM intelligence.
+
+Cognitive Toolworks is a Python library and CLI for generating, validating, and managing AI agent artifacts. It supports both Anthropic (Claude) and OpenAI (Codex) platforms with cross-platform skill generation.
+
+## Key Documentation
+
+- [CLAUDE.md](./CLAUDE.md): Authoritative rules for the repository (single source of truth)
+- [README.md](./README.md): Quick start guide and feature overview
+- [AGENTS.md](./AGENTS.md): Developer instructions for contributing
+- [docs/CLI_REFERENCE.md](./docs/CLI_REFERENCE.md): Complete CLI command reference
+- [docs/QUICKSTART.md](./docs/QUICKSTART.md): 5-minute getting started guide
+
+## Skills Library
+
+This repository contains 81 production-ready skills following the Anthropic SKILL.md format.
+
+- [index/skills-index.json](./index/skills-index.json): Searchable index of all skills
+- [skills/](./skills/): Individual skill directories with SKILL.md files
+
+Skill categories: API design, cloud architecture (AWS/Azure/GCP), security, testing, DevOps, compliance, observability, and more.
+
+## Agents Library
+
+18 orchestrator agents that coordinate multiple skills for complex workflows.
+
+- [index/agents-index.json](./index/agents-index.json): Searchable index of all agents
+- [agents/](./agents/): Individual agent directories with AGENT.md files
+
+Agent types: Testing orchestrator, security auditor, cloud orchestrators, compliance, disaster recovery, and more.
+
+## CLI Commands
+
+```bash
+ct ls                              # List all skills
+ct search <term>                   # Search skills/agents
+ct show <slug>                     # View skill/agent details
+ct validate <path>                 # Validate against specs
+ct generate skill --from-mcp      # Generate from MCP server
+ct generate skill --from-readme   # Generate from README
+ct generate agents-md             # Generate AGENTS.md
+```
+
+## Source Code
+
+- [src/cognitive_toolworks/](./src/cognitive_toolworks/): Main Python package
+- [src/cognitive_toolworks/cli.py](./src/cognitive_toolworks/cli.py): CLI implementation
+- [src/cognitive_toolworks/generators/](./src/cognitive_toolworks/generators/): Skill and agent generators
+- [src/cognitive_toolworks/validators/](./src/cognitive_toolworks/validators/): Platform validators
+- [src/cognitive_toolworks/templates/](./src/cognitive_toolworks/templates/): Jinja2 templates
+
+## Tooling
+
+- [tooling/validate_skill.py](./tooling/validate_skill.py): Skill validation script
+- [tooling/build_index.py](./tooling/build_index.py): Index generation script
+- [tooling/analyze_coverage.py](./tooling/analyze_coverage.py): Coverage analysis
+
+## Optional
+
+- [docs/COVERAGE_MATRIX.md](./docs/COVERAGE_MATRIX.md): Skills coverage matrix
+- [docs/AGENT_DEPENDENCIES.md](./docs/AGENT_DEPENDENCIES.md): Agent skill dependencies
+- [docs/EXPANSION_ROADMAP.md](./docs/EXPANSION_ROADMAP.md): Historical roadmap
+- [CHANGELOG.md](./CHANGELOG.md): Version history
