@@ -116,7 +116,7 @@ def generate_skill(
         ct generate skill --from-openapi https://api.example.com/openapi.json
         ct generate skill --from-readme ./README.md --name my-tool
 
-    Note: OpenAPI support is functional. README support is planned.
+    Note: MCP, OpenAPI, and README sources are all functional.
     """
     # Validate exactly one source is provided
     sources = [from_mcp, from_openapi, from_readme, from_analysis]
@@ -882,6 +882,22 @@ def _introspect_source(
             "authentication": analysis.authentication,
             "capabilities": analysis.capabilities,
         }
+    elif source_type == SourceType.README:
+        from cognitive_toolworks.sources.readme import parse_readme
+
+        try:
+            readme_path = Path(source_path)
+            if not readme_path.exists():
+                console.print(f"[red]Error: README file not found: {source_path}[/red]")
+                raise typer.Exit(1)
+
+            analysis = parse_readme(readme_path)
+            result = analysis.to_dict()
+            result["source_type"] = source_type.value
+            return result
+        except Exception as e:
+            console.print(f"[red]Error: README parsing failed: {e}[/red]")
+            raise typer.Exit(1) from None
     return {
         "source_type": source_type.value,
         "tools": [],
@@ -902,7 +918,13 @@ def _generate_skill(
     from cognitive_toolworks.generators.skill import GenerationConfig, SkillGenerator
     from cognitive_toolworks.models import MCPAnalysis, MCPToolDefinition
 
-    # Check for API key
+    source_type = str(analysis.get("source_type", "unknown"))
+
+    # README generation doesn't require LLM - use template directly
+    if source_type == "readme":
+        return _generate_skill_from_readme(analysis)
+
+    # Check for API key for LLM-based generation
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         console.print(
@@ -918,8 +940,6 @@ def _generate_skill(
             token_budget=token_budget,
         )
         generator = SkillGenerator(config=config)
-
-        source_type = str(analysis.get("source_type", "unknown"))
 
         # Route to appropriate generation method
         if source_type == "mcp":
@@ -981,6 +1001,90 @@ def _generate_skill_template(analysis: dict[str, object]) -> str:
         instructions="Configure and use this skill according to your needs.",
         examples=[],
         guidelines=["Follow best practices", "Test thoroughly"],
+    )
+
+    return skill.to_markdown()
+
+
+def _generate_skill_from_readme(analysis: dict[str, object]) -> str:
+    """Generate skill content from README analysis data."""
+    from cognitive_toolworks.models import SkillContent, SkillMetadata
+
+    # Extract data from README analysis
+    project_name = str(analysis.get("project_name", "generated-skill"))
+    description = str(analysis.get("description", ""))
+    features = analysis.get("features", [])
+    usage_examples = analysis.get("usage_examples", [])
+    installation = analysis.get("installation", "")
+    dependencies = analysis.get("dependencies", [])
+
+    # Clean up description - remove markdown quote syntax
+    description = description.strip()
+    if description.startswith(">"):
+        description = description[1:].strip()
+
+    # Clean up project name for skill slug
+    name = project_name.lower().replace("_", "-").replace(" ", "-")
+    # Remove emoji and special characters
+    name = "".join(c for c in name if c.isalnum() or c == "-")
+    name = name.strip("-") or "readme-skill"
+
+    # Truncate description to 160 chars for SKILL.md compliance
+    short_description = description[:157] + "..." if len(description) > 160 else description
+    if not short_description:
+        short_description = f"Skill generated from {project_name} README"
+
+    metadata = SkillMetadata(
+        name=name,
+        description=short_description,
+    )
+
+    # Build when-to-use from features
+    when_to_use = []
+    if isinstance(features, list):
+        for feature in features[:5]:  # Limit to 5 features
+            when_to_use.append(f"When you need to: {feature}")
+    if not when_to_use:
+        when_to_use = [f"Use this skill when working with {project_name}"]
+
+    # Build quick reference from installation/dependencies
+    quick_ref_parts = []
+    if installation:
+        install_str = str(installation)[:500]
+        quick_ref_parts.append(f"**Installation:**\n{install_str}")
+    if isinstance(dependencies, list) and dependencies:
+        deps_str = ", ".join(dependencies[:10])
+        quick_ref_parts.append(f"**Dependencies:** {deps_str}")
+    quick_reference = "\n\n".join(quick_ref_parts) if quick_ref_parts else ""
+
+    # Build examples from usage_examples
+    examples = []
+    if isinstance(usage_examples, list):
+        for i, example in enumerate(usage_examples[:3]):  # Limit to 3 examples
+            if isinstance(example, dict):
+                examples.append(
+                    {
+                        "title": f"Example {i + 1}",
+                        "description": example.get("description", ""),
+                        "code": example.get("code", ""),
+                        "language": example.get("language", "bash"),
+                    }
+                )
+
+    # Build overview
+    overview = description if description else f"{project_name} skill for automation."
+
+    skill = SkillContent(
+        metadata=metadata,
+        overview=overview[:1000] if len(overview) > 1000 else overview,
+        when_to_use=when_to_use,
+        quick_reference=quick_reference,
+        instructions=f"This skill was generated from the {project_name} README file.",
+        examples=examples,
+        guidelines=[
+            "Follow project documentation for detailed usage",
+            "Check dependencies before using",
+        ],
     )
 
     return skill.to_markdown()

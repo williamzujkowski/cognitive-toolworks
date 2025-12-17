@@ -26,8 +26,8 @@ Transform MCP servers and repositories into **SKILL.md** and **AGENTS.md** files
 **Beta**:
 - **AGENTS.md Generation**: Analyze repos and generate agent configs (`ct generate agents-md`, `ct analyze-repo`)
 
-**Planned**:
-- **README Source**: Generate skills from README files
+**Working** (new):
+- **README Source**: Generate skills from README files (`ct generate skill --from-readme`)
 
 ## 🚀 Quick Start
 
