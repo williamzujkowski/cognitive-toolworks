@@ -13,7 +13,7 @@ Cognitive Toolworks is a Python library and CLI for generating, validating, and 
 
 ## Skills Library
 
-This repository contains 81 production-ready skills following the Anthropic SKILL.md format.
+This repository contains 80 production-ready skills following the Anthropic SKILL.md format.
 
 - [index/skills-index.json](./index/skills-index.json): Searchable index of all skills
 - [skills/](./skills/): Individual skill directories with SKILL.md files
