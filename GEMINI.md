@@ -1,8 +1,10 @@
 # GEMINI.md - Cognitive Toolworks
 
-> Gemini CLI instructions for AI coding assistants working on this repository.
+> Gemini CLI wrapper that imports canonical development instructions.
 
 @./AGENTS.md
+
+**For skills/agents library work**: See [CLAUDE.md](./CLAUDE.md) for naming conventions, token budgets, and SKILL.md format requirements.
 
 ## Gemini CLI Configuration
 

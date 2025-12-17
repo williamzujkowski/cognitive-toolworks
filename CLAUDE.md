@@ -1,17 +1,19 @@
-# CLAUDE.md — Authoritative Rules for the Skills Repository
+# CLAUDE.md — Skills Library Meta-Rules
 
 ```
 STATUS: AUTHORITATIVE
-VERSION: 1.7.0
-LAST_AUDIT: 2025-12-16T20:00:00-05:00
-NEXT_REVIEW: 2026-03-16T20:00:00-04:00
-SCOPE: Personal/public Skills library (Anthropic Skills standard)
+VERSION: 1.8.0
+LAST_AUDIT: 2025-12-16T21:30:00-05:00
+NEXT_REVIEW: 2026-03-16T21:30:00-04:00
+SCOPE: Skills/agents library standards (Anthropic Skills format)
 TOKEN_BUDGET: ≤6000 tokens (self-enforced)
 ```
 
+**Development workflow**: See @./AGENTS.md for setup, testing, PR instructions, and coding conventions.
+
 ## 0) Purpose
 
-This file is the **single source of truth** for building and operating a library of small, composable **Skills** using Anthropic’s `SKILL.md` format. It enforces:
+This file defines **meta-rules for building skills and agents** using Anthropic's `SKILL.md` format. It enforces:
 
 * Progressive disclosure to minimize context/token usage
 * Precise input/output contracts and short examples
@@ -496,25 +498,18 @@ Do not open SKILL.md unless requested.
 
 ---
 
-## 10) PR Checklist (must self-certify)
+## 10) Skills PR Checklist (in addition to @./AGENTS.md)
 
-**Content (§1-§4):**
-* [ ] `NOW_ET` computed; access dates present
-* [ ] No secrets/PII; examples ≤30 lines; token budgets (T1/T2/T3)
-* [ ] All claims sourced (tier 1-3); links resolve; no `[TODO:]` markers
+**See @./AGENTS.md** for required checks (pytest, ruff, mypy, coverage).
 
-**Maintenance (§8A):**
+**Skills-specific requirements:**
+
+* [ ] `NOW_ET` computed; access dates present on citations
+* [ ] Token budgets declared (T1/T2/T3) and within limits
+* [ ] Examples ≤30 lines; no `[TODO:]` markers in committed skills
+* [ ] All claims sourced (tier 1-3); links resolve
 * [ ] Indices rebuilt: `python tooling/build_index.py`
-* [ ] Coverage updated: `python tooling/analyze_coverage.py`
-* [ ] CHANGELOG.md updated; `.gitkeep` in empty dirs
-
-**Quality (§2B):**
-* [ ] Pre-commit passes (black, ruff, mypy, gitleaks)
-* [ ] Evals pass; tests pass
-
-**Git (§13):**
-* [ ] Conventional commit: `type(scope): description`
-* [ ] All artifacts committed (indices, coverage, deps)
+* [ ] Evals added: `tests/evals_<slug>.yaml`
 
 ---
 
@@ -526,54 +521,24 @@ Do not open SKILL.md unless requested.
 
 ---
 
-## 13) Git & GitHub Workflow (Required)
+## 13) Git Workflow (Skills/Agents Specific)
 
-**Branch Strategy**: Never commit to `main` directly. Branch from latest main.
+**See @./AGENTS.md** for full PR instructions, commit format, and CI requirements.
+
+**Skills-specific branch naming**:
 * Feature: `feature/<skill-slug>` | Hotfix: `hotfix/<issue-id>`
+* Example: `feature/security-appsec-validator`
 
-**Commits**: Atomic, conventional format: `type(scope): description`
-* Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
-* Max 72 chars first line, imperative mood. Reference issues: `Fixes #123`
+**Skills-specific commit scopes**: `skills`, `agents`, `index`, `evals`
 
-**Issue Tracking Strategy**:
-* **When to create**: Multi-step tasks (>3 commits), bugs, feature requests, maintenance tasks
-* **Templates**: Bug report (steps/expected/actual), feature request (problem/solution), task (checklist)
-* **Labels**: `phase-1` (discovery), `phase-2` (execution), `priority-high/medium/low`, `type-bug/feature/task`
-* **Reference format**: `#123` in commits; `Closes #123` or `Fixes #123` in PR body/commits
+**Skills PR checklist additions** (beyond AGENTS.md requirements):
+* [ ] Skill/agent index rebuilt: `python tooling/build_index.py`
+* [ ] Token budgets declared (T1/T2/T3)
+* [ ] CHANGELOG.md updated in skill directory
+* [ ] Evals added: `tests/evals_<slug>.yaml`
 
-**Issue Management:**
+---
 
-| Action | Command | When |
-|--------|---------|------|
-| Create issue | `gh issue create -t "title" -b "body" -l "type-task,priority-medium"` | New task/bug/feature |
-| List open | `gh issue list -s open` | Review backlog |
-| Assign | `gh issue edit N --add-assignee @me` | Claim work |
-| Close with PR | Include `Closes #123` in PR body | Task complete via PR |
-| Close direct | `gh issue close N -c "reason"` | Resolved without PR |
-
-**GitHub CLI Quick Reference:**
-
-| Task | Command |
-|------|---------|
-| Create PR | `gh pr create --title "type: msg" --body "Closes #N\n\n..."` |
-| Check status | `gh pr status` |
-| Monitor CI | `gh pr checks` |
-| Merge | `gh pr merge --squash` |
-| Auto-merge | `gh pr merge --squash --auto` |
-| Admin merge | `gh pr merge --squash --admin` |
-
-**PR Workflow**: Issue created → Branch → Commit → Push → `gh pr create` (link issue) → CI passes → Merge
-
-**Auto-Merge Strategy**:
-* **Enable auto-merge**: `gh pr merge --auto --squash` — merges when CI passes
-* **Admin override**: `gh pr merge --admin --squash` — bypass CI for trusted changes
-* **When to auto-merge**: Clean PRs with passing local hooks, low-risk changes
-* **When to admin merge**: CI flaky/outdated, urgent fixes, trusted contributor changes
-
-**PR-Issue Integration**:
-* Always link PRs to issues: `Closes #N`, `Fixes #N`, or `Resolves #N` in PR description
-* Multi-issue PRs: `Closes #N, closes #M` (one line per issue for clarity)
-* Partial work: `Part of #N` or `Contributes to #N` (does not auto-close)
 ### Final Word
 
 Build **small, sharp Skills** with **clear triggers** and **tight outputs**. Cite precisely. Keep tokens down. When unsure, ask for inputs, list TODOs, and stop.

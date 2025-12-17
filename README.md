@@ -282,30 +282,44 @@ See [llms.txt](./llms.txt) for LLM-friendly project overview.
 
 ## Instruction Files
 
-This repository maintains multiple instruction files for AI assistant compatibility:
+This repository uses a **centralized architecture** for AI assistant instructions:
+
+```
+AGENTS.md (Canonical Source)
+├── Universal dev workflow (60k+ tool support)
+├── Setup, testing, PR, coding conventions
+└── Imported by CLI-specific files
+
+CLAUDE.md (Skills Meta-Rules)              GEMINI.md (Gemini Wrapper)
+├── @./AGENTS.md import                    ├── @./AGENTS.md import
+├── Naming conventions (§2A)               └── Gemini-specific commands
+├── Token budgets (§0A-0C)
+└── SKILL.md format (§3)
+```
 
 | File | Purpose | Tool Support |
 |------|---------|--------------|
-| [CLAUDE.md](./CLAUDE.md) | Authoritative rules for skills/agents library | Claude Code |
-| [AGENTS.md](./AGENTS.md) | Project development workflow | Codex, Cursor, Aider, 60k+ tools |
-| [GEMINI.md](./GEMINI.md) | Gemini CLI wrapper (imports AGENTS.md) | Gemini CLI |
-
-### File Relationships
-
-- **CLAUDE.md** contains meta-rules for building skills/agents (token budgets, naming conventions, validation)
-- **AGENTS.md** contains project development instructions (setup, testing, PR workflow)
-- **GEMINI.md** imports AGENTS.md using `@./AGENTS.md` syntax for Gemini CLI compatibility
+| [AGENTS.md](./AGENTS.md) | **Canonical** development workflow | Codex, Cursor, Aider, 60k+ tools |
+| [CLAUDE.md](./CLAUDE.md) | Skills/agents library meta-rules | Claude Code |
+| [GEMINI.md](./GEMINI.md) | Gemini CLI wrapper | Gemini CLI |
 
 ### When to Update Each
 
-- **CLAUDE.md**: Update when changing skills/agents standards, token budgets, or meta-rules
-- **AGENTS.md**: Update when changing dev workflow, testing, PR process, or coding conventions
-- **GEMINI.md**: Update only for Gemini-specific CLI features (rare)
+| Change Type | Update File |
+|-------------|-------------|
+| Dev workflow, testing, PR format | AGENTS.md |
+| Skill naming, token budgets, SKILL.md format | CLAUDE.md |
+| Gemini-specific CLI commands | GEMINI.md |
 
 ### Validation
 
 ```bash
+# Run all checks (tokens, imports, conflicts, cross-refs)
 python tooling/validate_instructions.py --all
+
+# Check specific aspects
+python tooling/validate_instructions.py --check-chain    # Import chain
+python tooling/validate_instructions.py --check-conflicts # PR format conflicts
 ```
 
 ## Contributing
