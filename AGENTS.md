@@ -1,6 +1,10 @@
 # AGENTS.md - Cognitive Toolworks
 
-> Agent instructions for AI coding assistants working on this repository.
+> **Canonical development instructions** for AI coding assistants working on this repository.
+
+This file contains universal development workflow instructions compatible with 60k+ tools (Codex, Cursor, Aider, Claude Code via import, etc.).
+
+**For skills/agents library work**: See [CLAUDE.md](./CLAUDE.md) for naming conventions, token budgets, and SKILL.md format requirements.
 
 ## Project Overview
 
@@ -89,15 +93,18 @@ mypy src/
 
 ## PR Instructions
 
-### Title Format
-`[component] Brief description`
+### Title Format (Conventional Commits)
+`type(scope): brief description`
 
-Components: `sources`, `generators`, `analyzers`, `validators`, `cli`, `docs`, `tests`, `ci`
+**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+
+**Scopes**: `sources`, `generators`, `analyzers`, `validators`, `cli`, `docs`, `tests`, `ci`, `skills`, `agents`
 
 Examples:
-- `[generators] Add OpenAPI to skill generation`
-- `[validators] Fix Anthropic description length check`
-- `[docs] Update API reference`
+- `feat(generators): add OpenAPI to skill generation`
+- `fix(validators): correct Anthropic description length check`
+- `docs(readme): update API reference`
+- `chore(deps): update dependencies`
 
 ### Required Checks
 All PRs must pass:
@@ -268,3 +275,34 @@ Source → Introspector → Analyzer → Generator → Validator → Optimizer �
 ### Claude-Flow Integration
 - Workflows in `.claude-flow/workflows/`
 - Agent definitions in `.claude-flow/agents/`
+
+## Skills & Agents Library Work
+
+When creating or editing skills/agents in this repository, follow [CLAUDE.md](./CLAUDE.md) for:
+
+- **Naming conventions**: Domain-first taxonomy (`{domain}-{scope}-{action}`)
+- **Token budgets**: T1 ≤2k, T2 ≤6k, T3 ≤12k tokens
+- **SKILL.md format**: Required sections, front-matter keys
+- **AGENT.md format**: 4-step workflow pattern, system prompt limits
+- **Research discipline**: Citation requirements, source hierarchy
+
+### Quick Reference
+
+| Task | See CLAUDE.md Section |
+|------|----------------------|
+| Create new skill | §3, §5 |
+| Create new agent | §3A |
+| Naming a skill/agent | §2A |
+| Token budget management | §0A-0C |
+| Research & citations | §4 |
+
+### Validation
+
+```bash
+# Validate skill format
+python tooling/validate_skill.py skills/<slug>/SKILL.md
+
+# Rebuild indices after changes
+python tooling/build_index.py
+python tooling/build_agent_index.py
+```

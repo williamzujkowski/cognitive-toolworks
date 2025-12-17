@@ -55,8 +55,7 @@ def validate_token_budgets(root: Path) -> list[str]:
 
         if tokens > limit:
             errors.append(
-                f"{filename}: {tokens} tokens exceeds limit of {limit} "
-                f"(over by {tokens - limit})"
+                f"{filename}: {tokens} tokens exceeds limit of {limit} (over by {tokens - limit})"
             )
         else:
             print(f"  {filename}: {tokens} tokens (limit: {limit})")
@@ -137,6 +136,100 @@ def validate_shared_concepts(root: Path) -> list[str]:
     return errors
 
 
+def validate_import_chain(root: Path) -> list[str]:
+    """Validate that import chains connect files properly."""
+    errors: list[str] = []
+
+    claude_path = root / "CLAUDE.md"
+    agents_path = root / "AGENTS.md"
+    gemini_path = root / "GEMINI.md"
+
+    if not check_file_exists(agents_path):
+        errors.append("AGENTS.md missing - canonical source required")
+        return errors
+
+    # Check CLAUDE.md imports AGENTS.md
+    if check_file_exists(claude_path):
+        claude_content = claude_path.read_text()
+        if "@./AGENTS.md" not in claude_content and "@AGENTS.md" not in claude_content:
+            errors.append("CLAUDE.md: Should import AGENTS.md using @./AGENTS.md")
+        else:
+            print("  CLAUDE.md -> AGENTS.md: Connected")
+
+    # Check GEMINI.md imports AGENTS.md
+    if check_file_exists(gemini_path):
+        gemini_content = gemini_path.read_text()
+        if "@./AGENTS.md" not in gemini_content and "@AGENTS.md" not in gemini_content:
+            errors.append("GEMINI.md: Should import AGENTS.md using @./AGENTS.md")
+        else:
+            print("  GEMINI.md -> AGENTS.md: Connected")
+
+    return errors
+
+
+def validate_pr_format_consistency(root: Path) -> list[str]:
+    """Check that PR format is consistent across files."""
+    errors: list[str] = []
+
+    claude_path = root / "CLAUDE.md"
+    agents_path = root / "AGENTS.md"
+
+    if not check_file_exists(claude_path) or not check_file_exists(agents_path):
+        return errors
+
+    claude_content = claude_path.read_text()
+    agents_content = agents_path.read_text()
+
+    # Check for conventional commits format
+    claude_conventional = "type(scope):" in claude_content.lower()
+    agents_conventional = "type(scope):" in agents_content.lower()
+
+    # Check for bracket format
+    claude_bracket = "[component]" in claude_content
+    agents_bracket = "[component]" in agents_content
+
+    if claude_conventional and agents_bracket:
+        errors.append(
+            "PR format conflict: CLAUDE.md uses conventional commits, AGENTS.md uses bracket style"
+        )
+    elif agents_conventional and claude_bracket:
+        errors.append(
+            "PR format conflict: AGENTS.md uses conventional commits, CLAUDE.md uses bracket style"
+        )
+    elif claude_conventional and agents_conventional:
+        print("  PR format: Consistent (conventional commits)")
+    elif claude_bracket and agents_bracket:
+        print("  PR format: Consistent (bracket style)")
+
+    return errors
+
+
+def validate_cross_references(root: Path) -> list[str]:
+    """Validate that cross-references between files resolve."""
+    errors: list[str] = []
+
+    claude_path = root / "CLAUDE.md"
+    agents_path = root / "AGENTS.md"
+
+    if not check_file_exists(claude_path) or not check_file_exists(agents_path):
+        return errors
+
+    agents_content = agents_path.read_text()
+
+    # Check AGENTS.md references to CLAUDE.md sections
+    claude_refs = re.findall(r"CLAUDE\.md[^)]*§(\d+[A-Z]?)", agents_content)
+    if claude_refs:
+        print(f"  AGENTS.md references CLAUDE.md sections: {', '.join(set(claude_refs))}")
+
+    # Check for skills work reference in AGENTS.md
+    if "skills" in agents_content.lower() and "claude.md" in agents_content.lower():
+        print("  AGENTS.md: Contains skills work reference to CLAUDE.md")
+    else:
+        errors.append("AGENTS.md: Missing reference to CLAUDE.md for skills work")
+
+    return errors
+
+
 def validate_structure(root: Path) -> list[str]:
     """Validate basic structure of instruction files."""
     errors = []
@@ -187,6 +280,21 @@ def main() -> None:
         help="Check GEMINI.md imports resolve",
     )
     parser.add_argument(
+        "--check-chain",
+        action="store_true",
+        help="Check import chain connectivity",
+    )
+    parser.add_argument(
+        "--check-conflicts",
+        action="store_true",
+        help="Check for PR format and other conflicts",
+    )
+    parser.add_argument(
+        "--check-refs",
+        action="store_true",
+        help="Check cross-references between files",
+    )
+    parser.add_argument(
         "--all",
         action="store_true",
         help="Run all checks",
@@ -201,11 +309,19 @@ def main() -> None:
     args = parser.parse_args()
 
     # Default to all checks if none specified
-    if not any([args.check_tokens, args.check_sync, args.check_imports]):
+    check_flags = [
+        args.check_tokens,
+        args.check_sync,
+        args.check_imports,
+        args.check_chain,
+        args.check_conflicts,
+        args.check_refs,
+    ]
+    if not any(check_flags):
         args.all = True
 
     root = args.root
-    all_errors = []
+    all_errors: list[str] = []
 
     print(f"Validating instruction files in: {root}\n")
 
@@ -234,13 +350,40 @@ def main() -> None:
         all_errors.extend(errors)
         print()
 
-    # Import validation
+    # Import chain validation (new)
+    if args.all or args.check_chain:
+        print("Validating import chain...")
+        errors = validate_import_chain(root)
+        all_errors.extend(errors)
+        if not errors:
+            print("  All import chains connected")
+        print()
+
+    # Import resolution validation
     if args.all or args.check_imports:
-        print("Validating GEMINI.md imports...")
+        print("Validating file imports...")
         errors = validate_gemini_imports(root)
         all_errors.extend(errors)
         if not errors:
-            print("  All imports valid")
+            print("  All imports resolve")
+        print()
+
+    # PR format conflict check (new)
+    if args.all or args.check_conflicts:
+        print("Checking for conflicts...")
+        errors = validate_pr_format_consistency(root)
+        all_errors.extend(errors)
+        if not errors:
+            print("  No conflicts found")
+        print()
+
+    # Cross-reference validation (new)
+    if args.all or args.check_refs:
+        print("Validating cross-references...")
+        errors = validate_cross_references(root)
+        all_errors.extend(errors)
+        if not errors:
+            print("  All cross-references valid")
         print()
 
     # Shared concept sync
