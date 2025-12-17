@@ -66,7 +66,7 @@ def validate_token_budgets(root: Path) -> list[str]:
 
 def validate_gemini_imports(root: Path) -> list[str]:
     """Validate GEMINI.md imports resolve correctly."""
-    errors = []
+    errors: list[str] = []
     gemini_path = root / "GEMINI.md"
 
     if not check_file_exists(gemini_path):
@@ -99,8 +99,8 @@ def validate_gemini_imports(root: Path) -> list[str]:
 
 def validate_shared_concepts(root: Path) -> list[str]:
     """Check that shared concepts are consistent across files."""
-    errors = []
-    warnings = []
+    errors: list[str] = []
+    warnings: list[str] = []
 
     claude_path = root / "CLAUDE.md"
     agents_path = root / "AGENTS.md"
@@ -169,7 +169,7 @@ def validate_structure(root: Path) -> list[str]:
     return errors
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Validate instruction file consistency")
     parser.add_argument(
         "--check-tokens",
