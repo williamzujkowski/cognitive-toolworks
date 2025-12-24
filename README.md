@@ -136,20 +136,25 @@ Make skills available to your AI coding assistants:
 
 ### Claude Code
 
-Claude Code discovers skills from `~/.claude/skills/` (personal) or `.claude/skills/` (project).
+Claude Code auto-discovers skills from `~/.claude/skills/` and agents from `~/.claude/agents/`.
 
 ```bash
-# Option 1: Personal installation (available in all projects)
-mkdir -p ~/.claude/skills
-ln -s "$(pwd)/skills"/* ~/.claude/skills/
+# Recommended: Use sync script for global installation
+./scripts/sync-to-claude.sh
 
-# Option 2: Project-level (committed to repo)
-mkdir -p .claude/skills
-# Copy specific skills you need
-cp -r skills/security-appsec-validator .claude/skills/
+# This creates symlinks with ct- prefix:
+#   ~/.claude/skills/ct-api-design-validator → ./skills/api-design-validator/
+#   ~/.claude/agents/ct-security-auditor.md → ./agents/security-auditor/AGENT.md
+
+# To uninstall:
+./scripts/sync-to-claude.sh --uninstall
 ```
 
-Verify: Ask Claude Code "What skills are available?"
+After syncing, skills and agents are auto-discoverable:
+- **Skills**: Claude uses them automatically based on context
+- **Agents**: Available via `Task(subagent_type="ct-security-auditor", ...)`
+
+Verify: Ask Claude Code "What skills are available?" or check `ls ~/.claude/skills/ct-*`
 
 ### Codex CLI
 
