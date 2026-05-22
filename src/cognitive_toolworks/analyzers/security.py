@@ -13,14 +13,14 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING, ClassVar
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-class Severity(str, Enum):
+class Severity(StrEnum):
     """Security issue severity levels."""
 
     CRITICAL = "critical"
@@ -30,7 +30,7 @@ class Severity(str, Enum):
     INFO = "info"
 
 
-class IssueType(str, Enum):
+class IssueType(StrEnum):
     """Types of security issues."""
 
     FILE_SYSTEM = "file_system"

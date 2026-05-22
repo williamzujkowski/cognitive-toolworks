@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
 from cognitive_toolworks.llm.client import LLMClient
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from cognitive_toolworks.models import SemanticAnalysis, SkillContent
 
 
-class ExampleComplexity(str, Enum):
+class ExampleComplexity(StrEnum):
     """Complexity level for generated examples."""
 
     SIMPLE = "simple"

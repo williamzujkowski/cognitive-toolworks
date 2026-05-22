@@ -604,8 +604,7 @@ advanced.process()
 
             # Create realistic doc structure
             (temp_dir / "mkdocs.yml").write_text("site_name: My Project Docs\n")
-            (temp_dir / "index.md").write_text(
-                """# My Project
+            (temp_dir / "index.md").write_text("""# My Project
 
 Welcome to My Project documentation.
 
@@ -614,13 +613,11 @@ Welcome to My Project documentation.
 ```bash
 pip install myproject
 ```
-"""
-            )
+""")
 
             guides_dir = temp_dir / "guides"
             guides_dir.mkdir()
-            (guides_dir / "installation.md").write_text(
-                """# Installation
+            (guides_dir / "installation.md").write_text("""# Installation
 
 Install via pip:
 
@@ -633,11 +630,9 @@ Or via conda:
 ```bash
 conda install myproject
 ```
-"""
-            )
+""")
 
-            (guides_dir / "usage.md").write_text(
-                """# Usage
+            (guides_dir / "usage.md").write_text("""# Usage
 
 Basic usage:
 
@@ -655,13 +650,11 @@ from myproject import advanced
 
 advanced.process(data)
 ```
-"""
-            )
+""")
 
             api_dir = temp_dir / "api"
             api_dir.mkdir()
-            (api_dir / "reference.md").write_text(
-                """# API Reference
+            (api_dir / "reference.md").write_text("""# API Reference
 
 ## Classes
 
@@ -674,8 +667,7 @@ Main class for the library.
 def process_data(data, options)
 
 Processes the input data.
-"""
-            )
+""")
 
             parser = DocsParser()
             result = parser.parse_directory(temp_dir)

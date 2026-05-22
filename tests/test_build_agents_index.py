@@ -33,8 +33,7 @@ class TestFrontMatterExtraction:
 
     def test_valid_front_matter(self) -> None:
         """Extract valid front matter successfully."""
-        md = dedent(
-            """\
+        md = dedent("""\
             ---
             name: Test Agent
             slug: test-agent
@@ -44,8 +43,7 @@ class TestFrontMatterExtraction:
             tools: [Read, Write, Bash]
             ---
             # Body content
-            """
-        )
+            """)
         meta = extract_front_matter(md)
         assert meta["name"] == "Test Agent"
         assert meta["slug"] == "test-agent"

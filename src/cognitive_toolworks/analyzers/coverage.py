@@ -12,11 +12,11 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import ClassVar
 
 
-class CoverageLevel(str, Enum):
+class CoverageLevel(StrEnum):
     """Coverage completeness levels."""
 
     COMPLETE = "complete"

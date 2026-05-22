@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING, ClassVar
 
 import yaml
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-class ValidationSeverity(str, Enum):
+class ValidationSeverity(StrEnum):
     """Severity of validation issues."""
 
     ERROR = "error"  # Blocks compliance

@@ -7,11 +7,11 @@ These models define the structure of skills, analysis reports, and configuration
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 
-class Platform(str, Enum):
+class Platform(StrEnum):
     """Target platform for skill generation."""
 
     ANTHROPIC = "anthropic"
@@ -22,7 +22,7 @@ class Platform(str, Enum):
         return self.value
 
 
-class SourceType(str, Enum):
+class SourceType(StrEnum):
     """Type of source to generate from."""
 
     MCP_SERVER = "mcp"
@@ -526,7 +526,7 @@ class ReadmeAnalysis:
         }
 
 
-class CompatibilitySeverity(str, Enum):
+class CompatibilitySeverity(StrEnum):
     """Severity of compatibility issues."""
 
     ERROR = "error"  # Blocks platform compatibility
