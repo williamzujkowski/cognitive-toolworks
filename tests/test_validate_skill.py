@@ -31,16 +31,14 @@ class TestFrontMatterExtraction:
 
     def test_valid_front_matter(self) -> None:
         """Extract valid front matter successfully."""
-        md = dedent(
-            """\
+        md = dedent("""\
             ---
             name: Test Skill
             slug: test-skill
             version: 1.0.0
             ---
             # Content here
-            """
-        )
+            """)
         fm = extract_front_matter(md)
         assert isinstance(fm, FrontMatter)
         assert fm.meta["name"] == "Test Skill"
@@ -84,23 +82,20 @@ class TestCodeBlockDetection:
 
     def test_single_code_block(self) -> None:
         """Detect single code block."""
-        text = dedent(
-            """\
+        text = dedent("""\
             Some text
             ```python
             print("hello")
             ```
             More text
-            """
-        )
+            """)
         blocks = find_code_blocks(text)
         assert len(blocks) == 1
         assert blocks[0] == (1, 3)  # Line indices
 
     def test_multiple_code_blocks(self) -> None:
         """Detect multiple code blocks."""
-        text = dedent(
-            """\
+        text = dedent("""\
             ```
             code1
             ```
@@ -108,8 +103,7 @@ class TestCodeBlockDetection:
             ```
             code2
             ```
-            """
-        )
+            """)
         blocks = find_code_blocks(text)
         assert len(blocks) == 2
 
@@ -131,8 +125,7 @@ class TestExampleBlockLength:
 
     def test_example_with_code_block(self) -> None:
         """Calculate length of example code block."""
-        text = dedent(
-            """\
+        text = dedent("""\
             ## Examples
 
             ```python
@@ -140,8 +133,7 @@ class TestExampleBlockLength:
             line2
             line3
             ```
-            """
-        )
+            """)
         length = first_examples_block_len(text)
         assert length == 3
 
@@ -159,8 +151,7 @@ class TestExampleBlockLength:
 
     def test_multiple_code_blocks_uses_first(self) -> None:
         """Use first code block in Examples section."""
-        text = dedent(
-            """\
+        text = dedent("""\
             ## Examples
 
             ```
@@ -171,8 +162,7 @@ class TestExampleBlockLength:
             second
             second2
             ```
-            """
-        )
+            """)
         length = first_examples_block_len(text)
         assert length == 1  # First block has 1 line
 
@@ -255,8 +245,7 @@ class TestSkillFileValidation:
         """Validate minimal valid SKILL.md file."""
         skill = tmp_path / "SKILL.md"
         skill.write_text(
-            dedent(
-                """\
+            dedent("""\
                 ---
                 name: Test Skill
                 slug: test-skill
@@ -300,8 +289,7 @@ class TestSkillFileValidation:
                 ```python
                 print("example")
                 ```
-                """
-            ),
+                """),
             encoding="utf-8",
         )
         issues = validate_skill_file(skill)
@@ -311,15 +299,13 @@ class TestSkillFileValidation:
         """Detect missing required metadata keys."""
         skill = tmp_path / "SKILL.md"
         skill.write_text(
-            dedent(
-                """\
+            dedent("""\
                 ---
                 name: Test
                 slug: test
                 ---
                 # Content
-                """
-            ),
+                """),
             encoding="utf-8",
         )
         issues = validate_skill_file(skill)
@@ -331,8 +317,7 @@ class TestSkillFileValidation:
         long_desc = "x" * (MAX_DESCRIPTION_LEN + 1)
         skill = tmp_path / "SKILL.md"
         skill.write_text(
-            dedent(
-                f"""\
+            dedent(f"""\
                 ---
                 name: Test
                 slug: test
@@ -348,8 +333,7 @@ class TestSkillFileValidation:
                 links: []
                 ---
                 # Content
-                """
-            ),
+                """),
             encoding="utf-8",
         )
         issues = validate_skill_file(skill)
@@ -359,8 +343,7 @@ class TestSkillFileValidation:
         """Detect missing required body sections."""
         skill = tmp_path / "SKILL.md"
         skill.write_text(
-            dedent(
-                """\
+            dedent("""\
                 ---
                 name: Test
                 slug: test
@@ -378,8 +361,7 @@ class TestSkillFileValidation:
 
                 ## Purpose & When-To-Use
                 Only one section
-                """
-            ),
+                """),
             encoding="utf-8",
         )
         issues = validate_skill_file(skill)
@@ -391,8 +373,7 @@ class TestSkillFileValidation:
         """Detect missing token budgets."""
         skill = tmp_path / "SKILL.md"
         skill.write_text(
-            dedent(
-                """\
+            dedent("""\
                 ---
                 name: Test
                 slug: test
@@ -433,8 +414,7 @@ class TestSkillFileValidation:
                 ```
                 example
                 ```
-                """
-            ),
+                """),
             encoding="utf-8",
         )
         issues = validate_skill_file(skill)
@@ -546,8 +526,7 @@ small example
         """Detect secrets in skill file."""
         skill = tmp_path / "SKILL.md"
         skill.write_text(
-            dedent(
-                """\
+            dedent("""\
                 ---
                 name: Test
                 slug: test
@@ -588,8 +567,7 @@ small example
                 ```
                 example
                 ```
-                """
-            ),
+                """),
             encoding="utf-8",
         )
         issues = validate_skill_file(skill)

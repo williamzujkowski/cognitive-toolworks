@@ -11,13 +11,13 @@ import asyncio
 import json
 import os
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 import httpx
 
 
-class LLMProvider(str, Enum):
+class LLMProvider(StrEnum):
     """Supported LLM providers."""
 
     ANTHROPIC = "anthropic"

@@ -11,14 +11,14 @@ import ast
 import contextlib
 import re
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-class ScriptLanguage(str, Enum):
+class ScriptLanguage(StrEnum):
     """Supported script languages."""
 
     PYTHON = "python"

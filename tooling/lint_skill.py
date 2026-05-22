@@ -6,6 +6,7 @@ Checks:
 - Code fences are properly closed
 - External links are valid (HTTP status check)
 """
+
 from __future__ import annotations
 
 import argparse

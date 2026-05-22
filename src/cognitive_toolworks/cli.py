@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 from typing import Annotated
 
@@ -29,7 +29,7 @@ app = typer.Typer(
 console = Console()
 
 
-class Platform(str, Enum):
+class Platform(StrEnum):
     """Target platform for skill generation."""
 
     ANTHROPIC = "anthropic"
@@ -37,7 +37,7 @@ class Platform(str, Enum):
     UNIVERSAL = "universal"
 
 
-class SourceType(str, Enum):
+class SourceType(StrEnum):
     """Type of source to generate from."""
 
     MCP = "mcp"

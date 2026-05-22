@@ -650,8 +650,7 @@ description: "Test"
         """Test validate_file method."""
         validator = AAIFValidator()
         skill_file = tmp_path / "SKILL.md"
-        skill_file.write_text(
-            """---
+        skill_file.write_text("""---
 name: "Test Skill"
 slug: "testing-unit-validator"
 description: "Valid description"
@@ -702,8 +701,7 @@ Gates.
 ## Resources
 
 Resources.
-"""
-        )
+""")
         result = validator.validate_file(skill_file)
         assert isinstance(result.valid, bool)
         assert isinstance(result.score, float)

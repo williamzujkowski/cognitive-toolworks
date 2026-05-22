@@ -48,16 +48,14 @@ class TestExtractBody:
 
     def test_extract_with_front_matter(self) -> None:
         """Extract body when front matter present."""
-        md = dedent(
-            """\
+        md = dedent("""\
             ---
             name: Test
             slug: test
             ---
             ## Purpose & When-To-Use
             Body content
-            """
-        )
+            """)
         body = extract_body(md)
         assert "## Purpose & When-To-Use" in body
         assert "Body content" in body
@@ -86,8 +84,7 @@ class TestCheckHeadingOrder:
 
     def test_correct_order(self, tmp_path: Path) -> None:
         """Accept headings in correct order."""
-        body = dedent(
-            """\
+        body = dedent("""\
             ## Purpose & When-To-Use
             Purpose
 
@@ -111,8 +108,7 @@ class TestCheckHeadingOrder:
 
             ## Resources
             Resources
-            """
-        )
+            """)
         issues = check_heading_order(body, tmp_path / "test.md")
         # Should only have no order errors (missing sections checked elsewhere)
         order_errors = [i for i in issues if "out of order" in i.message]
@@ -120,15 +116,13 @@ class TestCheckHeadingOrder:
 
     def test_wrong_order(self, tmp_path: Path) -> None:
         """Detect headings out of order."""
-        body = dedent(
-            """\
+        body = dedent("""\
             ## Procedure
             Procedure
 
             ## Purpose & When-To-Use
             Purpose (should come before Procedure)
-            """
-        )
+            """)
         issues = check_heading_order(body, tmp_path / "test.md")
         order_issues = [i for i in issues if "out of order" in i.message]
         assert len(order_issues) > 0
@@ -144,8 +138,7 @@ class TestCheckHeadingOrder:
 
     def test_extra_headings_ignored(self, tmp_path: Path) -> None:
         """Ignore extra headings not in required list."""
-        body = dedent(
-            """\
+        body = dedent("""\
             ## Purpose & When-To-Use
             Purpose
 
@@ -154,8 +147,7 @@ class TestCheckHeadingOrder:
 
             ## Pre-Checks
             Checks
-            """
-        )
+            """)
         issues = check_heading_order(body, tmp_path / "test.md")
         # Custom Section should be ignored (not cause errors)
         order_errors = [i for i in issues if "Custom Section" in i.message]
@@ -174,8 +166,7 @@ class TestCheckCodeFences:
 
     def test_properly_closed_fences(self, tmp_path: Path) -> None:
         """Accept properly closed code fences."""
-        body = dedent(
-            """\
+        body = dedent("""\
             Some text
             ```python
             code
@@ -184,20 +175,17 @@ class TestCheckCodeFences:
             ```
             another block
             ```
-            """
-        )
+            """)
         issues = check_code_fences(body, tmp_path / "test.md")
         assert len(issues) == 0
 
     def test_unclosed_fence(self, tmp_path: Path) -> None:
         """Detect unclosed code fence."""
-        body = dedent(
-            """\
+        body = dedent("""\
             Text
             ```python
             code without closing
-            """
-        )
+            """)
         issues = check_code_fences(body, tmp_path / "test.md")
         assert len(issues) == 1
         assert "Unclosed code fence" in issues[0].message
@@ -211,8 +199,7 @@ class TestCheckCodeFences:
 
     def test_multiple_unclosed(self, tmp_path: Path) -> None:
         """Detect last unclosed fence in odd number."""
-        body = dedent(
-            """\
+        body = dedent("""\
             ```
             block1
             ```
@@ -221,8 +208,7 @@ class TestCheckCodeFences:
             ```
             ```
             unclosed block3
-            """
-        )
+            """)
         issues = check_code_fences(body, tmp_path / "test.md")
         assert len(issues) == 1
         assert "line 7" in issues[0].message
@@ -390,8 +376,7 @@ class TestLintSkillFile:
         """Lint valid SKILL.md file."""
         skill_file = tmp_path / "SKILL.md"
         skill_file.write_text(
-            dedent(
-                """\
+            dedent("""\
                 ---
                 name: Test
                 slug: test
@@ -422,8 +407,7 @@ class TestLintSkillFile:
 
                 ## Resources
                 Resources
-                """
-            ),
+                """),
             encoding="utf-8",
         )
         issues = lint_skill_file(skill_file, validate_links=False)
@@ -441,8 +425,7 @@ class TestLintSkillFile:
         """Detect multiple types of issues."""
         skill_file = tmp_path / "SKILL.md"
         skill_file.write_text(
-            dedent(
-                """\
+            dedent("""\
                 ---
                 name: Test
                 ---
@@ -452,8 +435,7 @@ class TestLintSkillFile:
 
                 ```
                 Unclosed fence
-                """
-            ),
+                """),
             encoding="utf-8",
         )
         issues = lint_skill_file(skill_file, validate_links=False)
@@ -472,8 +454,7 @@ class TestMain:
     def create_skill_file(self, path: Path, valid: bool = True) -> Path:
         """Helper to create a test SKILL.md file."""
         if valid:
-            content = dedent(
-                """\
+            content = dedent("""\
                 ---
                 name: Test
                 slug: test
@@ -504,11 +485,9 @@ class TestMain:
 
                 ## Resources
                 Resources
-                """
-            )
+                """)
         else:
-            content = dedent(
-                """\
+            content = dedent("""\
                 ---
                 name: Test
                 ---
@@ -518,8 +497,7 @@ class TestMain:
 
                 ```
                 Unclosed fence
-                """
-            )
+                """)
 
         skill_file = path / "SKILL.md"
         skill_file.write_text(content, encoding="utf-8")
@@ -572,16 +550,14 @@ class TestMain:
         # Create skill with missing sections (warnings) but no errors
         skill_file = skills_dir / "SKILL.md"
         skill_file.write_text(
-            dedent(
-                """\
+            dedent("""\
                 ---
                 name: Test
                 ---
 
                 ## Purpose & When-To-Use
                 Only one section (will trigger warnings for missing sections)
-                """
-            ),
+                """),
             encoding="utf-8",
         )
 
@@ -599,8 +575,7 @@ class TestMain:
 
         skill_file = skills_dir / "SKILL.md"
         skill_file.write_text(
-            dedent(
-                """\
+            dedent("""\
                 ---
                 name: Test
                 ---
@@ -632,8 +607,7 @@ class TestMain:
 
                 ## Resources
                 Resources
-                """
-            ),
+                """),
             encoding="utf-8",
         )
 
